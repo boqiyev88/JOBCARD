@@ -43,9 +43,9 @@ public class DBUAT {
         hikariConfig.setPoolName("uat");
         hikariConfig.setDriverClassName("com.ibm.as400.access.AS400JDBCDriver");
         hikariConfig.setConnectionTestQuery("select current_timestamp cts from sysibm.sysdummy1");
-        hikariConfig.setJdbcUrl("jdbc:as400://etran.db.gtk/UAT");
-        hikariConfig.setUsername("etranzits");
-        hikariConfig.setPassword("nB4EaEtU");
+//        hikariConfig.setJdbcUrl("jdbc:as400://baza_url/UAT");
+//        hikariConfig.setUsername("login");
+//        hikariConfig.setPassword("password");
         hikariConfig.setConnectionTimeout(30000);
         hikariConfig.setValidationTimeout(5000);
         hikariConfig.setMinimumIdle(100);
