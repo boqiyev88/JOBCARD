@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- [Head] start -->
+
+<head>
+  @@include('../layouts/head-page-meta.html', {'title': 'Dynamic Import'}) @@include('../layouts/head-css.html')
+</head>
+<!-- [Head] end -->
+<!-- [Body] Start -->
+
+<body>
+  @@include('../layouts/layout-vertical.html')
+
+  <!-- [ Main Content ] start -->
+  <section class="pc-container">
+    <div class="pc-content">
+      @@include('../layouts/breadcrumb.html', {'breadcrumb-item': 'Table', 'breadcrumb-item-active': 'Dynamic Import'})
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ basic-table ] start -->
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>Dynamic Import</h5>
+            </div>
+            <div class="card-body table-border-style">
+              <div class="table-responsive">
+                <table class="table" id="pc-dt-dynamic-import"> </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ basic-table ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </section>
+  <!-- [ Main Content ] end -->
+  @@include('../layouts/footer-block.html') @@include('../layouts/footer-js.html')
+  @@include('../layouts/customizer.html')
+  <script src="../assets/js/plugins/simple-datatables.js"></script>
+  <script>
+    var dataTable = new simpleDatatables.DataTable('#pc-dt-dynamic-import');
+    dataTable.import({
+      type: "csv",
+      data: "Heading 1,Heading 2,Heading 3|Value 1,Value 2,Value 3|Value 4,Value 5,Value 6",
+      headings: true,
+      lineDelimiter: "|",
+      columnDelimiter: ","
+    });
+  </script>
+</body>
+<!-- [Body] end -->
+
+</html>

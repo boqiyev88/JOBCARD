@@ -1,0 +1,146 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd">
+
+    <!-- Role jadvalini yaratish -->
+    <changeSet id="1" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ROLE"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ROLE">
+            <column name="ID" type="INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(300)" encoding="CCSID 1208">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="CODE" type="VARCHAR(3)"/>
+            <column name="SYSID" type="VARCHAR(4)"/>
+            <column name="SYSTEMS" type="VARCHAR(10)"/>
+            <column name="SYSTEM_NAME" type="VARCHAR(300)" encoding="CCSID 1208"/>
+            <column name="ROLETYPE" type="SMALLINT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- User jadvalini yaratish -->
+    <!-- User table creation -->
+    <changeSet id="2" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="USER"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER">
+            <column name="ID" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USERNAME" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORDOPEN" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PINFL" type="VARCHAR(14)"/>
+            <column name="FIRSTNAME" type="VARCHAR(600)" encoding="CCSID 1208"/>
+            <column name="LASTNAME" type="VARCHAR(600)" encoding="CCSID 1208"/>
+            <column name="FATHERNAME" type="VARCHAR(600)" encoding="CCSID 1208"/>
+            <column name="FULLNAME" type="VARCHAR(1800)" encoding="CCSID 1208"/>
+            <column name="PASSPORT_NO" type="VARCHAR(10)"/>
+            <column name="PASSPORT_DATE" type="DATE"/>
+            <column name="PASSPORT_ISSUED" type="VARCHAR(600)" encoding="CCSID 1208"/>
+            <column name="PASSPORT_BIRTHDATE" type="DATE"/>
+            <column name="ADDRESS" type="VARCHAR(600)" encoding="CCSID 1208"/>
+            <column name="PHONE" type="VARCHAR(20)"/>
+            <column name="EMAIL" type="VARCHAR(30)"/>
+            <column name="IDDEVICE" type="VARCHAR(50)"/>
+            <column name="VERSION" type="VARCHAR(10)"/>
+            <column name="CATEGORY" type="VARCHAR(2)"/>
+            <column name="SPECIALTY" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="CONFIRMTYPE" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="NATIONALITY" type="SMALLINT"/>
+            <column name="DEPARTMENT" type="SMALLINT"/>
+            <column name="CITIZENSHIP" type="SMALLINT"/>
+            <column name="GENDER" type="VARCHAR(30)" encoding="CCSID 1208"/>
+            <column name="ORGANIZATION" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="JOBTITLE" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="ISCONFIRMED" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="CONTRACT_NO" type="VARCHAR(20)"/>
+            <column name="CONTRACT_DATE" type="DATE"/>
+            <column name="CONTRACT_END" type="DATE"/>
+            <column name="PHOTO" type="BLOB"/>
+
+            <!-- Added columns from AbstractAuditingEntity -->
+            <column name="INSUSER" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="INSTIME" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDUSER" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDTIME" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DELUSER" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DELTIME" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
+        </createTable>
+    </changeSet>
+
+
+    <!-- User-Roles bog‘lanishini yaratish -->
+    <changeSet id="3" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="USER_ROLES"/>
+            </not>
+        </preConditions>
+        <createTable tableName="USER_ROLES">
+            <column name="USER_ID" type="VARCHAR(50)" encoding="CCSID 1208">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROLE_ID" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Foreign Key: USER_ROLES.USER_ID -> USER.ID -->
+    <changeSet id="4" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_USER_ROLES_USER"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableName="USER_ROLES" baseColumnNames="USER_ID"
+                referencedTableName="USER" referencedColumnNames="ID"
+                constraintName="FK_USER_ROLES_USER"/>
+    </changeSet>
+
+    <!-- Foreign Key: USER_ROLES.ROLE_ID -> ROLE.ID -->
+    <changeSet id="5" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_USER_ROLES_ROLE"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableName="USER_ROLES" baseColumnNames="ROLE_ID"
+                referencedTableName="ROLE" referencedColumnNames="ID"
+                constraintName="FK_USER_ROLES_ROLE"/>
+    </changeSet>
+
+</databaseChangeLog>
