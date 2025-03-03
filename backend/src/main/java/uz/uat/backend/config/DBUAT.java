@@ -41,11 +41,12 @@ public class DBUAT {
         hikariConfig.addDataSourceProperty("encoding", "UTF-8");
         hikariConfig.addDataSourceProperty("useUnicode", "true");
         hikariConfig.setPoolName("uat");
-        hikariConfig.setDriverClassName("com.ibm.as400.access.AS400JDBCDriver");
-        hikariConfig.setConnectionTestQuery("select current_timestamp cts from sysibm.sysdummy1");
-//        hikariConfig.setJdbcUrl("jdbc:as400://baza_url/UAT");
-//        hikariConfig.setUsername("login");
-//        hikariConfig.setPassword("password");
+        hikariConfig.setDriverClassName("org.postgresql.Driver");
+//        hikariConfig.setConnectionTestQuery("select current_timestamp cts from sysibm.sysdummy1");  ibm uchun
+        hikariConfig.setConnectionTestQuery("select current_timestamp");
+        hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/JOBCARD");
+        hikariConfig.setUsername("postgres");
+        hikariConfig.setPassword("1122");
         hikariConfig.setConnectionTimeout(30000);
         hikariConfig.setValidationTimeout(5000);
         hikariConfig.setMinimumIdle(100);

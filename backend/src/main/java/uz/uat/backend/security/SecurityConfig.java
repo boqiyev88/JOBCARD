@@ -74,9 +74,17 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable) // CSRF ni o'chirish
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS konfiguratsiyasi
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/", "/static/**", "/index.html", "/assets/**", "/js/**", "/css/**")
+                .authorizeHttpRequests(auth -> auth.requestMatchers(
+                                "/", "/static/**", "/index.html", "/assets/**", "/js/**", "/css/**")
                         .permitAll() // Statik resurslar
-                        .requestMatchers("/register", "/forgot-password", "/api/account/login", "/api/account/logout")
+                        .requestMatchers(
+                                "/api/v1/auth/",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/register",
+                                "/forgot-password",
+                                "/api/account/login",
+                                "/api/account/logout")
                         .permitAll() // Ochiq sahifalar
                         .requestMatchers("/api/account/me").authenticated()
                         .anyRequest()
@@ -92,7 +100,7 @@ public class SecurityConfig {
                         })
                         .invalidateHttpSession(true) // Sessionni tozalash
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID") // Cookie o‘chirish
+                        .deleteCookies("JSESSIONID") /// Cookie o'chirish
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception.accessDeniedPage("/maintenance/404")); // Ruxsat yo'qligi sahifasi
