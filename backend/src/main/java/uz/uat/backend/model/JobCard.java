@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "JOB")
+@Table(name = "JOB",schema = "uat")
 @Builder
 public class JobCard extends AbstractAuditingEntity {
 

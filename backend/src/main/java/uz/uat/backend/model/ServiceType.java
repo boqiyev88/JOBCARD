@@ -14,7 +14,7 @@ import uz.uat.backend.model.enums.Status;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SERVICETYPE")
+@Table(name = "SERVICETYPE",schema = "uat")
 public class ServiceType extends AbstractAuditingEntity {
 
     @Id

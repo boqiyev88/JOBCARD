@@ -13,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SERVICES")
+@Table(name = "SERVICES",schema = "uat")
 @Builder
 public class Services extends AbstractAuditingEntity {
 

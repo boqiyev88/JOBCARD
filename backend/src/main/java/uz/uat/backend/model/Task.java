@@ -10,9 +10,9 @@ import org.hibernate.annotations.UuidGenerator;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "TASK")
+@Table(name = "task" ,schema = "uat")
 @Builder
-public class Task extends AbstractAuditingEntity {
+public class Task {
 
     @Id
     @GeneratedValue(generator = "uuid4")

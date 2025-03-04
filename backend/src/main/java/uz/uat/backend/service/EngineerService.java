@@ -10,6 +10,7 @@ import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
 import uz.uat.backend.dto.WorkListDto;
 import uz.uat.backend.mapper.ServicesMapper;
+import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
@@ -36,6 +37,7 @@ public class EngineerService implements EngineerServiceIM {
     private final ServiceNameRepository serviceNameRepository;
     private final TaskRepository taskRepository;
     private final ServicesMapper servicesMapper;
+    private final TaskMapper taskMapper;
 
     public Resource generateCsvFile(String fileName) {
         try {
@@ -58,28 +60,30 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public List<Task> uploadCSV(MultipartFile file) {
+    public List<TaskDto> uploadCSV(MultipartFile file) {
         List<Task> tasks = new ArrayList<>();
-        try {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] data = line.split(",");
-                    if (data.length >= 2) {
-                        tasks.add(
-                                Task.builder()
-                                        .Number(data[0])
-                                        .description(data[1])
-                                        .build()
+        List<TaskDto> tasksDto = new ArrayList<>();
 
-                        );
-                    }
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 2) {
+                    tasks.add(
+                            Task.builder()
+                                    .Number(data[0])
+                                    .description(data[1])
+                                    .build()
+
+                    );
                 }
             }
+            taskRepository.saveAll(tasks);
+            tasksDto = taskMapper.list(tasks);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return tasks;
+        return tasksDto;
     }
 
     @Override

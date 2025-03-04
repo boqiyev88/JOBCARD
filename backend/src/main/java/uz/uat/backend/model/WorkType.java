@@ -15,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "WORKTYPE")
+@Table(name = "WORKTYPE",schema = "uat")
 public class WorkType extends AbstractAuditingEntity {
 
     @Id

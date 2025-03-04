@@ -12,21 +12,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EngineerServiceIM {
-     List<Task>  uploadCSV(MultipartFile file);
+    List<TaskDto> uploadCSV(MultipartFile file);
 
+    List<ServiceDto> getMainManu();
 
-     List<ServiceDto> getMainManu();
+    void getDeleteTask(String id);
 
-     void getDeleteTask(String id);
+    void editTask(String id, TaskDto taskDto);
 
-     void editTask(String id, TaskDto taskDto);
+    List<ServiceName> getServiceName();
 
-     List<ServiceName> getServiceName();
+    List<Work> searchByDate(LocalDateTime startDate, LocalDateTime endDate);
 
-     List<Work> searchByDate(LocalDateTime startDate, LocalDateTime endDate);
+    void addNewService(WorkListDto workListDto);
 
-     void addNewService(WorkListDto workListDto);
-
-     List<ServiceType> getServiceType();
+    List<ServiceType> getServiceType();
 
 }

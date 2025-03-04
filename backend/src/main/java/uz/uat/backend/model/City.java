@@ -8,11 +8,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 import uz.uat.backend.model.enums.Status;
 
-@Entity(name = "CITY")
+@Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "CITY",schema = "uat")
 public class City extends AbstractAuditingEntity{
 
     @Id

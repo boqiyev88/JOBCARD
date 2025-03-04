@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(schema = "uat")
 public class PdfFile {
 
     @Id

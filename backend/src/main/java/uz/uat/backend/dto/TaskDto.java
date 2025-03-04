@@ -1,4 +1,4 @@
 package uz.uat.backend.dto;
 
-public class TaskDto {
+public record TaskDto(String Number, String description) {
 }

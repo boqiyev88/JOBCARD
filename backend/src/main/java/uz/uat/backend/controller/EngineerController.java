@@ -44,7 +44,7 @@ public class EngineerController {
     @Operation(description = "CSV faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
     public ResponseEntity<?> uploadFile(@NonNull @RequestParam("file")
                                         @Parameter(description = "CSV file") MultipartFile file) {
-        List<Task> tasks = engineerService.uploadCSV(file);
+        List<TaskDto> tasks = engineerService.uploadCSV(file);
         return ResponseEntity.ok(tasks);
     }
 
