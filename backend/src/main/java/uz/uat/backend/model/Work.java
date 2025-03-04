@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
+import uz.uat.backend.dto.Worker;
 
 import java.util.List;
 
@@ -28,17 +29,6 @@ public class Work extends AbstractAuditingEntity {
 
     @Column(nullable = false)
     private String REPEAT_INT;
-
-    @Column(nullable = false)
-    private String DESCRIPTION;
-
-    @JoinColumn(nullable = false)
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Task> taskList;
-
-    @JoinColumn(nullable = false,name = "WORKTYPE_ID")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private WorkType workType;
 
     @Column(nullable = false)
     private String ZONE;

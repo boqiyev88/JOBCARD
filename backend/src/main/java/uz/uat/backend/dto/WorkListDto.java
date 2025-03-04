@@ -1,6 +1,9 @@
 package uz.uat.backend.dto;
 
-import java.util.List;
 
-public record WorkListDto(Object workType, List<String> taskList) {
+
+import java.time.LocalDateTime;
+
+
+public record WorkListDto(String serviceType, String serviceName, String revisionNumber, LocalDateTime revisionTime) {
 }

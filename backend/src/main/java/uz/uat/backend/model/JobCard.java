@@ -3,10 +3,9 @@ package uz.uat.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Entity
 @Data
@@ -15,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "JOB")
 @Builder
-public class JobOverView extends AbstractAuditingEntity {
+public class JobCard extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(generator = "uuid4")

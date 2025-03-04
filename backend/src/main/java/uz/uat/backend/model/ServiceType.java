@@ -1,5 +1,6 @@
 package uz.uat.backend.model;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,14 +9,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 import uz.uat.backend.model.enums.Status;
 
-
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "TASKTYPE")
-public class TaskType extends AbstractAuditingEntity {
+@Table(name = "SERVICETYPE")
+public class ServiceType extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(generator = "uuid4")
@@ -29,4 +29,5 @@ public class TaskType extends AbstractAuditingEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
 }

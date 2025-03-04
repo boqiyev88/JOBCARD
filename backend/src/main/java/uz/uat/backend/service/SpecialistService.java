@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
-import uz.uat.backend.model.JobOverView;
+import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.repository.JobCardRepository;
-import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 import uz.uat.backend.service.serviceIMPL.SpecialistServiceIM;
 
 @Service
@@ -29,7 +28,7 @@ public class SpecialistService implements SpecialistServiceIM {
             String name = file.getName();
             byte[] bytes = file.getBytes();
             jobCardRepository.save(
-                    JobOverView.builder()
+                    JobCard.builder()
                             .id(jobCardId)
                             .mainPlan(PdfFile.builder()
                                     .fileName(name)

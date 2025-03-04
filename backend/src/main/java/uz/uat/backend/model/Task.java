@@ -1,13 +1,8 @@
 package uz.uat.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
-
-import java.time.LocalDateTime;
 
 
 @Entity
@@ -16,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "TASK")
+@Builder
 public class Task extends AbstractAuditingEntity {
 
     @Id
@@ -24,17 +20,10 @@ public class Task extends AbstractAuditingEntity {
     @Column(name = "ID", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column(nullable = false,name = "DESCRIPTION")
+    @Column(nullable = false,name = "NUMBER")
+    private String Number;
+
+    @Column(nullable = false, name = "DESCRIPTION")
     private String description;
-
-    @JoinColumn(nullable = false,name = "TASKTYPE")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private TaskType taskType;
-
-    @Column(nullable = false,name = "REVISONNUMBER")
-    private String revisionNumber;
-
-    @Column(nullable = false,name = "REVISONTIME")
-    private LocalDateTime revisionTime;
 
 }
