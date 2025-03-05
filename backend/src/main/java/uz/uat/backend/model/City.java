@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
-import uz.uat.backend.model.enums.Status;
+
 
 @Entity
 @Data
@@ -25,8 +25,5 @@ public class City extends AbstractAuditingEntity{
     @Column(nullable = false)
     private String NAME;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status STATUS;
 
 }

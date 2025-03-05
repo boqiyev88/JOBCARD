@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface WorkTypeRepository extends JpaRepository<WorkType, String> {
 
-    @Query("select w from WorkType w where w.STATUS= 'ACTIVE'")
+    @Query("select w from WorkType w where w.isDeleted=0")
     List<WorkType> getWorkTypes();
 
 }

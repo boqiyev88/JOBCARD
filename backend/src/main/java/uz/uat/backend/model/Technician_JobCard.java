@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "JOB", schema = "uat")
+@Table(name = "JOB_TECHNICIAN", schema = "uat")
 @Builder
-public class JobCard extends AbstractAuditingEntity {
+public class Technician_JobCard extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(generator = "uuid4")

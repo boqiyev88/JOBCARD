@@ -13,9 +13,9 @@ import java.util.Optional;
 public interface ServiceTypeRepository extends JpaRepository<ServiceType, String> {
 
 
-    @Query("select sn from ServiceType sn where sn.NAME= :name")
+    @Query("select sn from ServiceType sn where sn.NAME= :name and sn.isDeleted=0")
     Optional<ServiceType> findByName(@Param("name") String name);
 
-    @Query("select sn from ServiceType sn where sn.status='ACTIVE'")
+    @Query("select sn from ServiceType sn where sn.isDeleted=0")
     Optional<List<ServiceType>> getServiceType();
 }

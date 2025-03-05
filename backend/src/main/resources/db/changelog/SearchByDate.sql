@@ -1,3 +1,0 @@
-CREATE OR REPLACE VIEW from_date_to_date AS
-SELECT * FROM Work
-WHERE created_at BETWEEN '2024-01-01' AND '2024-12-31';

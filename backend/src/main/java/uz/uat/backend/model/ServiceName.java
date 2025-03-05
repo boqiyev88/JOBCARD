@@ -3,7 +3,6 @@ package uz.uat.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
-import uz.uat.backend.model.enums.Status;
 
 
 @Entity
@@ -23,7 +22,4 @@ public class ServiceName extends AbstractAuditingEntity {
     @Column(nullable = false)
     private String NAME;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status status;
 }

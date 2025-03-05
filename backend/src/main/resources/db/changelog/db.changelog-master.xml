@@ -132,7 +132,6 @@
             <column name="NAME" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="STATUS" type="VARCHAR(10)"/>
         </createTable>
     </changeSet>
 
@@ -151,7 +150,6 @@
             <column name="NAME" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="STATUS" type="VARCHAR(10)"/>
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -178,7 +176,6 @@
             <column name="NAME" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="STATUS" type="VARCHAR(10)"/>
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -205,7 +202,6 @@
             <column name="NAME" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="STATUS" type="VARCHAR(10)"/>
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -241,9 +237,7 @@
             <column name="REVISONTIME" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="STATUS" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
+
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -501,8 +495,27 @@
                                  onDelete="CASCADE"/>
     </changeSet>
 
-
-
+    <changeSet id="16" author="user">
+        <createTable tableName="SERVICES_CHANGELOG" schemaName="uat">
+            <column name="CHANGE_ID" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="SERVICE_ID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHANGED_BY" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHANGE_TIME" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COLUMN_NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OLD_VALUE" type="VARCHAR(255)"/>
+            <column name="NEW_VALUE" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
 
 
 </databaseChangeLog>

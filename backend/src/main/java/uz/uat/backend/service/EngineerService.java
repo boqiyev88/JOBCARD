@@ -15,12 +15,10 @@ import uz.uat.backend.dto.WorkListDto;
 import uz.uat.backend.mapper.ServicesMapper;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
-import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -109,7 +107,6 @@ public class EngineerService implements EngineerServiceIM {
                             .serviceName(serviceName)
                             .revisionNumber(workListDto.revisionNumber())
                             .revisionTime(workListDto.revisionTime())
-                            .status(Status.ACTIVE)
                             .build()
             );
         } catch (Exception e) {

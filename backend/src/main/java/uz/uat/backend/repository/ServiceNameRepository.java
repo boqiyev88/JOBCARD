@@ -12,9 +12,9 @@ import java.util.Optional;
 @Repository
 public interface ServiceNameRepository extends JpaRepository<ServiceName, String> {
 
-    @Query("select sn from ServiceName sn where sn.NAME= :name")
+    @Query("select sn from ServiceName sn where sn.NAME= :name and sn.isDeleted=0")
     Optional<ServiceName> findByName(@Param("name") String name);
 
-    @Query("select sn from ServiceName sn where sn.status='active'")
+    @Query("select sn from ServiceName sn where sn.isDeleted=0")
     Optional<List<ServiceName>> getServiceName();
 }

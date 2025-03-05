@@ -1,6 +1,7 @@
 package uz.uat.backend.model.enums;
 
-public enum Status {
+public enum SpecialistStatus {
+
     NEW,
     IN_PROCESS,
     CONFIRMED,

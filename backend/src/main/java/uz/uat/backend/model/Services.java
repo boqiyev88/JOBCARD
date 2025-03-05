@@ -3,7 +3,6 @@ package uz.uat.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
-import uz.uat.backend.model.enums.Status;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,10 +43,6 @@ public class Services extends AbstractAuditingEntity {
 
     @Column(nullable = false, name = "REVISONTIME")
     private LocalDate revisionTime;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
 
 }

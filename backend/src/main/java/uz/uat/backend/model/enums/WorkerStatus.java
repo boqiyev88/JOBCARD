@@ -1,8 +1,10 @@
 package uz.uat.backend.model.enums;
 
-public enum Status {
+public enum WorkerStatus {
+
     NEW,
     IN_PROCESS,
     CONFIRMED,
     REJECTED,
+
 }
