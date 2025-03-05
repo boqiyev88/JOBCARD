@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -15,13 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uz.uat.backend.dto.ResponseServiceDto;
 import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
 import uz.uat.backend.dto.WorkListDto;
 import uz.uat.backend.model.*;
 import uz.uat.backend.service.EngineerService;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class EngineerController {
     }
 
     @GetMapping("/generateCSV")
-    public ResponseEntity<?> generateCSV(@RequestParam String fileName) {
+    public ResponseEntity<?> generateCSV(@Valid @RequestParam String fileName) {
         Resource resource = engineerService.generateCsvFile(fileName);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tasks.csv")
@@ -58,14 +61,14 @@ public class EngineerController {
     }
 
     @GetMapping("/searchByDate")
-    public ResponseEntity<?> searchByDate(@NonNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,
-                                          @NonNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime endDate) {
-        List<Work> works = engineerService.searchByDate(startDate, endDate);
-        return ResponseEntity.ok(works);
+    public ResponseEntity<?> searchByDate(@Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,
+                                          @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime endDate) {
+        List<ResponseServiceDto> services = engineerService.searchByDate(startDate, endDate);
+        return ResponseEntity.ok(services);
     }
 
     @PostMapping("/addServices")
-    public ResponseEntity<?> addNewService(@NonNull @RequestBody WorkListDto workListDto) {
+    public ResponseEntity<?> addNewService(@Valid @RequestBody WorkListDto workListDto) {
         engineerService.addNewService(workListDto);
         return ResponseEntity.status(201).build();
     }
@@ -77,7 +80,7 @@ public class EngineerController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
+    public ResponseEntity<?> delete(@Valid @PathVariable String id) {
         engineerService.getDeleteTask(id);
         return ResponseEntity.ok().build();
     }
@@ -96,7 +99,7 @@ public class EngineerController {
 
     /// hali tayyor emas
     @PutMapping("/put/{id}")
-    public ResponseEntity<?> put(@PathVariable String id, @RequestBody TaskDto taskDto) {
+    public ResponseEntity<?> put(@Valid @PathVariable String id, @Valid @RequestBody TaskDto taskDto) {
         engineerService.editTask(id, taskDto);
         return null;
     }

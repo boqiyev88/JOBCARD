@@ -1,17 +1,21 @@
 package uz.uat.backend.service;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uz.uat.backend.dto.ResponseServiceDto;
 import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
 import uz.uat.backend.dto.WorkListDto;
 import uz.uat.backend.mapper.ServicesMapper;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
+import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 
@@ -30,8 +34,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EngineerService implements EngineerServiceIM {
 
-    private final WorkTypeRepository workTypeRepository;
-    private final WorkRepository workRepository;
     private final ServicesRepository servicesRepository;
     private final ServiceTypeRepository serviceTypeRepository;
     private final ServiceNameRepository serviceNameRepository;
@@ -39,7 +41,7 @@ public class EngineerService implements EngineerServiceIM {
     private final ServicesMapper servicesMapper;
     private final TaskMapper taskMapper;
 
-    public Resource generateCsvFile(String fileName) {
+    public Resource generateCsvFile(@NotBlank String fileName) {
         try {
             StringBuilder csvContent = new StringBuilder();
             csvContent.append("Number,Description\n");
@@ -107,6 +109,7 @@ public class EngineerService implements EngineerServiceIM {
                             .serviceName(serviceName)
                             .revisionNumber(workListDto.revisionNumber())
                             .revisionTime(workListDto.revisionTime())
+                            .status(Status.ACTIVE)
                             .build()
             );
         } catch (Exception e) {
@@ -142,17 +145,18 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public List<Work> searchByDate(LocalDateTime startDate, LocalDateTime endDate) {
-//        List<Work> works = workRepository.searchWorkByDate(startDate, endDate);
-//        if (works == null)
-//            throw new UsernameNotFoundException("No work found by these dates");
-
-        return null;
+    public List<ResponseServiceDto> searchByDate(@NotBlank LocalDateTime startDate,@NotBlank LocalDateTime endDate) {
+        Optional<List<Services>> optional = servicesRepository.searchServicesByDate(startDate, endDate);
+        if (optional.isEmpty() || optional.get().isEmpty())
+            throw new UsernameNotFoundException("services is null");
+        List<Services> services = optional.get();
+        List<ResponseServiceDto> respDtoService = servicesMapper.fromDto(services);
+        return respDtoService;
     }
 
 
     @Override
-    public void getDeleteTask(String id) {
+    public void getDeleteTask(@NotBlank String id) {
         servicesRepository.findById(id).ifPresent(services -> {
             servicesRepository.deleteById(id);
         });
@@ -161,7 +165,7 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public void editTask(String id, TaskDto taskDto) {
+    public void editTask(@NotBlank String id,@NotBlank TaskDto taskDto) {
 
     }
 

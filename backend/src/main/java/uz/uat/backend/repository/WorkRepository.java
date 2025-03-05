@@ -16,8 +16,5 @@ public interface WorkRepository extends JpaRepository<Work, String> {
 //    @Query("SELECT w.id,w.workType,w.taskList FROM Work w")
 //    List<Work> getWork();
 //
-//    @Query("SELECT w.id,w.workType,w.taskList FROM Work w " +
-//            "JOIN w.taskList t WHERE t.revisionTime BETWEEN :startDate AND :endDate")
-//    List<Work> searchWorkByDate(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 }

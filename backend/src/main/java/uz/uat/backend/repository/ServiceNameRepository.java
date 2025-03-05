@@ -15,6 +15,6 @@ public interface ServiceNameRepository extends JpaRepository<ServiceName, String
     @Query("select sn from ServiceName sn where sn.NAME= :name")
     Optional<ServiceName> findByName(@Param("name") String name);
 
-    @Query("select sn from ServiceName sn where sn.status='ACTIVE'")
+    @Query("select sn from ServiceName sn where sn.status='active'")
     Optional<List<ServiceName>> getServiceName();
 }

@@ -2,6 +2,7 @@ package uz.uat.backend.service.serviceIMPL;
 
 
 import org.springframework.web.multipart.MultipartFile;
+import uz.uat.backend.dto.ResponseServiceDto;
 import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
 import uz.uat.backend.dto.WorkListDto;
@@ -22,7 +23,7 @@ public interface EngineerServiceIM {
 
     List<ServiceName> getServiceName();
 
-    List<Work> searchByDate(LocalDateTime startDate, LocalDateTime endDate);
+    List<ResponseServiceDto> searchByDate(LocalDateTime startDate, LocalDateTime endDate);
 
     void addNewService(WorkListDto workListDto);
 

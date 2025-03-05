@@ -2,8 +2,14 @@ package uz.uat.backend.dto;
 
 
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+
+import java.time.LocalDate;
 
 
-public record WorkListDto(String serviceType, String serviceName, String revisionNumber, LocalDateTime revisionTime) {
+
+public record WorkListDto(@NotBlank String serviceType,
+                          @NotBlank String serviceName,
+                          @NotBlank String revisionNumber,
+                          @NotBlank LocalDate revisionTime) {
 }

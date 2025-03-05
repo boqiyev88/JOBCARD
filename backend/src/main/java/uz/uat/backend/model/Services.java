@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 import uz.uat.backend.model.enums.Status;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -43,7 +43,7 @@ public class Services extends AbstractAuditingEntity {
     private String revisionNumber;
 
     @Column(nullable = false, name = "REVISONTIME")
-    private LocalDateTime revisionTime;
+    private LocalDate revisionTime;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

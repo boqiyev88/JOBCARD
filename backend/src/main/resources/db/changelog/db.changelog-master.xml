@@ -152,6 +152,15 @@
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="STATUS" type="VARCHAR(10)"/>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
     </changeSet>
 
@@ -170,6 +179,15 @@
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="STATUS" type="VARCHAR(10)"/>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
     </changeSet>
 
@@ -188,6 +206,15 @@
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="STATUS" type="VARCHAR(10)"/>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
     </changeSet>
 
@@ -217,6 +244,15 @@
             <column name="STATUS" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
     </changeSet>
 
@@ -237,6 +273,15 @@
             <column name="DESCRIPTION" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
     </changeSet>
 
@@ -316,6 +361,15 @@
             <column name="DIT" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="WORK"
@@ -345,6 +399,15 @@
             <column name="DATA" type="BLOB">
                 <constraints nullable="false"/>
             </column>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
     </changeSet>
 
@@ -402,6 +465,15 @@
                 <constraints nullable="false"/>
             </column>
             <column name="MAIN_PLAN" type="BIGINT"/>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="JOB"
