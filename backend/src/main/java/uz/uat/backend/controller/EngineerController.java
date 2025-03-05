@@ -41,16 +41,28 @@ public class EngineerController {
     }
 
     @PostMapping(
-            path = "/upload",
+            path = "/uploadCSV",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "CSV faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
-    public ResponseEntity<?> uploadFile(@NonNull @RequestParam("file")
+    public ResponseEntity<?> uploadCSVFile(@NonNull @RequestParam("file")
                                         @Parameter(description = "CSV file") MultipartFile file) {
         List<TaskDto> tasks = engineerService.uploadCSV(file);
         return ResponseEntity.ok(tasks);
     }
 
+    @PostMapping(
+            path = "/uploadPDF",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "PDF faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
+    public ResponseEntity<?> uploadPDFFile(@NonNull @RequestParam("file")
+                                        @Parameter(description = "PDF file") MultipartFile file) {
+        List<TaskDto> tasks = engineerService.uploadPDF(file);
+        return ResponseEntity.ok(tasks);
+    }
+
+    /// Faqat CSV file generatsiya qilish uchun
     @GetMapping("/generateCSV")
     public ResponseEntity<?> generateCSV(@Valid @RequestParam String fileName) {
         Resource resource = engineerService.generateCsvFile(fileName);
@@ -59,6 +71,7 @@ public class EngineerController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(resource);
     }
+
 
     @GetMapping("/searchByDate")
     public ResponseEntity<?> searchByDate(@Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,

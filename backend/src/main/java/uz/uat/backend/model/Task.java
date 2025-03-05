@@ -21,7 +21,7 @@ public class Task {
     private String id;
 
     @Column(nullable = false,name = "NUMBER")
-    private String Number;
+    private String number;
 
     @Column(nullable = false, name = "DESCRIPTION")
     private String description;

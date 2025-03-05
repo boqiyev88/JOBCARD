@@ -29,4 +29,5 @@ public interface EngineerServiceIM {
 
     List<ServiceType> getServiceType();
 
+    List<TaskDto> uploadPDF(MultipartFile file);
 }

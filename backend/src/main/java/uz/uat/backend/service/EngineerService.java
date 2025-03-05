@@ -1,8 +1,9 @@
 package uz.uat.backend.service;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +19,15 @@ import uz.uat.backend.model.*;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -38,6 +48,7 @@ public class EngineerService implements EngineerServiceIM {
     private final TaskRepository taskRepository;
     private final ServicesMapper servicesMapper;
     private final TaskMapper taskMapper;
+    private final ExecutorService executorService;
 
     public Resource generateCsvFile(@NotBlank String fileName) {
         try {
@@ -60,8 +71,34 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
+    public List<TaskDto> uploadPDF(MultipartFile file) {
+
+        List<Task> taskList = new ArrayList<>();
+        try (PDDocument document = PDDocument.load(file.getInputStream())) {
+            String pdfText = new PDFTextStripper().getText(document);
+            Pattern pattern = Pattern.compile("(\\d+)\\.\\s*(.+)");
+            Matcher matcher = pattern.matcher(pdfText);
+            while (matcher.find()) {
+                String number = matcher.group(1);
+                String text = matcher.group(2);
+                taskList.add(
+                        Task.builder()
+                                .number(String.valueOf(number))
+                                .description(text)
+                                .build()
+                );
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return taskMapper.list(taskList);
+    }
+
+
+    @Override
     public List<TaskDto> uploadCSV(MultipartFile file) {
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = Collections.synchronizedList(new ArrayList<>());
         List<TaskDto> tasksDto = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -71,7 +108,7 @@ public class EngineerService implements EngineerServiceIM {
                 if (data.length >= 2) {
                     tasks.add(
                             Task.builder()
-                                    .Number(data[0])
+                                    .number(data[0])
                                     .description(data[1])
                                     .build()
 
@@ -142,7 +179,7 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public List<ResponseServiceDto> searchByDate(@NotBlank LocalDateTime startDate,@NotBlank LocalDateTime endDate) {
+    public List<ResponseServiceDto> searchByDate(@NotBlank LocalDateTime startDate, @NotBlank LocalDateTime endDate) {
         Optional<List<Services>> optional = servicesRepository.searchServicesByDate(startDate, endDate);
         if (optional.isEmpty() || optional.get().isEmpty())
             throw new UsernameNotFoundException("services is null");
@@ -162,7 +199,7 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public void editTask(@NotBlank String id,@NotBlank TaskDto taskDto) {
+    public void editTask(@NotBlank String id, @NotBlank TaskDto taskDto) {
 
     }
 
