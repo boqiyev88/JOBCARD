@@ -3,6 +3,7 @@ package uz.uat.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
+import uz.uat.backend.model.enums.SpecialistStatus;
 import uz.uat.backend.model.enums.Status;
 
 import java.time.LocalDateTime;
@@ -68,7 +69,7 @@ public class Specialist_JobCard extends AbstractAuditingEntity {
     private LocalDateTime DATE;
 
     @Column(nullable = false)
-    private Status STATUS = Status.NEW;
+    private SpecialistStatus STATUS = SpecialistStatus.NEW;
 
     @JoinColumn(name = "MAIN_PLAN")
     @OneToOne(fetch = FetchType.EAGER)

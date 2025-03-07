@@ -1,13 +1,8 @@
 package uz.uat.backend.controller;
 
-import feign.Param;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -56,8 +51,7 @@ public class EngineerController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "PDF faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
-    public ResponseEntity<?> uploadPDFFile(@NonNull @RequestParam("file")
-                                        @Parameter(description = "PDF file") MultipartFile file) {
+    public ResponseEntity<?> uploadPDFFile(@NonNull @RequestParam("file") @Parameter(description = "PDF file") MultipartFile file) {
         List<TaskDto> tasks = engineerService.uploadPDF(file);
         return ResponseEntity.ok(tasks);
     }
