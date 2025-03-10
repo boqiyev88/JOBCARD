@@ -21,6 +21,7 @@ public class Engineer_Delete_History {
     @Column(name = "ID", columnDefinition = "VARCHAR(50)")
     private String ID;
 
+
     @Column(name = "TABLEID")
     private String tableID;
 

@@ -8,16 +8,14 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
 import uz.uat.backend.dto.JobCardDto;
 import uz.uat.backend.dto.RequestDto;
-import uz.uat.backend.mapper.JobCardMapper;
 import uz.uat.backend.mapper.Specialist_JobCardMapper;
 import uz.uat.backend.mapper.Technician_JobCardMapper;
-import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.model.Specialist_JobCard;
 import uz.uat.backend.model.Technician_JobCard;
 import uz.uat.backend.model.enums.Status;
 
-import uz.uat.backend.repository.JobCardRepository;
+
 import uz.uat.backend.repository.Specialist_JobCardRepository;
 import uz.uat.backend.repository.Technician_JobCardRepository;
 import uz.uat.backend.service.serviceIMPL.SpecialistServiceIM;
@@ -72,10 +70,7 @@ public class SpecialistService implements SpecialistServiceIM {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /// real time da ishlayapti
-
+    }    /// real time da ishlayapti
 
     @Override
     public void returned(RequestDto requestDto) {
@@ -88,10 +83,9 @@ public class SpecialistService implements SpecialistServiceIM {
 
             tj.setSTATUS(Status.REJECTED);
             Technician_JobCard technician_jobCard = technicianJobCardRepository.save(tj);
-
             notifier.TechnicianNotifier(technician_jobCard);               /// real timeda texnik tablega jo'natildi
-            jobCardId.setSTATUS(Status.REJECTED);
 
+            jobCardId.setSTATUS(Status.REJECTED);
             Specialist_JobCard specialist_jobCard = specialistJobCardRepository.save(jobCardId);
             notifier.SpecialistNotifier(specialist_jobCard);                /// real timeda specialist tablega jo'natildi
 
@@ -100,21 +94,19 @@ public class SpecialistService implements SpecialistServiceIM {
             e.printStackTrace();
         }
 
-    }
-
-    /// real time da ishlayapti
+    } /// real time da ishlayapti
 
     @Override
-    public void completedTask(String jobId) {
-        ///  real timeda status o'zgartirish kerak
-        try {
-            Specialist_JobCard jobCard = getById(jobId);
-            jobCard.setSTATUS(Status.COMPLETED);
-            specialistJobCardRepository.save(jobCard);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    public void confirmed(String jobId) {
+        Specialist_JobCard jobCard = getById(jobId);
+        jobCard.setSTATUS(Status.COMPLETED);
+        notifier.SpecialistNotifier(jobCard);
+
+        Technician_JobCard technician = getTechnician(jobCard.getWorkOrderNumber());
+        technician.setSTATUS(Status.COMPLETED);
+        notifier.TechnicianNotifier(technician);
+        notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
+    }  /// real time da ishlayapti
 
     @Override
     public void statusInProcess(String jobId) {
@@ -145,7 +137,7 @@ public class SpecialistService implements SpecialistServiceIM {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }   /// real time da ishlayapti kamchiliklari bor hali
+    }    /// real time da ishlayapti kamchiliklari bor hali
 
     @Override
     public PdfFile getPdfFromJob(String jobId) {
@@ -160,7 +152,6 @@ public class SpecialistService implements SpecialistServiceIM {
         Specialist_JobCard jobCardId = specialistJobCardRepository.findByJobCardId(id);
         if (jobCardId == null)
             throw new UsernameNotFoundException("job card not found, may be Invalid job card id");
-        jobCardId.setSTATUS(Status.COMPLETED);
         /// job card va workni biriktirilgan holda qaytish kerak
         return jobCardId;
     }

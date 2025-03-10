@@ -54,17 +54,12 @@ public class SpecialistController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/confirmed/{jobId}")
+    @GetMapping("/completed/{jobId}")
     public ResponseEntity<?> confirmSpecialist(@Valid @PathVariable String jobId) {
-        Specialist_JobCard confirmed = specialistService.getById(jobId);
-        return ResponseEntity.ok(confirmed);
+         specialistService.confirmed(jobId);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/completed/{jobId}")
-    public ResponseEntity<?> completedSpecialist(@Valid @PathVariable String jobId) {
-        specialistService.completedTask(jobId);
-        return ResponseEntity.status(200).build();
-    }
 
     @GetMapping("/getPDF/{jobId}")
     public ResponseEntity<?> getPDF(@PathVariable String jobId) {

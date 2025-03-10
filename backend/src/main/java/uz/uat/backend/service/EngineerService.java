@@ -9,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uz.uat.backend.component.Notifier;
 import uz.uat.backend.dto.ResponseServiceDto;
 import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
@@ -48,7 +49,7 @@ public class EngineerService implements EngineerServiceIM {
     private final TaskRepository taskRepository;
     private final ServicesMapper servicesMapper;
     private final TaskMapper taskMapper;
-    private final ExecutorService executorService;
+    private final Notifier notifier;
 
     public Resource generateCsvFile(@NotBlank String fileName) {
         try {
@@ -68,7 +69,6 @@ public class EngineerService implements EngineerServiceIM {
             throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public List<TaskDto> uploadPDF(MultipartFile file) {
@@ -138,7 +138,7 @@ public class EngineerService implements EngineerServiceIM {
             throw new UsernameNotFoundException("service name not found");
         ServiceName serviceName = optional.get();
         try {
-            servicesRepository.save(
+            Services saveService = servicesRepository.save(
                     Services.builder()
                             .serviceType(serviceType)
                             .serviceName(serviceName)
@@ -146,6 +146,7 @@ public class EngineerService implements EngineerServiceIM {
                             .revisionTime(workListDto.revisionTime())
                             .build()
             );
+            notifier.EngineerNotifier(saveService);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,7 +165,7 @@ public class EngineerService implements EngineerServiceIM {
     public List<ServiceDto> getMainManu() {
         List<Services> services = servicesRepository.findAll();
         if (services.isEmpty())
-            throw new UsernameNotFoundException("services is null");
+            throw new UsernameNotFoundException("services  ");
         return servicesMapper.toDto(services);
     }
 
@@ -191,10 +192,18 @@ public class EngineerService implements EngineerServiceIM {
 
     @Override
     public void getDeleteTask(@NotBlank String id) {
-        servicesRepository.findById(id).ifPresent(services -> {
-            servicesRepository.deleteById(id);
-        });
-        throw new UsernameNotFoundException("Delete service not found by this id " + id);
+        try {
+            Optional<Services> optional = servicesRepository.findById(id);
+            if (optional.isEmpty())
+                throw new UsernameNotFoundException("services not found by id " + id);
+            Services service = optional.get();
+            service.setIsDeleted(1);
+            Services save = servicesRepository.save(service);
+            notifier.EngineerNotifier(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 

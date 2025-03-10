@@ -1,5 +1,6 @@
 package uz.uat.backend.service.serviceIMPL;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
@@ -23,5 +24,5 @@ public interface SpecialistServiceIM {
 
      Technician_JobCard getTechnician(String id);
 
-     void completedTask(@NotBlank String jobId);
+     void confirmed(@Valid String jobId);
 }
