@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
@@ -63,13 +64,6 @@ public class SpecialistController {
     public ResponseEntity<?> completedSpecialist(@Valid @PathVariable String jobId) {
         specialistService.completedTask(jobId);
         return ResponseEntity.status(200).build();
-    }
-
-    @PostMapping("/pdf/{id}")
-    public ResponseEntity<?> uploadPDF(@PathVariable String id,
-                                       @RequestParam("file") MultipartFile file) {
-        specialistService.addPdfToJobCard(id, file);
-        return ResponseEntity.status(HttpStatusCode.valueOf(201)).build();
     }
 
     @GetMapping("/getPDF/{jobId}")

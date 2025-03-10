@@ -1,6 +1,5 @@
 package uz.uat.backend.service.serviceIMPL;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
@@ -12,8 +11,6 @@ import uz.uat.backend.model.Technician_JobCard;
 public interface SpecialistServiceIM {
 
      void addJobCard(JobCardDto jobCardDto, MultipartFile file);
-
-     void addPdfToJobCard(String jobCardId, MultipartFile file);
 
 
      PdfFile getPdfFromJob(String jobId);
