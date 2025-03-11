@@ -11,9 +11,9 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Engineer_Update_History",schema = "uat")
+@Table(name = "Engineer_History", schema = "uat")
 @Builder
-public class Engineer_Update_History {
+public class Engineer_History {
 
     @Id
     @GeneratedValue(generator = "uuid4")
@@ -24,19 +24,16 @@ public class Engineer_Update_History {
     @Column(name = "TABLEID")
     private String tableID;
 
-    @Column(name = "ROWNAME")
-    private String rowName;
-
     @Column(name = "OLDVALUE")
     private String oldValue;
 
     @Column(name = "NEWVALUE")
     private String newValue;
 
-    @Column(name = "UPDATEDBY")
-    private String updatedBy;
+    @Column(name = "DELUSER")
+    private String deletedBy;
 
-    @Column(name = "UPDTIME")
-    private Instant updTime;
+    @Column(name = "DELTIME")
+    private Instant delTime;
 
 }

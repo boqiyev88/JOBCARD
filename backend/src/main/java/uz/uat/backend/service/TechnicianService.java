@@ -8,8 +8,7 @@ import uz.uat.backend.dto.WorkDto;
 @RequiredArgsConstructor
 public class TechnicianService {
 
-    public void addWork(WorkDto workDto)
-    {
+    public void addWork(WorkDto workDto){
 
     }
 

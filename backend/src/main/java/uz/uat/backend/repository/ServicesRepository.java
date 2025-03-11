@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.uat.backend.model.Services;
-import uz.uat.backend.model.Work;
 
 import java.time.LocalDateTime;
 import java.util.List;

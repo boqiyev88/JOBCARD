@@ -165,7 +165,7 @@ public class EngineerService implements EngineerServiceIM {
     public List<ServiceDto> getMainManu() {
         List<Services> services = servicesRepository.findAll();
         if (services.isEmpty())
-            throw new UsernameNotFoundException("services  ");
+            throw new UsernameNotFoundException("services not found");
         return servicesMapper.toDto(services);
     }
 

@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -24,6 +25,9 @@ public class Specialist_History {
 
     @Column(name = "TABLEID")
     private String tableID;
+
+    @Column(name = "DESCRITION")
+    private String description;
 
     @Column(name = "ROWNAME")
     private String rowName;

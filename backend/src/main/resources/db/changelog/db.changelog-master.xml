@@ -517,5 +517,74 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="17" author="user">
+        <createTable tableName="ENGINEER_HISTORY" schemaName="uat">
+            <column name="ID" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TABLEID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OLDVALUE" type="VARCHAR(255)"/>
+            <column name="NEWVALUE" type="VARCHAR(255)"/>
+            <column name="DELUSER" type="VARCHAR(50)"/>
+            <column name="DELTIME" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="18" author="user">
+        <createTable tableName="SPECIALIST_HISTORY" schemaName="uat">
+            <column name="ID" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TABLEID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROWNAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OLDVALUE" type="VARCHAR(255)"/>
+            <column name="NEWVALUE" type="VARCHAR(255)"/>
+            <column name="UPDATEDBY" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="19" author="user">
+        <createTable tableName="TECHNICIAN_HISTORY" schemaName="uat">
+            <column name="ID" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TABLEID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROWNAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OLDVALUE" type="VARCHAR(255)"/>
+            <column name="NEWVALUE" type="VARCHAR(255)"/>
+            <column name="UPDATEDBY" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20" author="user">
+        <createTable tableName="WORKER_HISTORY" schemaName="uat">
+            <column name="ID" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TABLEID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROWNAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OLDVALUE" type="VARCHAR(255)"/>
+            <column name="NEWVALUE" type="VARCHAR(255)"/>
+            <column name="UPDATEDBY" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
 
 </databaseChangeLog>

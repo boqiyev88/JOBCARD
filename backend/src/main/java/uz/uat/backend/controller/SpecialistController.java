@@ -14,7 +14,10 @@ import uz.uat.backend.dto.JobCardDto;
 import uz.uat.backend.dto.RequestDto;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.model.Specialist_JobCard;
+import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.service.SpecialistService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/specialist")
@@ -56,7 +59,7 @@ public class SpecialistController {
 
     @GetMapping("/completed/{jobId}")
     public ResponseEntity<?> confirmSpecialist(@Valid @PathVariable String jobId) {
-         specialistService.confirmed(jobId);
+        specialistService.confirmed(jobId);
         return ResponseEntity.ok().build();
     }
 
@@ -69,6 +72,43 @@ public class SpecialistController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + pdfFile.getFileName() + "\"")
                 .body(pdfFile.getData());
+    }
+
+
+    @GetMapping("/NewTask")
+    public ResponseEntity<?> getNewTask() {
+        List<JobCardDto> newJobCard = specialistService.getByStatus(Status.NEW);
+        return ResponseEntity.ok(newJobCard);
+    }
+
+    @GetMapping("/AllTask")
+    public ResponseEntity<?> getAllTask() {
+        List<JobCardDto> list = specialistService.getAll();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/InprocessTask")
+    public ResponseEntity<?> getInProcessTask() {
+        List<JobCardDto> inProcess = specialistService.getByStatus(Status.IN_PROCESS);
+        return ResponseEntity.ok(inProcess);
+    }
+
+    @GetMapping("/ConfirmedTask")
+    public ResponseEntity<?> getConfirmedTask() {
+        List<JobCardDto> confirmed = specialistService.getByStatus(Status.CONFIRMED);
+        return ResponseEntity.ok(confirmed);
+    }
+
+    @GetMapping("/CompletedTask")
+    public ResponseEntity<?> getCompletedTask() {
+        List<JobCardDto> completed = specialistService.getByStatus(Status.COMPLETED);
+        return ResponseEntity.ok(completed);
+    }
+
+    @GetMapping("/RejectedTask")
+    public ResponseEntity<?> getRejectedTask() {
+        List<JobCardDto> rejected = specialistService.getByStatus(Status.REJECTED);
+        return ResponseEntity.ok(rejected);
     }
 
 
