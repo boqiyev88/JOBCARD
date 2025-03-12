@@ -15,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "WORK",schema = "uat")
+@Table(name = "WORK", schema = "uat")
 public class Work extends AbstractAuditingEntity {
 
     @Id
@@ -50,6 +50,18 @@ public class Work extends AbstractAuditingEntity {
 
     @Column(nullable = false)
     private boolean DIT;
+
+    @JoinColumn
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Technician_JobCard T_JOBCARD_ID;
+
+    @JoinColumn
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Services SERVICE_ID;
+
+    @JoinColumn
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Employeer workers_names;
 
 
 }

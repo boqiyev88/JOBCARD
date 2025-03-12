@@ -1,33 +1,26 @@
 package uz.uat.backend.service.serviceIMPL;
 
-import jakarta.validation.Valid;
+
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
 import uz.uat.backend.dto.RequestDto;
+import uz.uat.backend.dto.RequestStatusDto;
 import uz.uat.backend.model.PdfFile;
-import uz.uat.backend.model.Specialist_JobCard;
-import uz.uat.backend.model.Technician_JobCard;
-import uz.uat.backend.model.enums.Status;
+
 
 import java.util.List;
 
 public interface SpecialistServiceIM {
 
-     void addJobCard(JobCardDto jobCardDto, MultipartFile file);
+     void addJobCard(JobCardDto jobCardDto);
 
      PdfFile getPdfFromJob(String jobId);
 
-     Specialist_JobCard getById(String id);
-
-     void statusInProcess(String jobId);
+     void changeStatus(RequestStatusDto statusDto);
 
      void returned(RequestDto requestDto);
 
-     Technician_JobCard getTechnician(String id);
+     List<JobCardDto> getByStatus(int status);
 
-     void confirmed(@Valid String jobId);
-
-     List<JobCardDto> getByStatus(Status status);
-
-     List<JobCardDto> getAll();
+     void addFileToJob(String jobId,MultipartFile file);
 }
