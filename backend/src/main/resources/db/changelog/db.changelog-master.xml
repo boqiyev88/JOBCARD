@@ -314,67 +314,6 @@
                 onDelete="CASCADE"/>
     </changeSet>
 
-    <!-- WORK jadvalini yaratish -->
-    <changeSet id="13" author="user">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="WORK" schemaName="uat"/>
-            </not>
-        </preConditions>
-        <createTable tableName="WORK" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="THRESHOLD" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="REPEAT_INT" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="WORKTYPE_ID" type="VARCHAR(55)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ZONE" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="MRF" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ACCESS" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="AIRPLANE_APP" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ACCESS_NOTE" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="TASK_DESCRIPTION" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="DIT" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-
-            <!-- Audit fields -->
-            <column name="INSUSER" type="VARCHAR(50)"/>
-            <column name="INSTIME" type="TIMESTAMP"/>
-            <column name="UPDUSER" type="VARCHAR(50)"/>
-            <column name="UPDTIME" type="TIMESTAMP"/>
-            <column name="DELUSER" type="VARCHAR(50)"/>
-            <column name="DELTIME" type="TIMESTAMP"/>
-            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="WORK"
-                                 baseColumnNames="WORKTYPE_ID"
-                                 constraintName="fk_work_worktype"
-                                 referencedTableName="WORKTYPE"
-                                 referencedColumnNames="ID"
-                                 baseTableSchemaName="uat"
-                                 onDelete="CASCADE"/>
-    </changeSet>
-
 
     <!-- PDF FILE jadvalini yaratish -->
     <changeSet id="14" author="user">
@@ -384,13 +323,13 @@
             </not>
         </preConditions>
         <createTable tableName="PDF_FILE" schemaName="uat">
-            <column name="ID" type="BIGINT">
+            <column name="ID" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="FILE_NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DATA" type="BLOB">
+            <column name="DATA" type="JAVA.SQL.TYPES.BLOB">
                 <constraints nullable="false"/>
             </column>
 
@@ -449,13 +388,16 @@
             <column name="FH" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="LEG" type="VARCHAR(50)">
+            <column name="LEG_ID" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="TO" type="VARCHAR(50)">
+            <column name="TO_ID" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DATE" type="DATETIME">
+            <column name="DATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="MAIN_PLAN" type="BIGINT"/>
@@ -471,7 +413,7 @@
         </createTable>
 
         <addForeignKeyConstraint baseTableName="JOB"
-                                 baseColumnNames="LEG"
+                                 baseColumnNames="LEG_ID"
                                  constraintName="fk_joboverview_city_leg"
                                  referencedTableName="CITY"
                                  referencedColumnNames="ID"
@@ -479,7 +421,7 @@
                                  onDelete="CASCADE"/>
 
         <addForeignKeyConstraint baseTableName="JOB"
-                                 baseColumnNames="TO"
+                                 baseColumnNames="TO_ID"
                                  constraintName="fk_joboverview_city_to"
                                  referencedTableName="CITY"
                                  referencedColumnNames="ID"
@@ -495,94 +437,110 @@
                                  onDelete="CASCADE"/>
     </changeSet>
 
-    <changeSet id="16" author="user">
-        <createTable tableName="SERVICES_CHANGELOG" schemaName="uat">
-            <column name="CHANGE_ID" type="VARCHAR(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="SERVICE_ID" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="CHANGED_BY" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="CHANGE_TIME" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="COLUMN_NAME" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="OLD_VALUE" type="VARCHAR(255)"/>
-            <column name="NEW_VALUE" type="VARCHAR(255)"/>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="17" author="user">
-        <createTable tableName="ENGINEER_HISTORY" schemaName="uat">
+    <!-- WORK jadvalini yaratish -->
+    <changeSet id="13" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="WORK" schemaName="uat"/>
+            </not>
+        </preConditions>
+        <createTable tableName="WORK" schemaName="uat">
             <column name="ID" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="TABLEID" type="VARCHAR(50)">
+            <column name="THRESHOLD" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="OLDVALUE" type="VARCHAR(255)"/>
-            <column name="NEWVALUE" type="VARCHAR(255)"/>
+            <column name="REPEAT_INT" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONE" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MRF" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCESS" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AIRPLANE_APP" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACCESS_NOTE" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASK_DESCRIPTION" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DIT" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Audit fields -->
+            <column name="INSUSER" type="VARCHAR(50)"/>
+            <column name="INSTIME" type="TIMESTAMP"/>
+            <column name="UPDUSER" type="VARCHAR(50)"/>
+            <column name="UPDTIME" type="TIMESTAMP"/>
             <column name="DELUSER" type="VARCHAR(50)"/>
             <column name="DELTIME" type="TIMESTAMP"/>
+            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
+
+            <!-- Foreign key columns -->
+            <column name="JOBCARD_ID" type="VARCHAR(50)"/>
+            <column name="SERVICE_ID" type="VARCHAR(50)"/>
+            <column name="workers_names" type="VARCHAR(50)"/>
         </createTable>
+
+        <addForeignKeyConstraint baseTableName="WORK"
+                                 baseColumnNames="workers_names"
+                                 constraintName="fk_work_worktype"
+                                 referencedTableName="USER"
+                                 referencedColumnNames="ID"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="WORK"
+                                 baseColumnNames="JOBCARD_ID"
+                                 constraintName="fk_work_jobcard"
+                                 referencedTableName="job"
+                                 referencedColumnNames="ID"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="WORK"
+                                 baseColumnNames="SERVICE_ID"
+                                 constraintName="fk_work_service"
+                                 referencedTableName="SERVICES"
+                                 referencedColumnNames="ID"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
-    <changeSet id="18" author="user">
-        <createTable tableName="SPECIALIST_HISTORY" schemaName="uat">
+    <changeSet id="16" author="user">
+        <createTable tableName="SPECIALIST_HISOTRY" schemaName="uat">
             <column name="ID" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="TABLEID" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ROWNAME" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="OLDVALUE" type="VARCHAR(255)"/>
-            <column name="NEWVALUE" type="VARCHAR(255)"/>
-            <column name="UPDATEDBY" type="VARCHAR(50)"/>
-            <column name="UPDTIME" type="TIMESTAMP"/>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="19" author="user">
-        <createTable tableName="TECHNICIAN_HISTORY" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="TABLEID" type="VARCHAR(50)">
+            <column name="DESCRITION" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="ROWNAME" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="OLDVALUE" type="VARCHAR(255)"/>
-            <column name="NEWVALUE" type="VARCHAR(255)"/>
-            <column name="UPDATEDBY" type="VARCHAR(50)"/>
-            <column name="UPDTIME" type="TIMESTAMP"/>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="20" author="user">
-        <createTable tableName="WORKER_HISTORY" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="TABLEID" type="VARCHAR(50)">
+            <column name="OLDVALUE" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ROWNAME" type="VARCHAR(50)">
+            <column name="NEWVALUE" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="OLDVALUE" type="VARCHAR(255)"/>
-            <column name="NEWVALUE" type="VARCHAR(255)"/>
-            <column name="UPDATEDBY" type="VARCHAR(50)"/>
-            <column name="UPDTIME" type="TIMESTAMP"/>
+            <column name="UPDATEDBY" type="VARCHAR(50)">
+            </column>
+            <column name="UPDTIME" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

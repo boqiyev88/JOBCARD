@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import uz.uat.backend.dto.JobCardDto;
+
+import java.util.List;
 
 @Component
 public class Notifier {
@@ -17,12 +20,12 @@ public class Notifier {
     }
 
 
-    public void SpecialistNotifier(Object object) {
-        messagingTemplate.convertAndSend("/topic/specialist", object);
+    public void SpecialistNotifier(List<JobCardDto> jobCards) {
+        messagingTemplate.convertAndSend("/topic/specialist", jobCards);
     }
 
-    public void TechnicianNotifier(Object object) {
-        messagingTemplate.convertAndSend("/topic/technician", object);
+    public void TechnicianNotifier(List<JobCardDto> jobCards) {
+        messagingTemplate.convertAndSend("/topic/technician", jobCards);
     }
 
     public void TechnicianMassageNotifier(String massage) {

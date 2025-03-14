@@ -3,6 +3,7 @@ package uz.uat.backend.controller;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,9 @@ import uz.uat.backend.service.SpecialistService;
 
 import java.util.List;
 
+
+
+@Slf4j
 @RestController
 @RequestMapping("/api/specialist")
 @CrossOrigin("*")
@@ -32,10 +36,10 @@ public class SpecialistController {
     }
 
     @PostMapping(
-            path = "/pdf",
+            path = "/pdf/{jobId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addJobCard(@PathVariable("id") String jobId,
+    public ResponseEntity<?> addJobCard(@PathVariable("jobId") String jobId,
                                         @RequestPart("file") @Parameter(description = "PDF file") MultipartFile file) {
         specialistService.addFileToJob(jobId, file);
         return ResponseEntity.status(201).build();
@@ -67,9 +71,10 @@ public class SpecialistController {
 
 
     @GetMapping("/tasks")
-    public ResponseEntity<?> getTask(@RequestParam("status") int status) {
+    public ResponseEntity<Object> getTask(@RequestParam("status") int status) {
         List<JobCardDto> newJobCard = specialistService.getByStatus(status);
-        return ResponseEntity.ok(newJobCard);
+        log.info("newJobCard: " + newJobCard);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(newJobCard);
     }
 
 

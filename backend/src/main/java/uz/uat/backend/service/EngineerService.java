@@ -23,10 +23,6 @@ import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
@@ -127,15 +123,13 @@ public class EngineerService implements EngineerServiceIM {
     public void addNewService(WorkListDto workListDto) {
         if (workListDto == null)
             throw new UsernameNotFoundException("workList is null");
-        Optional<ServiceName> optional = serviceNameRepository.findByName(workListDto.serviceName());
-        Optional<ServiceType> optional1 = serviceTypeRepository.findByName(workListDto.serviceType());
+        Optional<ServiceName> optional = serviceNameRepository.findByName(workListDto.serviceName_id());
+        Optional<ServiceType> optional1 = serviceTypeRepository.findByName(workListDto.serviceType_id());
 
-        if (optional1.isEmpty())
-            throw new UsernameNotFoundException("serviceType is null");
+        if (optional1.isEmpty() || optional.isEmpty())
+            throw new UsernameNotFoundException("serviceType or serviceName not found by these ids");
+
         ServiceType serviceType = optional1.get();
-
-        if (optional.isEmpty())
-            throw new UsernameNotFoundException("service name not found");
         ServiceName serviceName = optional.get();
         try {
             Services saveService = servicesRepository.save(

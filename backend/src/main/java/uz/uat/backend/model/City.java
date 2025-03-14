@@ -14,7 +14,7 @@ import org.hibernate.annotations.UuidGenerator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "CITY",schema = "uat")
-public class City extends AbstractAuditingEntity{
+public class City {
 
     @Id
     @GeneratedValue(generator = "uuid4")

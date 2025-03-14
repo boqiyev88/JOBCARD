@@ -4,13 +4,7 @@ import uz.uat.backend.dto.HistoryDto;
 
 public interface HistoryServiceIM {
 
-    void addEngineer();
-
-    void addSpecialist(HistoryDto specialistHDto);
-
-    void addTechnician(HistoryDto historyDto);
-
-    void addWorker();
+    void addHistory(HistoryDto specialistHDto);
 
 
 }

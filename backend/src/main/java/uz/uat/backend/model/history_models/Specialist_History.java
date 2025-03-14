@@ -23,25 +23,25 @@ public class Specialist_History {
     @Column(name = "ID", columnDefinition = "VARCHAR(50)")
     private String ID;
 
-    @Column(name = "TABLEID")
+    @Column(name = "TABLEID", nullable = false)
     private String tableID;
 
-    @Column(name = "DESCRITION")
+    @Column(name = "DESCRITION", nullable = false)
     private String description;
 
-    @Column(name = "ROWNAME")
+    @Column(name = "ROWNAME", nullable = false)
     private String rowName;
 
-    @Column(name = "OLDVALUE")
+    @Column(name = "OLDVALUE", nullable = false)
     private String oldValue;
 
-    @Column(name = "NEWVALUE")
+    @Column(name = "NEWVALUE", nullable = false)
     private String newValue;
 
     @Column(name = "UPDATEDBY")
     private String updatedBy;
 
-    @Column(name = "UPDTIME")
+    @Column(name = "UPDTIME", nullable = false)
     private Instant updTime;
 
 

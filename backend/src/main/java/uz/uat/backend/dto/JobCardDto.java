@@ -2,11 +2,12 @@ package uz.uat.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import uz.uat.backend.model.City;
+import lombok.Builder;
 
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
+@Builder
 public record JobCardDto(
         @NotBlank String WorkOrderNumber,
         @NotBlank String REG,
@@ -19,8 +20,8 @@ public record JobCardDto(
         @NotBlank String SerialNumber4,
         @NotBlank String BEFORELIGHT,
         @NotBlank String FH,
-        @NotNull City LEG,
-        @NotNull City TO,
-        @NotNull LocalDateTime DATE
+        @NotNull String LEG,
+        @NotNull String TO,
+        @NotNull Instant DATE
 ) {
 }

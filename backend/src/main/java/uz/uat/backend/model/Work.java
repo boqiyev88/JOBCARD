@@ -53,7 +53,7 @@ public class Work extends AbstractAuditingEntity {
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Technician_JobCard T_JOBCARD_ID;
+    private JobCard JOBCARD_ID;
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
