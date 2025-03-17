@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,9 +79,10 @@ public class SecurityConfig {
                                 "/", "/static/**", "/index.html", "/assets/**", "/js/**", "/css/**")
                         .permitAll() // Statik resurslar
                         .requestMatchers(
-                                "/api/v1/auth/",
-                                "/v3/api-docs/**",
                                 "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
                                 "/api/**",
                                 "/api/ws/**",
                                 "/register",
@@ -106,7 +108,6 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception.accessDeniedPage("/maintenance/404")); // Ruxsat yo'qligi sahifasi
-
         return http.build();
     }
 

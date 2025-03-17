@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import uz.uat.backend.model.JobCard;
+import uz.uat.backend.model.enums.Status;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
 
     @Transactional
     @Query("select sj from JobCard sj where sj.STATUS = :status and sj.isDeleted =0")
-    List<JobCard> findBySTATUS(@Param("status") String status);
+    List<JobCard> findBySTATUS(@Param("status") Status status);
 
     @Query("select sj from JobCard sj where  sj.isDeleted =0")
     Optional<List<JobCard>> getAll();
@@ -29,4 +30,7 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
     @Query("update JobCard s set s.STATUS = ?1 where s.id = ?2")
     JobCard updateSTATUSById(String STATUS, String id);
 
+    @Transactional
+    @Query("select sj from JobCard sj where sj.WorkOrderNumber= :work and  sj.isDeleted =0")
+    Optional<JobCard> findByWorkOrderNumber(@Param("work") String workOrderNumber);
 }

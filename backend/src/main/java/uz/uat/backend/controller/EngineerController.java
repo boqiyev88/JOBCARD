@@ -40,7 +40,7 @@ public class EngineerController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "CSV faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
-    public ResponseEntity<?> uploadCSVFile(@NonNull @RequestParam("file")
+    public ResponseEntity<?> addUploadCSVFile(@NonNull @RequestParam("file")
                                         @Parameter(description = "CSV file") MultipartFile file) {
         List<TaskDto> tasks = engineerService.uploadCSV(file);
         return ResponseEntity.ok(tasks);
@@ -51,7 +51,7 @@ public class EngineerController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "PDF faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
-    public ResponseEntity<?> uploadPDFFile(@NonNull @RequestParam("file") @Parameter(description = "PDF file") MultipartFile file) {
+    public ResponseEntity<?> addUploadPDFFile(@NonNull @RequestParam("file") @Parameter(description = "PDF file") MultipartFile file) {
         List<TaskDto> tasks = engineerService.uploadPDF(file);
         return ResponseEntity.ok(tasks);
     }

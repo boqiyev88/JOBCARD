@@ -2,10 +2,11 @@ package uz.uat.backend.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
+import uz.uat.backend.config.exception.MyConflictException;
+import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.mapper.JobCardMapper;
 import uz.uat.backend.model.City;
@@ -42,38 +43,42 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     public void addJobCard(JobCardDto jobCardDto) {
         if (jobCardDto == null) {
-            throw new UsernameNotFoundException("jobCardDto is null");
+            throw new MyNotFoundException("jobCardDto is null");
         }
-        try {
-            Optional<City> LEG = cityRepository.findById(jobCardDto.LEG());
-            Optional<City> TO = cityRepository.findById(jobCardDto.TO());
-            if (LEG.isEmpty() || TO.isEmpty()) {
-                throw new UsernameNotFoundException("city not found");
-            }
-            JobCardDtoMapper dtoMapper = jobCardMapper.toDtoMapper(jobCardDto);
-            JobCard specialist_jobCard = jobCardMapper.toEntity(dtoMapper);
-            specialist_jobCard.setSTATUS(Status.NEW);
-            specialist_jobCard.setLEG(LEG.get());
-            specialist_jobCard.setTO(TO.get());
-            JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
+        Optional<City> LEG = cityRepository.findById(jobCardDto.LEG());
+        Optional<City> TO = cityRepository.findById(jobCardDto.TO());
+        if (LEG.isEmpty() || TO.isEmpty()) {
+            throw new MyNotFoundException("city not found");
+        }
+        Optional<JobCard> optional =
+                specialistJobCardRepository.findByWorkOrderNumber(jobCardDto.WorkOrderNumber());
+
+        if (optional.isPresent()) {
+            throw new MyConflictException("jobCard already exists");
+        }
+
+        JobCardDtoMapper dtoMapper = jobCardMapper.toDtoMapper(jobCardDto);
+        JobCard specialist_jobCard = jobCardMapper.toEntity(dtoMapper);
+        specialist_jobCard.setSTATUS(Status.NEW);
+        specialist_jobCard.setLEG(LEG.get());
+        specialist_jobCard.setTO(TO.get());
+        JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
 //            notifier.SpecialistNotifier(saveSpecialist);
 //            notifier.SpecialistMassageNotifier("New JobCard added");
-            /// historyga yozildi
-            historyService.addHistory(HistoryDto.builder()
-                    .tableID("Job Card table")
-                    .description("New Job Card added")
-                    .rowName("Status")
-                    .oldValue(" ")
-                    .newValue(Status.NEW.name())
-                    .updatedBy(jobCard.getUpdUser())
-                    .updTime(Instant.now())
-                    .build());
+        /// historyga yozildi
+        historyService.addHistory(HistoryDto.builder()
+                .tableID("Job Card table")
+                .description("New Job Card added")
+                .rowName("Status")
+                .oldValue(" ")
+                .newValue(Status.NEW.name())
+                .updatedBy(jobCard.getUpdUser())
+                .updTime(Instant.now())
+                .build());
 
 //            notifier.TechnicianNotifier(saveTechnician);
 //            notifier.TechnicianMassageNotifier("New JobCard added");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     @Override
@@ -88,7 +93,7 @@ public class SpecialistService implements SpecialistServiceIM {
             jobCard.setMainPlan(pdfFile);
             specialistJobCardRepository.save(jobCard);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MyConflictException(e.getMessage());
         }
     }
 
@@ -96,31 +101,27 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     public void returned(RequestDto requestDto) {
         if (requestDto.id() == null || requestDto.massage() == null)
-            throw new UsernameNotFoundException("invalid request id or massage is null");
+            throw new MyNotFoundException("invalid request id or massage is null");
 
-        try {
-            JobCard jobCardId = getById(requestDto.id());
+        JobCard jobCardId = getById(requestDto.id());
 
+        jobCardId.setSTATUS(Status.REJECTED);
+        JobCard specialist_jobCard =
+                specialistJobCardRepository.updateSTATUSById(Status.REJECTED.name(), jobCardId.getId());
 
-            jobCardId.setSTATUS(Status.REJECTED);
-            JobCard specialist_jobCard =
-                    specialistJobCardRepository.updateSTATUSById(Status.REJECTED.name(), jobCardId.getId());
+        notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
+        notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
+        historyService.addHistory(HistoryDto.builder()
+                .tableID("Job Card table")
+                .description("Job Card status updated")
+                .rowName("Status")
+                .oldValue(jobCardId.getSTATUS().name())
+                .newValue(Status.REJECTED.name())
+                .updatedBy(specialist_jobCard.getUpdUser())
+                .updTime(Instant.now())
+                .build());
+        notifier.TechnicianNotifier(getAll());               /// real timeda texnik tablega jo'natildi
 
-            notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
-            notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
-            historyService.addHistory(HistoryDto.builder()
-                    .tableID("Job Card table")
-                    .description("Job Card status updated")
-                    .rowName("Status")
-                    .oldValue(jobCardId.getSTATUS().name())
-                    .newValue(Status.REJECTED.name())
-                    .updatedBy(specialist_jobCard.getUpdUser())
-                    .updTime(Instant.now())
-                    .build());
-            notifier.TechnicianNotifier(getAll());               /// real timeda texnik tablega jo'natildi
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -129,18 +130,30 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     public void changeStatus(RequestStatusDto statusDto) {
         switch (statusDto.status()) {
-            case 1:
+            case 1: {
                 changed(statusDto.jobId(), Status.NEW.name());
-            case 2:
+                break;
+            }
+            case 2: {
                 changed(statusDto.jobId(), Status.PENDING.name());
-            case 3:
+                break;
+            }
+            case 3: {
                 changed(statusDto.jobId(), Status.IN_PROCESS.name());
-            case 4:
+                break;
+            }
+            case 4: {
                 changed(statusDto.jobId(), Status.CONFIRMED.name());
-            case 5:
+                break;
+            }
+            case 5: {
                 changed(statusDto.jobId(), Status.COMPLETED.name());
-            case 6:
+                break;
+            }
+            case 6: {
                 changed(statusDto.jobId(), Status.REJECTED.name());
+                break;
+            }
         }
     }
 
@@ -148,30 +161,30 @@ public class SpecialistService implements SpecialistServiceIM {
     public PdfFile getPdfFromJob(String jobId) {
         JobCard jobCardId = specialistJobCardRepository.findByJobCardId(jobId);
         if (jobCardId == null)
-            throw new UsernameNotFoundException("job card not found");
+            throw new MyNotFoundException("job card not found");
         return jobCardId.getMainPlan();
     }
 
 
-    public List<JobCardDto> getByStatus(int status) {
+    public List<ResponseJobCardDto> getByStatusNum(int status) {
         switch (status) {
             case 1 -> {
-                return getByStatus(Status.NEW.name());
+                return getByStatus(Status.NEW);
             }
             case 2 -> {
-                return getByStatus(Status.PENDING.name());
+                return getByStatus(Status.PENDING);
             }
             case 3 -> {
-                return getByStatus(Status.IN_PROCESS.name());
+                return getByStatus(Status.IN_PROCESS);
             }
             case 4 -> {
-                return getByStatus(Status.CONFIRMED.name());
+                return getByStatus(Status.CONFIRMED);
             }
             case 5 -> {
-                return getByStatus(Status.COMPLETED.name());
+                return getByStatus(Status.COMPLETED);
             }
             case 6 -> {
-                return getByStatus(Status.REJECTED.name());
+                return getByStatus(Status.REJECTED);
             }
             default -> {
                 return getAll();
@@ -179,18 +192,57 @@ public class SpecialistService implements SpecialistServiceIM {
         }
     }
 
-    private List<JobCardDto> getAll() {
+    private List<ResponseJobCardDto> getAll() {
         Optional<List<JobCard>> all = specialistJobCardRepository.getAll();
         if (all.isEmpty())
-            throw new UsernameNotFoundException("specialist job card not found");
+            throw new MyNotFoundException("specialist job card not found");
         List<JobCard> jobCards = all.get();
         return getJobCard(jobCards);
     }
 
-    private List<JobCardDto> getJobCard(List<JobCard> jobCards) {
-        List<JobCardDto> jobCardDtos = new ArrayList<>();
+    private void changed(String jobId, String status) {
+
+        JobCard jobCard = getById(jobId);
+        jobCard.setSTATUS(Status.valueOf(status));
+        JobCard specialist_jobCard = specialistJobCardRepository.save(jobCard);
+        notifier.SpecialistNotifier(getAll());
+
+
+        notifier.TechnicianNotifier(getAll());
+        notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
+
+        historyService.addHistory(HistoryDto.builder()
+                .tableID("Job Card table")
+                .description("Job Card status updated")
+                .rowName("Status")
+                .oldValue(jobCard.getSTATUS().name())
+                .newValue(specialist_jobCard.getSTATUS().name())
+                .updatedBy(specialist_jobCard.getUpdUser())
+                .updTime(Instant.now())
+                .build());
+
+    }
+
+    private JobCard getById(String id) {
+        JobCard jobCardId = specialistJobCardRepository.findByJobCardId(id);
+        if (jobCardId == null)
+            throw new MyNotFoundException("job card not found, may be Invalid job card id");
+        /// job card va workni biriktirilgan holda qaytish kerak
+        return jobCardId;
+    }
+
+    private List<ResponseJobCardDto> getByStatus(Status status) {
+        List<JobCard> jobCards = specialistJobCardRepository.findBySTATUS(status);
+        if (jobCards.isEmpty())
+            throw new MyNotFoundException("job card not found by this status : " + status);
+        return getJobCard(jobCards);
+    }
+
+
+    private List<ResponseJobCardDto> getJobCard(List<JobCard> jobCards) {
+        List<ResponseJobCardDto> jobCardDtos = new ArrayList<>();
         for (JobCard jobCard : jobCards) {
-            jobCardDtos.add(JobCardDto.builder()
+            jobCardDtos.add(ResponseJobCardDto.builder()
                     .WorkOrderNumber(jobCard.getWorkOrderNumber())
                     .REG(jobCard.getREG())
                     .SerialNumber1(jobCard.getSerialNumber1())
@@ -205,50 +257,11 @@ public class SpecialistService implements SpecialistServiceIM {
                     .LEG(jobCard.getLEG().getID())
                     .TO(jobCard.getTO().getID())
                     .DATE(jobCard.getDATE())
+                    .status(jobCard.getSTATUS().name())
                     .build());
         }
         return jobCardDtos;
     }
-
-    private void changed(String jobId, String status) {
-        try {
-            JobCard jobCard = getById(jobId);
-            JobCard specialist_jobCard = specialistJobCardRepository.updateSTATUSById(status, jobCard.getId());
-            notifier.SpecialistNotifier(getAll());
-
-
-            notifier.TechnicianNotifier(getAll());
-            notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
-
-            historyService.addHistory(HistoryDto.builder()
-                    .tableID("Job Card table")
-                    .description("Job Card status updated")
-                    .rowName("Status")
-                    .oldValue(jobCard.getSTATUS().name())
-                    .newValue(specialist_jobCard.getSTATUS().name())
-                    .updatedBy(specialist_jobCard.getUpdUser())
-                    .updTime(Instant.now())
-                    .build());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private JobCard getById(String id) {
-        JobCard jobCardId = specialistJobCardRepository.findByJobCardId(id);
-        if (jobCardId == null)
-            throw new UsernameNotFoundException("job card not found, may be Invalid job card id");
-        /// job card va workni biriktirilgan holda qaytish kerak
-        return jobCardId;
-    }
-
-    private List<JobCardDto> getByStatus(String status) {
-        List<JobCard> jobCards = specialistJobCardRepository.findBySTATUS(status);
-        if (jobCards.isEmpty())
-            throw new UsernameNotFoundException("job card not found by this status : " + status);
-        return getJobCard(jobCards);
-    }
-
 
 }
 

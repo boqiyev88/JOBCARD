@@ -24,31 +24,31 @@ public class JobCard extends AbstractAuditingEntity {
     @Column(name = "ID", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column(nullable = false,name = "WORK_ORDER_NUMBER")
+    @Column(nullable = false, name = "WORK_ORDER_NUMBER")
     private String WorkOrderNumber;
 
     @Column(nullable = false)
     private String REG;
 
-    @Column(nullable = false,name = "SERIAL_NUMBER_1")
+    @Column(nullable = false, name = "SERIAL_NUMBER_1")
     private String SerialNumber1;
 
     @Column(nullable = false)
     private String ENGINE_1;
 
-    @Column(nullable = false,name = "SERIAL_NUMBER_2")
+    @Column(nullable = false, name = "SERIAL_NUMBER_2")
     private String SerialNumber2;
 
     @Column(nullable = false)
     private String ENGINE_2;
 
-    @Column(nullable = false,name = "SERIAL_NUMBER_3")
+    @Column(nullable = false, name = "SERIAL_NUMBER_3")
     private String SerialNumber3;
 
     @Column(nullable = false)
     private String APU;
 
-    @Column(nullable = false,name = "SERIAL_NUMBER_4")
+    @Column(nullable = false, name = "SERIAL_NUMBER_4")
     private String SerialNumber4;
 
     @Column(nullable = false)
@@ -69,6 +69,7 @@ public class JobCard extends AbstractAuditingEntity {
     private Instant DATE;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status STATUS = Status.NEW;
 
     @JoinColumn(name = "MAIN_PLAN")

@@ -6,10 +6,10 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
+import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.ResponseServiceDto;
 import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
@@ -122,35 +122,33 @@ public class EngineerService implements EngineerServiceIM {
     @Override
     public void addNewService(WorkListDto workListDto) {
         if (workListDto == null)
-            throw new UsernameNotFoundException("workList is null");
+            throw new MyNotFoundException("workList is null");
         Optional<ServiceName> optional = serviceNameRepository.findByName(workListDto.serviceName_id());
         Optional<ServiceType> optional1 = serviceTypeRepository.findByName(workListDto.serviceType_id());
 
         if (optional1.isEmpty() || optional.isEmpty())
-            throw new UsernameNotFoundException("serviceType or serviceName not found by these ids");
+            throw new MyNotFoundException("serviceType or serviceName not found by these ids");
 
         ServiceType serviceType = optional1.get();
         ServiceName serviceName = optional.get();
-        try {
-            Services saveService = servicesRepository.save(
-                    Services.builder()
-                            .serviceType(serviceType)
-                            .serviceName(serviceName)
-                            .revisionNumber(workListDto.revisionNumber())
-                            .revisionTime(workListDto.revisionTime())
-                            .build()
-            );
-            notifier.EngineerNotifier(saveService);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        Services saveService = servicesRepository.save(
+                Services.builder()
+                        .serviceType(serviceType)
+                        .serviceName(serviceName)
+                        .revisionNumber(workListDto.revisionNumber())
+                        .revisionTime(workListDto.revisionTime())
+                        .build()
+        );
+        notifier.EngineerNotifier(saveService);
+
     }
 
     @Override
     public List<ServiceType> getServiceType() {
         Optional<List<ServiceType>> optional = serviceTypeRepository.getServiceType();
         if (optional.isEmpty() || optional.get().isEmpty())
-            throw new UsernameNotFoundException("serviceType is null");
+            throw new MyNotFoundException("serviceType is null");
 
         return optional.get();
     }
@@ -159,7 +157,7 @@ public class EngineerService implements EngineerServiceIM {
     public List<ServiceDto> getMainManu() {
         List<Services> services = servicesRepository.findAll();
         if (services.isEmpty())
-            throw new UsernameNotFoundException("services not found");
+            throw new MyNotFoundException("services not found");
         return servicesMapper.toDto(services);
     }
 
@@ -167,7 +165,7 @@ public class EngineerService implements EngineerServiceIM {
     public List<ServiceName> getServiceName() {
         Optional<List<ServiceName>> optionalList = serviceNameRepository.getServiceName();
         if (optionalList.isEmpty() || optionalList.get().isEmpty())
-            throw new UsernameNotFoundException("serviceName is null");
+            throw new MyNotFoundException("serviceName is null");
 
         return optionalList.get();
     }
@@ -177,7 +175,7 @@ public class EngineerService implements EngineerServiceIM {
     public List<ResponseServiceDto> searchByDate(@NotBlank LocalDateTime startDate, @NotBlank LocalDateTime endDate) {
         Optional<List<Services>> optional = servicesRepository.searchServicesByDate(startDate, endDate);
         if (optional.isEmpty() || optional.get().isEmpty())
-            throw new UsernameNotFoundException("services is null");
+            throw new MyNotFoundException("services is null");
         List<Services> services = optional.get();
         List<ResponseServiceDto> respDtoService = servicesMapper.fromDto(services);
         return respDtoService;
@@ -186,17 +184,13 @@ public class EngineerService implements EngineerServiceIM {
 
     @Override
     public void getDeleteTask(@NotBlank String id) {
-        try {
-            Optional<Services> optional = servicesRepository.findById(id);
-            if (optional.isEmpty())
-                throw new UsernameNotFoundException("services not found by id " + id);
-            Services service = optional.get();
-            service.setIsDeleted(1);
-            Services save = servicesRepository.save(service);
-            notifier.EngineerNotifier(save);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Optional<Services> optional = servicesRepository.findById(id);
+        if (optional.isEmpty())
+            throw new MyNotFoundException("services not found by id " + id);
+        Services service = optional.get();
+        service.setIsDeleted(1);
+        Services save = servicesRepository.save(service);
+        notifier.EngineerNotifier(save);
 
     }
 

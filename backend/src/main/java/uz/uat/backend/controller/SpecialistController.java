@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
 import uz.uat.backend.dto.RequestDto;
 import uz.uat.backend.dto.RequestStatusDto;
+import uz.uat.backend.dto.ResponseJobCardDto;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.SpecialistService;
 
@@ -72,9 +73,9 @@ public class SpecialistController {
 
     @GetMapping("/tasks")
     public ResponseEntity<Object> getTask(@RequestParam("status") int status) {
-        List<JobCardDto> newJobCard = specialistService.getByStatus(status);
-        log.info("newJobCard: " + newJobCard);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(newJobCard);
+        List<ResponseJobCardDto> list = specialistService.getByStatusNum(status);
+        log.info("newJobCard: " + list);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
 

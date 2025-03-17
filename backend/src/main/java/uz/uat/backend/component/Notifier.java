@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import uz.uat.backend.dto.JobCardDto;
+import uz.uat.backend.dto.ResponseJobCardDto;
 
 import java.util.List;
 
@@ -20,11 +21,11 @@ public class Notifier {
     }
 
 
-    public void SpecialistNotifier(List<JobCardDto> jobCards) {
+    public void SpecialistNotifier(List<ResponseJobCardDto> jobCards) {
         messagingTemplate.convertAndSend("/topic/specialist", jobCards);
     }
 
-    public void TechnicianNotifier(List<JobCardDto> jobCards) {
+    public void TechnicianNotifier(List<ResponseJobCardDto> jobCards) {
         messagingTemplate.convertAndSend("/topic/technician", jobCards);
     }
 
