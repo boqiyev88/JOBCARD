@@ -10,11 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
 import uz.uat.backend.config.exception.MyNotFoundException;
+import uz.uat.backend.dto.HistoryDto;
 import uz.uat.backend.dto.ResponseServiceDto;
-import uz.uat.backend.dto.ServiceDto;
 import uz.uat.backend.dto.TaskDto;
 import uz.uat.backend.dto.WorkListDto;
-import uz.uat.backend.mapper.ServicesMapper;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
 import uz.uat.backend.repository.*;
@@ -22,17 +21,14 @@ import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 
 
 import java.io.IOException;
-import java.util.Collections;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -43,9 +39,9 @@ public class EngineerService implements EngineerServiceIM {
     private final ServiceTypeRepository serviceTypeRepository;
     private final ServiceNameRepository serviceNameRepository;
     private final TaskRepository taskRepository;
-    private final ServicesMapper servicesMapper;
     private final TaskMapper taskMapper;
     private final Notifier notifier;
+    private final HistoryService historyService;
 
     public Resource generateCsvFile(@NotBlank String fileName) {
         try {
@@ -123,6 +119,7 @@ public class EngineerService implements EngineerServiceIM {
     public void addNewService(WorkListDto workListDto) {
         if (workListDto == null)
             throw new MyNotFoundException("workList is null");
+
         Optional<ServiceName> optional = serviceNameRepository.findByName(workListDto.serviceName_id());
         Optional<ServiceType> optional1 = serviceTypeRepository.findByName(workListDto.serviceType_id());
 
@@ -134,14 +131,23 @@ public class EngineerService implements EngineerServiceIM {
 
         Services saveService = servicesRepository.save(
                 Services.builder()
-                        .serviceType(serviceType)
-                        .serviceName(serviceName)
-                        .revisionNumber(workListDto.revisionNumber())
-                        .revisionTime(workListDto.revisionTime())
+                        .SERVICETYPE(serviceType)
+                        .SERVICENAME(serviceName)
+                        .REVISONNUMBER(workListDto.revisionNumber())
+                        .REVISONTIME(workListDto.revisionTime())
                         .build()
-        );
-        notifier.EngineerNotifier(saveService);
 
+        );
+        historyService.addHistory(HistoryDto.builder()
+                .tableID("Services table")
+                .description("New Services added")
+                .rowName(" ")
+                .newValue(saveService.getId())
+                .oldValue(" ")
+                .updatedBy(saveService.getUpdUser())
+                .updTime(saveService.getUpdTime())
+                .build());
+//        notifier.EngineerNotifier(saveService);
     }
 
     @Override
@@ -154,11 +160,11 @@ public class EngineerService implements EngineerServiceIM {
     }
 
     @Override
-    public List<ServiceDto> getMainManu() {
-        List<Services> services = servicesRepository.findAll();
+    public List<ResponseServiceDto> getMainManu() {
+        List<Services> services = servicesRepository.getAll();
         if (services.isEmpty())
             throw new MyNotFoundException("services not found");
-        return servicesMapper.toDto(services);
+        return fromEntity(services);
     }
 
     @Override
@@ -172,13 +178,11 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public List<ResponseServiceDto> searchByDate(@NotBlank LocalDateTime startDate, @NotBlank LocalDateTime endDate) {
-        Optional<List<Services>> optional = servicesRepository.searchServicesByDate(startDate, endDate);
-        if (optional.isEmpty() || optional.get().isEmpty())
-            throw new MyNotFoundException("services is null");
-        List<Services> services = optional.get();
-        List<ResponseServiceDto> respDtoService = servicesMapper.fromDto(services);
-        return respDtoService;
+    public List<ResponseServiceDto> searchByDate(@NotBlank LocalDate startDate, @NotBlank LocalDate endDate) {
+        List<Services> services = servicesRepository.searchServicesByDate(startDate, endDate);
+        if (services.isEmpty())
+            throw new MyNotFoundException("services not found");
+        return fromEntity(services);
     }
 
 
@@ -198,6 +202,23 @@ public class EngineerService implements EngineerServiceIM {
     @Override
     public void editTask(@NotBlank String id, @NotBlank TaskDto taskDto) {
 
+    }
+
+
+    private List<ResponseServiceDto> fromEntity(List<Services> services) {
+        List<ResponseServiceDto> rsd = new ArrayList<>();
+        for (Services service : services) {
+            rsd.add(ResponseServiceDto.builder()
+                    .ID(service.getId())
+                    .SERVICETYPE(service.getSERVICETYPE().getId())
+                    .SERVICENAME(service.getSERVICENAME().getId())
+                    .REVISONNUMBER(service.getREVISONNUMBER())
+                    .REVISONTIME(service.getREVISONTIME())
+                    .tasks(service.getTasks())
+                    .build()
+            );
+        }
+        return rsd;
     }
 
 

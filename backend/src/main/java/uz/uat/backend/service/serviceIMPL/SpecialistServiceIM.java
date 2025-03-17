@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.JobCardDto;
 import uz.uat.backend.dto.RequestDto;
 import uz.uat.backend.dto.RequestStatusDto;
+import uz.uat.backend.dto.ResponseJobCardDto;
 import uz.uat.backend.model.PdfFile;
 
 
@@ -20,7 +21,7 @@ public interface SpecialistServiceIM {
 
      void returned(RequestDto requestDto);
 
-     List<JobCardDto> getByStatus(int status);
+     List<ResponseJobCardDto> getByStatusNum(int status);
 
      void addFileToJob(String jobId,MultipartFile file);
 }

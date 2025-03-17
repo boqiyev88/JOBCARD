@@ -248,6 +248,22 @@
             <column name="DELTIME" type="TIMESTAMP"/>
             <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
+
+        <addForeignKeyConstraint baseTableName="SERVICES"
+                                 baseColumnNames="SERVICENAME"
+                                 constraintName="fk_services_service_name"
+                                 referencedTableName="SERVICENAME"
+                                 referencedColumnNames="ID"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="SERVICES"
+                                 baseColumnNames="SERVICETYPE"
+                                 constraintName="fk_services_service_type"
+                                 referencedTableName="servicetype"
+                                 referencedColumnNames="ID"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
     <!-- TASK jadvalini yaratish -->

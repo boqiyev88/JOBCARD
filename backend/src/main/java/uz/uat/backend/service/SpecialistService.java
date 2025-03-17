@@ -106,11 +106,7 @@ public class SpecialistService implements SpecialistServiceIM {
         JobCard jobCardId = getById(requestDto.id());
 
         jobCardId.setSTATUS(Status.REJECTED);
-        JobCard specialist_jobCard =
-                specialistJobCardRepository.updateSTATUSById(Status.REJECTED.name(), jobCardId.getId());
-
-        notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
-        notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
+        JobCard specialist_jobCard = specialistJobCardRepository.save(jobCardId);
         historyService.addHistory(HistoryDto.builder()
                 .tableID("Job Card table")
                 .description("Job Card status updated")
@@ -120,8 +116,11 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
-        notifier.TechnicianNotifier(getAll());               /// real timeda texnik tablega jo'natildi
 
+
+//        notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
+//        notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
+//        notifier.TechnicianNotifier(getAll());               /// real timeda texnik tablega jo'natildi
 
     }
 
@@ -131,27 +130,27 @@ public class SpecialistService implements SpecialistServiceIM {
     public void changeStatus(RequestStatusDto statusDto) {
         switch (statusDto.status()) {
             case 1: {
-                changed(statusDto.jobId(), Status.NEW.name());
+                changed(statusDto.jobId(), Status.NEW, 1);
                 break;
             }
             case 2: {
-                changed(statusDto.jobId(), Status.PENDING.name());
+                changed(statusDto.jobId(), Status.PENDING, 2);
                 break;
             }
             case 3: {
-                changed(statusDto.jobId(), Status.IN_PROCESS.name());
+                changed(statusDto.jobId(), Status.IN_PROCESS, 3);
                 break;
             }
             case 4: {
-                changed(statusDto.jobId(), Status.CONFIRMED.name());
+                changed(statusDto.jobId(), Status.CONFIRMED, 4);
                 break;
             }
             case 5: {
-                changed(statusDto.jobId(), Status.COMPLETED.name());
+                changed(statusDto.jobId(), Status.COMPLETED, 5);
                 break;
             }
             case 6: {
-                changed(statusDto.jobId(), Status.REJECTED.name());
+                changed(statusDto.jobId(), Status.REJECTED, 6);
                 break;
             }
         }
@@ -200,26 +199,31 @@ public class SpecialistService implements SpecialistServiceIM {
         return getJobCard(jobCards);
     }
 
-    private void changed(String jobId, String status) {
+    private void changed(String jobId, Status status, int check) {
+
+        if (!isValid(status, check)) {
+            throw new MyConflictException("invalid change status " + status);
+        }
 
         JobCard jobCard = getById(jobId);
-        jobCard.setSTATUS(Status.valueOf(status));
+        Status oldStatus = jobCard.getSTATUS();
+        jobCard.setSTATUS(status);
         JobCard specialist_jobCard = specialistJobCardRepository.save(jobCard);
-        notifier.SpecialistNotifier(getAll());
 
-
-        notifier.TechnicianNotifier(getAll());
-        notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
+//        notifier.SpecialistNotifier(getAll());
+//        notifier.TechnicianNotifier(getAll());
+//        notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
 
         historyService.addHistory(HistoryDto.builder()
                 .tableID("Job Card table")
                 .description("Job Card status updated")
                 .rowName("Status")
-                .oldValue(jobCard.getSTATUS().name())
+                .oldValue(oldStatus.name())
                 .newValue(specialist_jobCard.getSTATUS().name())
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
+
 
     }
 
@@ -238,6 +242,14 @@ public class SpecialistService implements SpecialistServiceIM {
         return getJobCard(jobCards);
     }
 
+
+    private boolean isValid(Status oldStatus, int newStatus) {
+        return switch (newStatus) {
+            case 3 -> oldStatus == Status.PENDING; // IN_PROCESS ga faqat PENDING dan o‘tishi mumkin
+            case 5, 6 -> oldStatus == Status.CONFIRMED; // COMPLETED yoki REJECTED faqat CONFIRMED dan o‘tishi mumkin
+            default -> false;
+        };
+    }
 
     private List<ResponseJobCardDto> getJobCard(List<JobCard> jobCards) {
         List<ResponseJobCardDto> jobCardDtos = new ArrayList<>();

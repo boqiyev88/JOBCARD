@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class Services extends AbstractAuditingEntity {
 
     @JoinColumn(nullable = false, name = "SERVICETYPE")
     @ManyToOne(fetch = FetchType.EAGER)
-    private ServiceType serviceType;
+    private ServiceType SERVICETYPE;
 
     @JoinColumn(nullable = false, name = "SERVICENAME")
     @ManyToOne(fetch = FetchType.EAGER)
-    private ServiceName serviceName;
+    private ServiceName SERVICENAME;
 
     @ManyToMany
     @JoinTable(
@@ -39,10 +40,10 @@ public class Services extends AbstractAuditingEntity {
     )
     private List<Task> tasks;
     @Column(nullable = false, name = "REVISONNUMBER")
-    private String revisionNumber;
+    private String REVISONNUMBER;
 
     @Column(nullable = false, name = "REVISONTIME")
-    private LocalDate revisionTime;
+    private LocalDate REVISONTIME;
 
 
 }

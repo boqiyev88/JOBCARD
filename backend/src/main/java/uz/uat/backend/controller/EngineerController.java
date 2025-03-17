@@ -13,14 +13,14 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.ResponseServiceDto;
-import uz.uat.backend.dto.ServiceDto;
+
 import uz.uat.backend.dto.TaskDto;
 import uz.uat.backend.dto.WorkListDto;
 import uz.uat.backend.model.*;
 import uz.uat.backend.service.EngineerService;
 
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,7 +41,7 @@ public class EngineerController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "CSV faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
     public ResponseEntity<?> addUploadCSVFile(@NonNull @RequestParam("file")
-                                        @Parameter(description = "CSV file") MultipartFile file) {
+                                              @Parameter(description = "CSV file") MultipartFile file) {
         List<TaskDto> tasks = engineerService.uploadCSV(file);
         return ResponseEntity.ok(tasks);
     }
@@ -68,10 +68,10 @@ public class EngineerController {
 
 
     @GetMapping("/searchByDate")
-    public ResponseEntity<?> searchByDate(@Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime startDate,
-                                          @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime endDate) {
+    public ResponseEntity<?> searchByDate(@Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                          @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         List<ResponseServiceDto> services = engineerService.searchByDate(startDate, endDate);
-        return ResponseEntity.ok(services);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(services);
     }
 
     @PostMapping("/addServices")
@@ -82,8 +82,8 @@ public class EngineerController {
 
     @GetMapping("/mainManu")
     public ResponseEntity<?> mainManu() {
-        List<ServiceDto> list = engineerService.getMainManu();
-        return ResponseEntity.ok(list);
+        List<ResponseServiceDto> list = engineerService.getMainManu();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -95,13 +95,13 @@ public class EngineerController {
     @GetMapping("/getServiceName")
     public ResponseEntity<?> getServiceName() {
         List<ServiceName> nameList = engineerService.getServiceName();
-        return ResponseEntity.status(200).body(nameList);
+        return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(nameList);
     }
 
     @GetMapping("/getServiceType")
     public ResponseEntity<?> getServiceType() {
         List<ServiceType> nameList = engineerService.getServiceType();
-        return ResponseEntity.status(200).body(nameList);
+        return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(nameList);
     }
 
     /// hali tayyor emas

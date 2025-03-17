@@ -28,9 +28,9 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
     @Transactional
     @Modifying
     @Query("update JobCard s set s.STATUS = ?1 where s.id = ?2")
-    JobCard updateSTATUSById(String STATUS, String id);
+    JobCard updateSTATUSById(Status STATUS, String id);
 
     @Transactional
-    @Query("select sj from JobCard sj where sj.WorkOrderNumber= :work and  sj.isDeleted =0")
-    Optional<JobCard> findByWorkOrderNumber(@Param("work") String workOrderNumber);
+    @Query("select sj from JobCard sj where sj.WorkOrderNumber= :workOrderNumber and  sj.isDeleted =0")
+    Optional<JobCard> findByWorkOrderNumber(@Param("workOrderNumber") String workOrderNumber);
 }

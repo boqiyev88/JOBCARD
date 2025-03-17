@@ -19,7 +19,6 @@ import uz.uat.backend.service.SpecialistService;
 import java.util.List;
 
 
-
 @Slf4j
 @RestController
 @RequestMapping("/api/specialist")
@@ -71,10 +70,9 @@ public class SpecialistController {
     }
 
 
-    @GetMapping("/tasks")
+    @GetMapping(value = "/tasks")
     public ResponseEntity<Object> getTask(@RequestParam("status") int status) {
         List<ResponseJobCardDto> list = specialistService.getByStatusNum(status);
-        log.info("newJobCard: " + list);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
