@@ -10,4 +10,5 @@ import java.util.List;
 public interface TaskMapper {
 
     List<TaskDto> list(List<Task> tasks);
+    List<Task> toEntitys(List<TaskDto> tasks);
 }

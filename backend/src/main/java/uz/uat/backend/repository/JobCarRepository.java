@@ -19,7 +19,7 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
 
 
     @Transactional
-    @Query("select sj from JobCard sj where sj.STATUS = :status and sj.isDeleted =0")
+    @Query("select sj from JobCard sj where sj.status = :status and sj.isDeleted =0")
     List<JobCard> findBySTATUS(@Param("status") Status status);
 
     @Query("select sj from JobCard sj where  sj.isDeleted =0")
@@ -27,10 +27,10 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
 
     @Transactional
     @Modifying
-    @Query("update JobCard s set s.STATUS = ?1 where s.id = ?2")
+    @Query("update JobCard s set s.status = ?1 where s.id = ?2")
     JobCard updateSTATUSById(Status STATUS, String id);
 
     @Transactional
-    @Query("select sj from JobCard sj where sj.WorkOrderNumber= :workOrderNumber and  sj.isDeleted =0")
+    @Query("select sj from JobCard sj where sj.workOrder= :workOrderNumber and  sj.isDeleted =0")
     Optional<JobCard> findByWorkOrderNumber(@Param("workOrderNumber") String workOrderNumber);
 }

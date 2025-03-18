@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface SpecialistServiceIM {
 
-     void addJobCard(JobCardDto jobCardDto);
+     List<ResponseJobCardDto>  addJobCard(JobCardDto jobCardDto);
 
      PdfFile getPdfFromJob(String jobId);
 

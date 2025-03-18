@@ -35,25 +35,15 @@ public class EngineerController {
         this.engineerService = engineerService;
     }
 
-    @PostMapping(
-            path = "/uploadCSV",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "CSV faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
-    public ResponseEntity<?> addUploadCSVFile(@NonNull @RequestParam("file")
-                                              @Parameter(description = "CSV file") MultipartFile file) {
-        List<TaskDto> tasks = engineerService.uploadCSV(file);
-        return ResponseEntity.ok(tasks);
-    }
 
     @PostMapping(
-            path = "/uploadPDF",
+            path = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "PDF faylni yuklab, uni qayta ishlaydi va list ko‘rinishida qaytaradi.")
     public ResponseEntity<?> addUploadPDFFile(@NonNull @RequestParam("file") @Parameter(description = "PDF file") MultipartFile file) {
-        List<TaskDto> tasks = engineerService.uploadPDF(file);
-        return ResponseEntity.ok(tasks);
+        List<TaskDto> tasks = engineerService.uploadfile(file);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tasks);
     }
 
     /// Faqat CSV file generatsiya qilish uchun
@@ -76,8 +66,8 @@ public class EngineerController {
 
     @PostMapping("/addServices")
     public ResponseEntity<?> addNewService(@Valid @RequestBody WorkListDto workListDto) {
-        engineerService.addNewService(workListDto);
-        return ResponseEntity.status(201).build();
+        List<ResponseServiceDto> response = engineerService.addNewService(workListDto);
+        return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @GetMapping("/mainManu")

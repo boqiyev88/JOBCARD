@@ -13,8 +13,8 @@ import java.util.List;
 @Repository
 public interface WorkRepository extends JpaRepository<Work, String> {
 
-//    @Query("SELECT w.id,w.workType,w.taskList FROM Work w")
-//    List<Work> getWork();
-//
+    @Query("select w from Work w where w.isDeleted =0")
+    List<Work> getAll();
+
 
 }

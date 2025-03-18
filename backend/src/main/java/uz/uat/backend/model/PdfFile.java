@@ -18,9 +18,9 @@ public class PdfFile extends AbstractAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "FILE_NAME", nullable = false)
+    @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    @Column(name = "DATA")
+    @Column(name = "data")
     private byte[] data;
 }

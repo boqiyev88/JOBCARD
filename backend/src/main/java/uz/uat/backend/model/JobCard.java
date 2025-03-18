@@ -21,56 +21,56 @@ public class JobCard extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column(nullable = false, name = "WORK_ORDER_NUMBER")
-    private String WorkOrderNumber;
+    @Column(nullable = false, name = "work_order")
+    private String workOrder;
 
     @Column(nullable = false)
-    private String REG;
+    private String reg;
 
-    @Column(nullable = false, name = "SERIAL_NUMBER_1")
-    private String SerialNumber1;
-
-    @Column(nullable = false)
-    private String ENGINE_1;
-
-    @Column(nullable = false, name = "SERIAL_NUMBER_2")
-    private String SerialNumber2;
+    @Column(nullable = false, name = "serial_number_1")
+    private String serialNumber1;
 
     @Column(nullable = false)
-    private String ENGINE_2;
+    private String engine_1;
 
-    @Column(nullable = false, name = "SERIAL_NUMBER_3")
-    private String SerialNumber3;
-
-    @Column(nullable = false)
-    private String APU;
-
-    @Column(nullable = false, name = "SERIAL_NUMBER_4")
-    private String SerialNumber4;
+    @Column(nullable = false, name = "serial_number_2")
+    private String serialNumber2;
 
     @Column(nullable = false)
-    private String BEFORELIGHT;
+    private String engine_2;
+
+    @Column(nullable = false, name = "serial_number_3")
+    private String serialNumber3;
 
     @Column(nullable = false)
-    private String FH;
+    private String apu;
+
+    @Column(nullable = false, name = "serial_number_4")
+    private String serialNumber4;
+
+    @Column(nullable = false,name = "beforelight")
+    private String beforelight;
+
+    @Column(nullable = false)
+    private String fh;
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
-    private City LEG;
+    private City leg;
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
-    private City TO;
+    private City to;
 
-    @Column(nullable = false, name = "DATE")
-    private Instant DATE;
+    @Column(nullable = false, name = "date")
+    private Instant date;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status STATUS = Status.NEW;
+    private Status status = Status.NEW;
 
     @JoinColumn(name = "MAIN_PLAN")
     @OneToOne(fetch = FetchType.EAGER)

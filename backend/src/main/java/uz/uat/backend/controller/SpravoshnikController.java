@@ -1,6 +1,7 @@
 package uz.uat.backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.uat.backend.dto.CityDto;
@@ -19,7 +20,7 @@ public class SpravoshnikController {
     @GetMapping("/city")
     public ResponseEntity<?> getCity() {
         List<CityDto> citys = spcService.getCitys();
-        return ResponseEntity.ok(citys);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(citys);
     }
 
 

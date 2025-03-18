@@ -20,7 +20,7 @@ public class Specialist_History {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String ID;
 
     @Column(name = "TABLEID", nullable = false)

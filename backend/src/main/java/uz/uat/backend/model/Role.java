@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false, columnDefinition = "INTEGER")
+    @Column(name = "id", nullable = false, columnDefinition = "INTEGER")
     private Integer id;
 
     @Column(name = "NAME", columnDefinition = "VARCHAR(300) CCSID 1208")

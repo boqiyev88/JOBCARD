@@ -17,13 +17,13 @@ public class Task {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column(nullable = false,name = "NUMBER")
+    @Column(nullable = false,name = "number")
     private String number;
 
-    @Column(nullable = false, name = "DESCRIPTION")
+    @Column(nullable = false, name = "description")
     private String description;
 
 }

@@ -10,5 +10,9 @@ import java.time.LocalDate;
 
 
 @Builder
-public record ServiceDto(ServiceName SERVICENAME, ServiceType SERVICETYPE, String REVISONNUMBER, LocalDate REVISONTIME) {
+public record ServiceDto(
+        ServiceName serviceName,
+        ServiceType serviceType,
+        String revisonNumber,
+        LocalDate revisonTime) {
 }

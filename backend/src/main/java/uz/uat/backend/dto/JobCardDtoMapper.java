@@ -5,16 +5,16 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 
-public record JobCardDtoMapper(@NotBlank String WorkOrderNumber,
-                               @NotBlank String REG,
-                               @NotBlank String SerialNumber1,
-                               @NotBlank String ENGINE_1,
-                               @NotBlank String SerialNumber2,
-                               @NotBlank String ENGINE_2,
-                               @NotBlank String SerialNumber3,
-                               @NotBlank String APU,
-                               @NotBlank String SerialNumber4,
-                               @NotBlank String BEFORELIGHT,
-                               @NotBlank String FH,
-                               @NotNull Instant DATE) {
+public record JobCardDtoMapper(@NotBlank String workOrder,
+                               @NotBlank String reg,
+                               @NotBlank String serialNumber1,
+                               @NotBlank String engine_1,
+                               @NotBlank String serialNumber2,
+                               @NotBlank String engine_2,
+                               @NotBlank String serialNumber3,
+                               @NotBlank String apu,
+                               @NotBlank String serialNumber4,
+                               @NotBlank String beforelight,
+                               @NotBlank String fh,
+                               @NotNull Instant date) {
 }

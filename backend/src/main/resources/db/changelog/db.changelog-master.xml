@@ -122,14 +122,14 @@
     <changeSet id="6" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="CITY" schemaName="uat"/>
+                <tableExists tableName="city" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="CITY" schemaName="uat">
-            <column name="ID" type="VARCHAR(55)">
+        <createTable tableName="city" schemaName="uat">
+            <column name="id" type="VARCHAR(55)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="NAME" type="VARCHAR(50)">
+            <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
@@ -140,14 +140,14 @@
     <changeSet id="7" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="SERVICENAME" schemaName="uat"/>
+                <tableExists tableName="service_name" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="SERVICENAME" schemaName="uat">
-            <column name="ID" type="VARCHAR(55)">
+        <createTable tableName="service_name" schemaName="uat">
+            <column name="id" type="VARCHAR(55)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="NAME" type="VARCHAR(50)">
+            <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -192,14 +192,14 @@
     <changeSet id="9" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="SERVICETYPE" schemaName="uat"/>
+                <tableExists tableName="service_type" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="SERVICETYPE" schemaName="uat">
-            <column name="ID" type="VARCHAR(55)">
+        <createTable tableName="service_type" schemaName="uat">
+            <column name="id" type="VARCHAR(55)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="NAME" type="VARCHAR(50)">
+            <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
@@ -218,23 +218,23 @@
     <changeSet id="10" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="SERVICES" schemaName="uat"/>
+                <tableExists tableName="services" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="SERVICES" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
+        <createTable tableName="services" schemaName="uat">
+            <column name="id" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="SERVICETYPE" type="VARCHAR(50)">
+            <column name="servicetype" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="SERVICENAME" type="VARCHAR(50)">
+            <column name="servicename" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="REVISONNUMBER" type="VARCHAR(50)">
+            <column name="revisionnumber" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="REVISONTIME" type="DATETIME">
+            <column name="revisiontime" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
 
@@ -249,19 +249,19 @@
             <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="SERVICES"
-                                 baseColumnNames="SERVICENAME"
+        <addForeignKeyConstraint baseTableName="services"
+                                 baseColumnNames="servicename"
                                  constraintName="fk_services_service_name"
-                                 referencedTableName="SERVICENAME"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="service_name"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
 
-        <addForeignKeyConstraint baseTableName="SERVICES"
-                                 baseColumnNames="SERVICETYPE"
+        <addForeignKeyConstraint baseTableName="services"
+                                 baseColumnNames="servicetype"
                                  constraintName="fk_services_service_type"
-                                 referencedTableName="servicetype"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="service_type"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
     </changeSet>
@@ -270,17 +270,17 @@
     <changeSet id="11" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="TASK" schemaName="uat"/>
+                <tableExists tableName="task" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="TASK" schemaName="uat">
-            <column name="ID" type="VARCHAR(55)">
+        <createTable tableName="task" schemaName="uat">
+            <column name="id" type="VARCHAR(55)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="NUMBER" type="VARCHAR(50)">
+            <column name="number" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DESCRIPTION" type="VARCHAR(50)">
+            <column name="description" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
 
@@ -299,33 +299,34 @@
     <changeSet id="12" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="SERVICE_TASK" schemaName="uat"/>
+                <tableExists tableName="service_task" schemaName="uat"/>
+
             </not>
         </preConditions>
-        <createTable tableName="SERVICE_TASK" schemaName="uat">
-            <column name="SERVICE_ID" type="VARCHAR(50)">
-                <constraints primaryKey="true" nullable="false"/>
+        <createTable tableName="service_task" schemaName="uat">
+            <column name="service_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
             </column>
-            <column name="TASK_ID" type="VARCHAR(55)">
+            <column name="task_id" type="VARCHAR(55)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
         <addForeignKeyConstraint
-                baseTableName="SERVICE_TASK"
-                baseColumnNames="SERVICE_ID"
+                baseTableName="service_task"
+                baseColumnNames="service_id"
                 constraintName="fk_service_task_service"
-                referencedTableName="SERVICES"
-                referencedColumnNames="ID"
+                referencedTableName="services"
+                referencedColumnNames="id"
                 baseTableSchemaName="uat"
                 onDelete="CASCADE"/>
 
         <addForeignKeyConstraint
-                baseTableName="SERVICE_TASK"
-                baseColumnNames="TASK_ID"
+                baseTableName="service_task"
+                baseColumnNames="task_id"
                 constraintName="fk_service_task_task"
-                referencedTableName="TASK"
-                referencedColumnNames="ID"
+                referencedTableName="task"
+                referencedColumnNames="id"
                 baseTableSchemaName="uat"
                 onDelete="CASCADE"/>
     </changeSet>
@@ -339,13 +340,13 @@
             </not>
         </preConditions>
         <createTable tableName="PDF_FILE" schemaName="uat">
-            <column name="ID" type="bigserial">
+            <column name="id" type="bigserial">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="FILE_NAME" type="VARCHAR(255)">
+            <column name="file_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DATA" type="JAVA.SQL.TYPES.BLOB">
+            <column name="data" type="JAVA.SQL.TYPES.BLOB">
                 <constraints nullable="false"/>
             </column>
 
@@ -368,55 +369,55 @@
             </not>
         </preConditions>
         <createTable tableName="JOB" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
+            <column name="id" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="WORK_ORDER_NUMBER" type="VARCHAR(50)">
+            <column name="work_order" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="REG" type="VARCHAR(50)">
+            <column name="reg" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="SERIAL_NUMBER_1" type="VARCHAR(50)">
+            <column name="serial_number_1" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ENGINE_1" type="VARCHAR(50)">
+            <column name="engine_1" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="SERIAL_NUMBER_2" type="VARCHAR(50)">
+            <column name="serial_number_2" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ENGINE_2" type="VARCHAR(50)">
+            <column name="engine_2" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="SERIAL_NUMBER_3" type="VARCHAR(50)">
+            <column name="serial_number_3" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="APU" type="VARCHAR(50)">
+            <column name="apu" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="SERIAL_NUMBER_4" type="VARCHAR(50)">
+            <column name="serial_number_4" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="BEFORELIGHT" type="VARCHAR(50)">
+            <column name="beforelight" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="FH" type="VARCHAR(50)">
+            <column name="fh" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="LEG_ID" type="VARCHAR(50)">
+            <column name="leg_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="TO_ID" type="VARCHAR(50)">
+            <column name="to_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DATE" type="TIMESTAMP">
+            <column name="date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="STATUS" type="VARCHAR(50)">
+            <column name="status" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="MAIN_PLAN" type="BIGINT"/>
+            <column name="main_plan" type="BIGINT"/>
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -429,66 +430,93 @@
         </createTable>
 
         <addForeignKeyConstraint baseTableName="JOB"
-                                 baseColumnNames="LEG_ID"
+                                 baseColumnNames="leg_id"
                                  constraintName="fk_joboverview_city_leg"
-                                 referencedTableName="CITY"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="city"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
 
         <addForeignKeyConstraint baseTableName="JOB"
-                                 baseColumnNames="TO_ID"
+                                 baseColumnNames="to_id"
                                  constraintName="fk_joboverview_city_to"
-                                 referencedTableName="CITY"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="city"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
 
         <addForeignKeyConstraint baseTableName="JOB"
-                                 baseColumnNames="MAIN_PLAN"
+                                 baseColumnNames="main_plan"
                                  constraintName="fk_joboverview_pdf_file"
                                  referencedTableName="PDF_FILE"
-                                 referencedColumnNames="ID"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
     </changeSet>
 
+    <changeSet id="17" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="employeer" schemaName="uat"/>
+            </not>
+        </preConditions>
+        <createTable tableName="employeer" schemaName="uat">
+            <column name="id" type="VARCHAR(55)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="avionic" type="boolean">
+                <constraints  unique="true"/>
+            </column>
+            <column name="mechanic" type="boolean">
+                <constraints  unique="true"/>
+            </column>
+            <column name="cab_mechanic" type="boolean">
+                <constraints  unique="true"/>
+            </column>
+            <column name="sheet_metal" type="boolean">
+                <constraints  unique="true"/>
+            </column>
+            <column name="NDT" type="boolean">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
     <!-- WORK jadvalini yaratish -->
     <changeSet id="13" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="WORK" schemaName="uat"/>
+                <tableExists tableName="work" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="WORK" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
+        <createTable tableName="work" schemaName="uat">
+            <column name="id" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="THRESHOLD" type="VARCHAR(50)">
+            <column name="threshold" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="REPEAT_INT" type="VARCHAR(50)">
+            <column name="repeat_int" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ZONE" type="VARCHAR(50)">
+            <column name="zone" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="MRF" type="VARCHAR(50)">
+            <column name="mrf" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ACCESS" type="VARCHAR(50)">
+            <column name="access" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="AIRPLANE_APP" type="VARCHAR(50)">
+            <column name="airplane_app" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="ACCESS_NOTE" type="VARCHAR(50)">
+            <column name="access_note" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="TASK_DESCRIPTION" type="VARCHAR(50)">
+            <column name="task_description" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DIT" type="BOOLEAN">
+            <column name="dit" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
 
@@ -502,32 +530,32 @@
             <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
 
             <!-- Foreign key columns -->
-            <column name="JOBCARD_ID" type="VARCHAR(50)"/>
-            <column name="SERVICE_ID" type="VARCHAR(50)"/>
+            <column name="jobCard_id" type="VARCHAR(50)"/>
+            <column name="service_id" type="VARCHAR(50)"/>
             <column name="workers_names" type="VARCHAR(50)"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="WORK"
+        <addForeignKeyConstraint baseTableName="work"
                                  baseColumnNames="workers_names"
                                  constraintName="fk_work_worktype"
-                                 referencedTableName="USER"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="EMPLOYEER"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
 
         <addForeignKeyConstraint baseTableName="WORK"
-                                 baseColumnNames="JOBCARD_ID"
+                                 baseColumnNames="jobCard_id"
                                  constraintName="fk_work_jobcard"
-                                 referencedTableName="job"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="JOB"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
 
-        <addForeignKeyConstraint baseTableName="WORK"
-                                 baseColumnNames="SERVICE_ID"
+        <addForeignKeyConstraint baseTableName="work"
+                                 baseColumnNames="service_id"
                                  constraintName="fk_work_service"
-                                 referencedTableName="SERVICES"
-                                 referencedColumnNames="ID"
+                                 referencedTableName="services"
+                                 referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
     </changeSet>
@@ -559,6 +587,10 @@
             </column>
         </createTable>
     </changeSet>
+
+
+
+
 
 
 </databaseChangeLog>

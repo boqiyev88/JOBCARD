@@ -31,8 +31,8 @@ public class SpecialistController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addJobCard(@RequestBody @Valid JobCardDto jobCardDto) {
-        specialistService.addJobCard(jobCardDto);
-        return ResponseEntity.status(201).build();
+        List<ResponseJobCardDto> resp = specialistService.addJobCard(jobCardDto);
+        return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(resp);
     }
 
     @PostMapping(
@@ -48,7 +48,7 @@ public class SpecialistController {
     @PostMapping("/status")
     public ResponseEntity<?> inChangeStatus(@RequestBody RequestStatusDto statusDto) {
         specialistService.changeStatus(statusDto);
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body("status changed");
     }
 
     @PostMapping("/returned")

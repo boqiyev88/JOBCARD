@@ -25,7 +25,7 @@ public class User extends AbstractAuditingEntity implements UserDetails {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
     @Column(nullable = false, name = "USERNAME", columnDefinition = "VARCHAR(20)")

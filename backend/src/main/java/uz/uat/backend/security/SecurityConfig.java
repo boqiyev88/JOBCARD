@@ -115,10 +115,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*\"http://localhost:3000\", \"http://localhost:3001\", \"http://localhost:3002\", \"http://localhost:3003\",\"http://192.168.1.200\"")); // Frontend domeni
+        configuration.setAllowedOrigins(List.of("*")); // Frontend domeni
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-//        configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

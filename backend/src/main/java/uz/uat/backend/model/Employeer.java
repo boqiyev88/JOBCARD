@@ -12,14 +12,14 @@ import org.hibernate.annotations.UuidGenerator;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Employeer", schema = "uat")
+@Table(name = "employeer", schema = "uat")
 public class Employeer {
 
 
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
     @Column

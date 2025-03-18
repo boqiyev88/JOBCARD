@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EngineerServiceIM {
-    List<TaskDto> uploadCSV(MultipartFile file);
+    List<TaskDto> uploadfile(MultipartFile file);
 
     List<ResponseServiceDto> getMainManu();
 
@@ -26,9 +26,8 @@ public interface EngineerServiceIM {
 
     List<ResponseServiceDto> searchByDate(LocalDate startDate, LocalDate endDate);
 
-    void addNewService(WorkListDto workListDto);
+    List<ResponseServiceDto> addNewService(WorkListDto workListDto);
 
     List<ServiceType> getServiceType();
 
-    List<TaskDto> uploadPDF(MultipartFile file);
 }

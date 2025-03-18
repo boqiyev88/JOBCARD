@@ -2,13 +2,16 @@ package uz.uat.backend.service;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
+import uz.uat.backend.config.exception.MyConflictException;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.HistoryDto;
 import uz.uat.backend.dto.ResponseServiceDto;
@@ -31,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EngineerService implements EngineerServiceIM {
@@ -62,61 +66,25 @@ public class EngineerService implements EngineerServiceIM {
         }
     }
 
+
     @Override
-    public List<TaskDto> uploadPDF(MultipartFile file) {
+    public List<TaskDto> uploadfile(@NotBlank MultipartFile file) {
+        String contentType = file.getContentType();
+        List<TaskDto> tasks;
+        if (contentType.equals("application/pdf")) {
+            tasks = uploadPDF(file);
+        } else if (contentType.equals("text/csv")) {
+            tasks = uploadCSV(file);
+        } else
+            throw new MyConflictException("Unsupported content type file: " + contentType);
 
-        List<Task> taskList = new ArrayList<>();
-        try (PDDocument document = PDDocument.load(file.getInputStream())) {
-            String pdfText = new PDFTextStripper().getText(document);
-            Pattern pattern = Pattern.compile("(\\d+)\\.\\s*(.+)");
-            Matcher matcher = pattern.matcher(pdfText);
-            while (matcher.find()) {
-                String number = matcher.group(1);
-                String text = matcher.group(2);
-                taskList.add(
-                        Task.builder()
-                                .number(String.valueOf(number))
-                                .description(text)
-                                .build()
-                );
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return taskMapper.list(taskList);
+        return tasks;
     }
 
 
+    @Transactional
     @Override
-    public List<TaskDto> uploadCSV(MultipartFile file) {
-        List<Task> tasks = Collections.synchronizedList(new ArrayList<>());
-        List<TaskDto> tasksDto = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data.length >= 2) {
-                    tasks.add(
-                            Task.builder()
-                                    .number(data[0])
-                                    .description(data[1])
-                                    .build()
-
-                    );
-                }
-            }
-            taskRepository.saveAll(tasks);
-            tasksDto = taskMapper.list(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return tasksDto;
-    }
-
-    @Override
-    public void addNewService(WorkListDto workListDto) {
+    public List<ResponseServiceDto> addNewService(WorkListDto workListDto) {
         if (workListDto == null)
             throw new MyNotFoundException("workList is null");
 
@@ -128,15 +96,16 @@ public class EngineerService implements EngineerServiceIM {
 
         ServiceType serviceType = optional1.get();
         ServiceName serviceName = optional.get();
-
+        List<Task> tasks = taskMapper.toEntitys(workListDto.tasks());
+        List<Task> saved = taskRepository.saveAll(tasks);
         Services saveService = servicesRepository.save(
                 Services.builder()
-                        .SERVICETYPE(serviceType)
-                        .SERVICENAME(serviceName)
-                        .REVISONNUMBER(workListDto.revisionNumber())
-                        .REVISONTIME(workListDto.revisionTime())
+                        .serviceType(serviceType)
+                        .serviceName(serviceName)
+                        .revisionNumber(workListDto.revisionNumber())
+                        .revisionTime(workListDto.revisionTime())
+                        .tasks(saved)
                         .build()
-
         );
         historyService.addHistory(HistoryDto.builder()
                 .tableID("Services table")
@@ -148,6 +117,7 @@ public class EngineerService implements EngineerServiceIM {
                 .updTime(saveService.getUpdTime())
                 .build());
 //        notifier.EngineerNotifier(saveService);
+        return getMainManu();
     }
 
     @Override
@@ -204,21 +174,68 @@ public class EngineerService implements EngineerServiceIM {
 
     }
 
-
     private List<ResponseServiceDto> fromEntity(List<Services> services) {
         List<ResponseServiceDto> rsd = new ArrayList<>();
         for (Services service : services) {
             rsd.add(ResponseServiceDto.builder()
-                    .ID(service.getId())
-                    .SERVICETYPE(service.getSERVICETYPE().getId())
-                    .SERVICENAME(service.getSERVICENAME().getId())
-                    .REVISONNUMBER(service.getREVISONNUMBER())
-                    .REVISONTIME(service.getREVISONTIME())
+                    .id(service.getId())
+                    .service_type(service.getServiceType().getId())
+                    .service_name(service.getServiceName().getId())
+                    .revisionNumber(service.getRevisionNumber())
+                    .revisonTime(service.getRevisionTime())
                     .tasks(service.getTasks())
                     .build()
             );
         }
         return rsd;
+    }
+
+    private List<TaskDto> uploadPDF(MultipartFile file) {
+        List<Task> taskList = new ArrayList<>();
+        try (PDDocument document = PDDocument.load(file.getInputStream())) {
+            String pdfText = new PDFTextStripper().getText(document);
+            Pattern pattern = Pattern.compile("(\\d+)\\.\\s*(.+)");
+            Matcher matcher = pattern.matcher(pdfText);
+            while (matcher.find()) {
+                String number = matcher.group(1);
+                String text = matcher.group(2);
+                taskList.add(
+                        Task.builder()
+                                .number(String.valueOf(number))
+                                .description(text)
+                                .build()
+                );
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return taskMapper.list(taskList);
+    }
+
+    private List<TaskDto> uploadCSV(MultipartFile file) {
+        List<Task> tasks = Collections.synchronizedList(new ArrayList<>());
+        List<TaskDto> tasksDto = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 2) {
+                    tasks.add(
+                            Task.builder()
+                                    .number(data[0])
+                                    .description(data[1])
+                                    .build()
+
+                    );
+                }
+            }
+            taskRepository.saveAll(tasks);
+            tasksDto = taskMapper.list(tasks);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tasksDto;
     }
 
 

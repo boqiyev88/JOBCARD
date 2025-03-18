@@ -13,37 +13,38 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SERVICES",schema = "uat")
+@Table(name = "services", schema = "uat")
 @Builder
 public class Services extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @JoinColumn(nullable = false, name = "SERVICETYPE")
+    @JoinColumn(nullable = false, name = "servicetype")
     @ManyToOne(fetch = FetchType.EAGER)
-    private ServiceType SERVICETYPE;
+    private ServiceType serviceType;
 
-    @JoinColumn(nullable = false, name = "SERVICENAME")
+    @JoinColumn(nullable = false, name = "servicename")
     @ManyToOne(fetch = FetchType.EAGER)
-    private ServiceName SERVICENAME;
+    private ServiceName serviceName;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
-            name = "SERVICE_TASK",
+            name = "service_task",
             schema = "uat",
-            joinColumns = @JoinColumn(name = "SERVICE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "TASK_ID")
+            joinColumns = @JoinColumn(name = "service_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
     )
     private List<Task> tasks;
-    @Column(nullable = false, name = "REVISONNUMBER")
-    private String REVISONNUMBER;
 
-    @Column(nullable = false, name = "REVISONTIME")
-    private LocalDate REVISONTIME;
+    @Column(nullable = false, name = "revisionnumber")
+    private String revisionNumber;
+
+    @Column(nullable = false, name = "revisiontime")
+    private LocalDate   revisionTime;
 
 
 }

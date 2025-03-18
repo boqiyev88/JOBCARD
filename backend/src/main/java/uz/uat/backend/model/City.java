@@ -19,11 +19,11 @@ public class City {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
-    private String ID;
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
+    private String id;
 
     @Column(nullable = false)
-    private String NAME;
+    private String name;
 
 
 }

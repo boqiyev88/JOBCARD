@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
-import uz.uat.backend.dto.Worker;
-
-import java.util.List;
 
 @Entity
 @Data
@@ -21,45 +18,45 @@ public class Work extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "ID", columnDefinition = "VARCHAR(50)")
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
     @Column(nullable = false)
-    private String THRESHOLD;
+    private String threshold;
 
     @Column(nullable = false)
-    private String REPEAT_INT;
+    private String repeat_int;
 
     @Column(nullable = false)
-    private String ZONE;
+    private String zone;
 
     @Column(nullable = false)
-    private String MRF;
+    private String mrf;
 
     @Column(nullable = false)
-    private String ACCESS;
+    private String access;
 
     @Column(nullable = false)
-    private String AIRPLANE_APP;
+    private String airplane_app;
 
     @Column(nullable = false)
-    private String ACCESS_NOTE;
+    private String access_note;
 
     @Column(nullable = false)
-    private String TASK_DESCRIPTION;
+    private String task_description;
 
     @Column(nullable = false)
-    private boolean DIT;
+    private boolean dit;
 
-    @JoinColumn
+    @JoinColumn(name = "jobCard_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private JobCard JOBCARD_ID;
+    private JobCard jobCard_id;
 
-    @JoinColumn
+    @JoinColumn(name = "service_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Services SERVICE_ID;
+    private Services service_id;
 
-    @JoinColumn
+    @JoinColumn(name = "workers_names")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Employeer workers_names;
 

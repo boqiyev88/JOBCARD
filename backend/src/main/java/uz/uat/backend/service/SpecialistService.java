@@ -41,17 +41,17 @@ public class SpecialistService implements SpecialistServiceIM {
 
     @Transactional
     @Override
-    public void addJobCard(JobCardDto jobCardDto) {
+    public List<ResponseJobCardDto> addJobCard(JobCardDto jobCardDto) {
         if (jobCardDto == null) {
             throw new MyNotFoundException("jobCardDto is null");
         }
-        Optional<City> LEG = cityRepository.findById(jobCardDto.LEG());
-        Optional<City> TO = cityRepository.findById(jobCardDto.TO());
+        Optional<City> LEG = cityRepository.findById(jobCardDto.leg());
+        Optional<City> TO = cityRepository.findById(jobCardDto.to());
         if (LEG.isEmpty() || TO.isEmpty()) {
             throw new MyNotFoundException("city not found");
         }
         Optional<JobCard> optional =
-                specialistJobCardRepository.findByWorkOrderNumber(jobCardDto.WorkOrderNumber());
+                specialistJobCardRepository.findByWorkOrderNumber(jobCardDto.workOrder());
 
         if (optional.isPresent()) {
             throw new MyConflictException("jobCard already exists");
@@ -59,9 +59,9 @@ public class SpecialistService implements SpecialistServiceIM {
 
         JobCardDtoMapper dtoMapper = jobCardMapper.toDtoMapper(jobCardDto);
         JobCard specialist_jobCard = jobCardMapper.toEntity(dtoMapper);
-        specialist_jobCard.setSTATUS(Status.NEW);
-        specialist_jobCard.setLEG(LEG.get());
-        specialist_jobCard.setTO(TO.get());
+        specialist_jobCard.setStatus(Status.NEW);
+        specialist_jobCard.setLeg(LEG.get());
+        specialist_jobCard.setTo(TO.get());
         JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
 //            notifier.SpecialistNotifier(saveSpecialist);
 //            notifier.SpecialistMassageNotifier("New JobCard added");
@@ -79,6 +79,7 @@ public class SpecialistService implements SpecialistServiceIM {
 //            notifier.TechnicianNotifier(saveTechnician);
 //            notifier.TechnicianMassageNotifier("New JobCard added");
 
+        return getAll();
     }
 
     @Override
@@ -105,13 +106,13 @@ public class SpecialistService implements SpecialistServiceIM {
 
         JobCard jobCardId = getById(requestDto.id());
 
-        jobCardId.setSTATUS(Status.REJECTED);
+        jobCardId.setStatus(Status.REJECTED);
         JobCard specialist_jobCard = specialistJobCardRepository.save(jobCardId);
         historyService.addHistory(HistoryDto.builder()
                 .tableID("Job Card table")
                 .description("Job Card status updated")
                 .rowName("Status")
-                .oldValue(jobCardId.getSTATUS().name())
+                .oldValue(jobCardId.getStatus().name())
                 .newValue(Status.REJECTED.name())
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
@@ -206,8 +207,8 @@ public class SpecialistService implements SpecialistServiceIM {
         }
 
         JobCard jobCard = getById(jobId);
-        Status oldStatus = jobCard.getSTATUS();
-        jobCard.setSTATUS(status);
+        Status oldStatus = jobCard.getStatus();
+        jobCard.setStatus(status);
         JobCard specialist_jobCard = specialistJobCardRepository.save(jobCard);
 
 //        notifier.SpecialistNotifier(getAll());
@@ -219,7 +220,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .description("Job Card status updated")
                 .rowName("Status")
                 .oldValue(oldStatus.name())
-                .newValue(specialist_jobCard.getSTATUS().name())
+                .newValue(specialist_jobCard.getStatus().name())
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
@@ -255,21 +256,21 @@ public class SpecialistService implements SpecialistServiceIM {
         List<ResponseJobCardDto> jobCardDtos = new ArrayList<>();
         for (JobCard jobCard : jobCards) {
             jobCardDtos.add(ResponseJobCardDto.builder()
-                    .WorkOrderNumber(jobCard.getWorkOrderNumber())
-                    .REG(jobCard.getREG())
-                    .SerialNumber1(jobCard.getSerialNumber1())
-                    .ENGINE_1(jobCard.getENGINE_1())
-                    .SerialNumber2(jobCard.getSerialNumber2())
-                    .ENGINE_2(jobCard.getENGINE_2())
-                    .SerialNumber3(jobCard.getSerialNumber3())
-                    .APU(jobCard.getAPU())
-                    .SerialNumber4(jobCard.getSerialNumber4())
-                    .BEFORELIGHT(jobCard.getBEFORELIGHT())
-                    .FH(jobCard.getFH())
-                    .LEG(jobCard.getLEG().getID())
-                    .TO(jobCard.getTO().getID())
-                    .DATE(jobCard.getDATE())
-                    .status(jobCard.getSTATUS().name())
+                    .workOrder(jobCard.getWorkOrder())
+                    .reg(jobCard.getReg())
+                    .serialNumber1(jobCard.getSerialNumber1())
+                    .engine_1(jobCard.getEngine_1())
+                    .serialNumber2(jobCard.getSerialNumber2())
+                    .engine_2(jobCard.getEngine_2())
+                    .serialNumber3(jobCard.getSerialNumber3())
+                    .apu(jobCard.getApu())
+                    .serialNumber4(jobCard.getSerialNumber4())
+                    .beforeLight(jobCard.getBeforelight())
+                    .fh(jobCard.getFh())
+                    .leg(jobCard.getLeg().getId())
+                    .to(jobCard.getTo().getId())
+                    .date(jobCard.getDate())
+                    .status(jobCard.getStatus().name())
                     .build());
         }
         return jobCardDtos;

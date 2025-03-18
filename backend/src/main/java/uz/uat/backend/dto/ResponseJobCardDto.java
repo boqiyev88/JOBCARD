@@ -8,20 +8,20 @@ import java.time.Instant;
 
 @Builder
 public record ResponseJobCardDto(
-        @NotBlank String WorkOrderNumber,
-        @NotBlank String REG,
-        @NotBlank String SerialNumber1,
-        @NotBlank String ENGINE_1,
-        @NotBlank String SerialNumber2,
-        @NotBlank String ENGINE_2,
-        @NotBlank String SerialNumber3,
-        @NotBlank String APU,
-        @NotBlank String SerialNumber4,
-        @NotBlank String BEFORELIGHT,
-        @NotBlank String FH,
-        @NotNull String LEG,
-        @NotNull String TO,
-        @NotNull Instant DATE,
+        @NotBlank String workOrder,
+        @NotBlank String reg,
+        @NotBlank String serialNumber1,
+        @NotBlank String engine_1,
+        @NotBlank String serialNumber2,
+        @NotBlank String engine_2,
+        @NotBlank String serialNumber3,
+        @NotBlank String apu,
+        @NotBlank String serialNumber4,
+        @NotBlank String beforeLight,
+        @NotBlank String fh,
+        @NotNull String leg,
+        @NotNull String to,
+        @NotNull Instant date,
         @NotBlank String status
 ) {
 }
