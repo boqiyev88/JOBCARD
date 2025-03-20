@@ -23,9 +23,8 @@ public class Services extends AbstractAuditingEntity {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @JoinColumn(nullable = false, name = "servicetype")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private ServiceType serviceType;
+   @Column(nullable = false, name = "servicetype")
+    private String serviceType;
 
     @JoinColumn(nullable = false, name = "servicename")
     @ManyToOne(fetch = FetchType.EAGER)

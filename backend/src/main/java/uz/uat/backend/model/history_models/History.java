@@ -6,16 +6,15 @@ import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SPECIALIST_HISOTRY", schema = "uat")
+@Table(name = "HISOTRY", schema = "uat")
 @Builder
-public class Specialist_History {
+public class History {
 
     @Id
     @GeneratedValue(generator = "uuid4")

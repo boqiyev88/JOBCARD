@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-public record WorkListDto(@NotBlank String serviceType_id,
+public record WorkListDto(@NotBlank String serviceType,
                           @NotBlank String serviceName_id,
                           @NotBlank String revisionNumber,
                           @NotBlank LocalDate revisionTime,

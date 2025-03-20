@@ -89,18 +89,15 @@ public class EngineerService implements EngineerServiceIM {
             throw new MyNotFoundException("workList is null");
 
         Optional<ServiceName> optional = serviceNameRepository.findByName(workListDto.serviceName_id());
-        Optional<ServiceType> optional1 = serviceTypeRepository.findByName(workListDto.serviceType_id());
+        if (optional.isEmpty())
+            throw new MyNotFoundException("service name not found");
 
-        if (optional1.isEmpty() || optional.isEmpty())
-            throw new MyNotFoundException("serviceType or serviceName not found by these ids");
-
-        ServiceType serviceType = optional1.get();
         ServiceName serviceName = optional.get();
         List<Task> tasks = taskMapper.toEntitys(workListDto.tasks());
         List<Task> saved = taskRepository.saveAll(tasks);
         Services saveService = servicesRepository.save(
                 Services.builder()
-                        .serviceType(serviceType)
+                        .serviceType(workListDto.serviceType())
                         .serviceName(serviceName)
                         .revisionNumber(workListDto.revisionNumber())
                         .revisionTime(workListDto.revisionTime())
@@ -179,11 +176,10 @@ public class EngineerService implements EngineerServiceIM {
         for (Services service : services) {
             rsd.add(ResponseServiceDto.builder()
                     .id(service.getId())
-                    .service_type(service.getServiceType().getId())
+                    .service_type(service.getServiceType())
                     .service_name(service.getServiceName().getId())
                     .revisionNumber(service.getRevisionNumber())
-                    .revisonTime(service.getRevisionTime())
-                    .tasks(service.getTasks())
+                    .revisionTime(service.getRevisionTime())
                     .build()
             );
         }

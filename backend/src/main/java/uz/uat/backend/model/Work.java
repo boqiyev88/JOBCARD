@@ -1,10 +1,7 @@
 package uz.uat.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -12,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "WORK", schema = "uat")
 public class Work extends AbstractAuditingEntity {
 
@@ -46,11 +44,11 @@ public class Work extends AbstractAuditingEntity {
     private String task_description;
 
     @Column(nullable = false)
-    private boolean dit;
+    private int dit;
 
-    @JoinColumn(name = "jobCard_id")
+    @JoinColumn(name = "jobcard_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private JobCard jobCard_id;
+    private JobCard jobcard_id;
 
     @JoinColumn(name = "service_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -63,7 +63,6 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setLeg(LEG.get());
         specialist_jobCard.setTo(TO.get());
         JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
-//            notifier.SpecialistNotifier(saveSpecialist);
 //            notifier.SpecialistMassageNotifier("New JobCard added");
         /// historyga yozildi
         historyService.addHistory(HistoryDto.builder()
@@ -76,7 +75,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updTime(Instant.now())
                 .build());
 
-//            notifier.TechnicianNotifier(saveTechnician);
+//            notifier.JobCardNotifier(saveTechnician);
 //            notifier.TechnicianMassageNotifier("New JobCard added");
 
         return getAll();
@@ -121,7 +120,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
 //        notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
 //        notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
-//        notifier.TechnicianNotifier(getAll());               /// real timeda texnik tablega jo'natildi
+//        notifier.JobCardNotifier(getAll());               /// real timeda texnik tablega jo'natildi
 
     }
 
@@ -192,12 +191,11 @@ public class SpecialistService implements SpecialistServiceIM {
         }
     }
 
-    private List<ResponseJobCardDto> getAll() {
-        Optional<List<JobCard>> all = specialistJobCardRepository.getAll();
+    public List<ResponseJobCardDto> getAll() {
+        List<JobCard> all = specialistJobCardRepository.getAll();
         if (all.isEmpty())
-            throw new MyNotFoundException("specialist job card not found");
-        List<JobCard> jobCards = all.get();
-        return getJobCard(jobCards);
+            throw new MyNotFoundException("job card is empty");
+        return getJobCard(all);
     }
 
     private void changed(String jobId, Status status, int check) {
@@ -211,8 +209,7 @@ public class SpecialistService implements SpecialistServiceIM {
         jobCard.setStatus(status);
         JobCard specialist_jobCard = specialistJobCardRepository.save(jobCard);
 
-//        notifier.SpecialistNotifier(getAll());
-//        notifier.TechnicianNotifier(getAll());
+//        notifier.JobCardNotifier(getAll());
 //        notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
 
         historyService.addHistory(HistoryDto.builder()

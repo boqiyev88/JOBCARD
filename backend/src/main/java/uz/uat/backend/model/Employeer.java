@@ -1,10 +1,6 @@
 package uz.uat.backend.model;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -13,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "employeer", schema = "uat")
+@Builder
 public class Employeer {
 
 
@@ -22,14 +19,18 @@ public class Employeer {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column
-    private boolean avionic;
-    @Column
-    private boolean mechanic;
-    @Column
-    private boolean cab_mechanic;
-    @Column
-    private boolean sheet_metal;
-    @Column
-    private boolean NDT;
+    @Column(name = "avionic")
+    private int avionic=0;
+
+    @Column(name = "mechanic")
+    private int mechanic=0;
+
+    @Column(name = "cab_mechanic")
+    private int cab_mechanic=0;
+
+    @Column(name = "sheet_metal")
+    private int sheet_metal=0;
+
+    @Column(name = "ndt")
+    private int ndt=0;
 }

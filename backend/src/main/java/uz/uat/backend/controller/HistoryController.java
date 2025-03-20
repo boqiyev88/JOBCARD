@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uz.uat.backend.model.history_models.Specialist_History;
+import uz.uat.backend.model.history_models.History;
 import uz.uat.backend.service.HistoryService;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class HistoryController {
 
     @GetMapping
     public ResponseEntity<?> getHistory() {
-        List<Specialist_History> history = historyService.getHistory();
+        List<History> history = historyService.getHistory();
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(history);
     }
 }

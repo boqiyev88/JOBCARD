@@ -23,7 +23,7 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
     List<JobCard> findBySTATUS(@Param("status") Status status);
 
     @Query("select sj from JobCard sj where  sj.isDeleted =0")
-    Optional<List<JobCard>> getAll();
+    List<JobCard> getAll();
 
     @Transactional
     @Modifying

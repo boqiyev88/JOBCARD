@@ -136,7 +136,7 @@
     </changeSet>
 
 
-    <!-- SERVICENAME type jadvalini yaratish -->
+    <!-- SERVICENAME jadvalini yaratish -->
     <changeSet id="7" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -162,57 +162,6 @@
         </createTable>
     </changeSet>
 
-    <!-- Work Type jadvalini yaratish -->
-    <changeSet id="8" author="user">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="WORKTYPE" schemaName="uat"/>
-            </not>
-        </preConditions>
-        <createTable tableName="WORKTYPE" schemaName="uat">
-            <column name="ID" type="VARCHAR(55)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="NAME" type="VARCHAR(50)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
-            <!-- Audit fields -->
-            <column name="INSUSER" type="VARCHAR(50)"/>
-            <column name="INSTIME" type="TIMESTAMP"/>
-            <column name="UPDUSER" type="VARCHAR(50)"/>
-            <column name="UPDTIME" type="TIMESTAMP"/>
-            <column name="DELUSER" type="VARCHAR(50)"/>
-            <column name="DELTIME" type="TIMESTAMP"/>
-            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
-        </createTable>
-    </changeSet>
-
-    <!-- Service Type jadvalini yaratish -->
-    <changeSet id="9" author="user">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="service_type" schemaName="uat"/>
-            </not>
-        </preConditions>
-        <createTable tableName="service_type" schemaName="uat">
-            <column name="id" type="VARCHAR(55)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="VARCHAR(50)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-
-            <!-- Audit fields -->
-            <column name="INSUSER" type="VARCHAR(50)"/>
-            <column name="INSTIME" type="TIMESTAMP"/>
-            <column name="UPDUSER" type="VARCHAR(50)"/>
-            <column name="UPDTIME" type="TIMESTAMP"/>
-            <column name="DELUSER" type="VARCHAR(50)"/>
-            <column name="DELTIME" type="TIMESTAMP"/>
-            <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
-        </createTable>
-    </changeSet>
 
     <!-- SERVICES jadvalini yaratish -->
     <changeSet id="10" author="user">
@@ -256,14 +205,6 @@
                                  referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
-
-        <addForeignKeyConstraint baseTableName="services"
-                                 baseColumnNames="servicetype"
-                                 constraintName="fk_services_service_type"
-                                 referencedTableName="service_type"
-                                 referencedColumnNames="id"
-                                 baseTableSchemaName="uat"
-                                 onDelete="CASCADE"/>
     </changeSet>
 
     <!-- TASK jadvalini yaratish -->
@@ -280,7 +221,7 @@
             <column name="number" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR(50)">
+            <column name="description" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
 
@@ -461,26 +402,19 @@
             </not>
         </preConditions>
         <createTable tableName="employeer" schemaName="uat">
-            <column name="id" type="VARCHAR(55)">
+            <column name="id" type="varchar">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="avionic" type="boolean">
-                <constraints  unique="true"/>
-            </column>
-            <column name="mechanic" type="boolean">
-                <constraints  unique="true"/>
-            </column>
-            <column name="cab_mechanic" type="boolean">
-                <constraints  unique="true"/>
-            </column>
-            <column name="sheet_metal" type="boolean">
-                <constraints  unique="true"/>
-            </column>
-            <column name="NDT" type="boolean">
-                <constraints unique="true"/>
-            </column>
+
+            <column name="avionic" type="int"/>
+            <column name="mechanic" type="int"/>
+            <column name="cab_mechanic" type="int"/>
+            <column name="sheet_metal" type="int"/>
+            <column name="ndt" type="int"/>
         </createTable>
     </changeSet>
+
+
     <!-- WORK jadvalini yaratish -->
     <changeSet id="13" author="user">
         <preConditions onFail="MARK_RAN">
@@ -516,7 +450,7 @@
             <column name="task_description" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="dit" type="BOOLEAN">
+            <column name="dit" type="int">
                 <constraints nullable="false"/>
             </column>
 
@@ -530,7 +464,7 @@
             <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
 
             <!-- Foreign key columns -->
-            <column name="jobCard_id" type="VARCHAR(50)"/>
+            <column name="jobcard_id" type="VARCHAR(50)"/>
             <column name="service_id" type="VARCHAR(50)"/>
             <column name="workers_names" type="VARCHAR(50)"/>
         </createTable>
@@ -544,7 +478,7 @@
                                  onDelete="CASCADE"/>
 
         <addForeignKeyConstraint baseTableName="WORK"
-                                 baseColumnNames="jobCard_id"
+                                 baseColumnNames="jobcard_id"
                                  constraintName="fk_work_jobcard"
                                  referencedTableName="JOB"
                                  referencedColumnNames="id"
@@ -561,14 +495,14 @@
     </changeSet>
 
     <changeSet id="16" author="user">
-        <createTable tableName="SPECIALIST_HISOTRY" schemaName="uat">
+        <createTable tableName="HISOTRY" schemaName="uat">
             <column name="ID" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="TABLEID" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DESCRITION" type="VARCHAR(50)">
+            <column name="DESCRITION" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
             <column name="ROWNAME" type="VARCHAR(50)">
@@ -587,6 +521,8 @@
             </column>
         </createTable>
     </changeSet>
+
+
 
 
 

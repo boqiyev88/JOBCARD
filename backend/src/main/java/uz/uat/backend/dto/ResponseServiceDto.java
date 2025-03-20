@@ -12,6 +12,6 @@ public record ResponseServiceDto(
         String service_type,
         String service_name,
         String revisionNumber,
-        LocalDate revisonTime,
-        List<Task> tasks) {
+        LocalDate revisionTime
+) {
 }

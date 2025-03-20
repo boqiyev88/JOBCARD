@@ -57,20 +57,20 @@ public class EngineerController {
     }
 
 
-    @GetMapping("/searchByDate")
+    @GetMapping("/search")
     public ResponseEntity<?> searchByDate(@Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                           @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         List<ResponseServiceDto> services = engineerService.searchByDate(startDate, endDate);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(services);
     }
 
-    @PostMapping("/addServices")
+    @PostMapping("/add")
     public ResponseEntity<?> addNewService(@Valid @RequestBody WorkListDto workListDto) {
         List<ResponseServiceDto> response = engineerService.addNewService(workListDto);
         return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @GetMapping("/mainManu")
+    @GetMapping("/list")
     public ResponseEntity<?> mainManu() {
         List<ResponseServiceDto> list = engineerService.getMainManu();
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
