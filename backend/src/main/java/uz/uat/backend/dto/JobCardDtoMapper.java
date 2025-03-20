@@ -15,6 +15,6 @@ public record JobCardDtoMapper(@NotBlank String workOrder,
                                @NotBlank String apu,
                                @NotBlank String serialNumber4,
                                @NotBlank String beforelight,
-                               @NotBlank String fh,
-                               @NotNull Instant date) {
+                               @NotBlank String fh
+) {
 }

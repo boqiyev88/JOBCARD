@@ -62,6 +62,7 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setStatus(Status.NEW);
         specialist_jobCard.setLeg(LEG.get());
         specialist_jobCard.setTo(TO.get());
+        specialist_jobCard.setDate(Instant.now());
         JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
 //            notifier.SpecialistMassageNotifier("New JobCard added");
         /// historyga yozildi

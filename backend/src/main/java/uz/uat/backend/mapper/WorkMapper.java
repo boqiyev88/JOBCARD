@@ -2,6 +2,7 @@ package uz.uat.backend.mapper;
 
 import org.mapstruct.Mapper;
 import uz.uat.backend.dto.RequestWorkDto;
+import uz.uat.backend.dto.ToWorkMapper;
 import uz.uat.backend.model.Work;
 
 import java.util.List;

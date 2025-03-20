@@ -21,6 +21,5 @@ public record JobCardDto(
         @NotBlank String beforelight,
         @NotBlank String fh,
         @NotNull String leg,
-        @NotNull String to,
-        Instant date) {
+        @NotNull String to) {
 }

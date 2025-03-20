@@ -24,10 +24,9 @@ public interface EngineerServiceIM {
 
     List<ServiceName> getServiceName();
 
-    List<ResponseServiceDto> searchByDate(LocalDate startDate, LocalDate endDate);
+    List<ResponseServiceDto> search(LocalDate startDate, LocalDate endDate,String search);
 
     List<ResponseServiceDto> addNewService(WorkListDto workListDto);
 
-    List<ServiceType> getServiceType();
 
 }

@@ -1,0 +1,55 @@
+# Server sozlamalari
+server:
+  port: 8090
+
+spring:
+  application:
+    name: backend
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+
+
+    # Spring Boot Actuator endpointlarini yoqish
+    # Micrometer Tracing (Prometheus monitoring)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    try-it-out-enabled: on
+  api-docs:
+    enabled: true
+
+
+
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type: trace
+      springframework:
+        security: DEBUG

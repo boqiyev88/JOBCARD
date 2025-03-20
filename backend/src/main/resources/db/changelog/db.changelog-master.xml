@@ -395,25 +395,6 @@
                                  onDelete="CASCADE"/>
     </changeSet>
 
-    <changeSet id="17" author="user">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="employeer" schemaName="uat"/>
-            </not>
-        </preConditions>
-        <createTable tableName="employeer" schemaName="uat">
-            <column name="id" type="varchar">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="avionic" type="int"/>
-            <column name="mechanic" type="int"/>
-            <column name="cab_mechanic" type="int"/>
-            <column name="sheet_metal" type="int"/>
-            <column name="ndt" type="int"/>
-        </createTable>
-    </changeSet>
-
 
     <!-- WORK jadvalini yaratish -->
     <changeSet id="13" author="user">
@@ -453,6 +434,11 @@
             <column name="dit" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="avionic" type="int"/>
+            <column name="mechanic" type="int"/>
+            <column name="cab_mechanic" type="int"/>
+            <column name="sheet_metal" type="int"/>
+            <column name="ndt" type="int"/>
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -466,16 +452,8 @@
             <!-- Foreign key columns -->
             <column name="jobcard_id" type="VARCHAR(50)"/>
             <column name="service_id" type="VARCHAR(50)"/>
-            <column name="workers_names" type="VARCHAR(50)"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="work"
-                                 baseColumnNames="workers_names"
-                                 constraintName="fk_work_worktype"
-                                 referencedTableName="EMPLOYEER"
-                                 referencedColumnNames="id"
-                                 baseTableSchemaName="uat"
-                                 onDelete="CASCADE"/>
 
         <addForeignKeyConstraint baseTableName="WORK"
                                  baseColumnNames="jobcard_id"
@@ -521,12 +499,6 @@
             </column>
         </createTable>
     </changeSet>
-
-
-
-
-
-
 
 
 </databaseChangeLog>

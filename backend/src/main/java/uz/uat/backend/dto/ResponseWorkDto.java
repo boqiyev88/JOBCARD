@@ -2,10 +2,6 @@ package uz.uat.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
-import uz.uat.backend.model.Employeer;
-
-
-import java.util.List;
 
 @Builder
 public record ResponseWorkDto(
@@ -20,6 +16,12 @@ public record ResponseWorkDto(
         @NotBlank String access_note,
         @NotBlank String task_description,
         @NotBlank boolean dit,
-        @NotBlank Employeer workers_names,
-        @NotBlank List<TaskDto> taskList) {
+        @NotBlank boolean avionic,
+        @NotBlank boolean mechanic,
+        @NotBlank boolean cab_mechanic,
+        @NotBlank boolean sheet_metal,
+        @NotBlank boolean ndt
+
+
+) {
 }

@@ -1,5 +1,6 @@
 package uz.uat.backend.model;
 
+import feign.codec.Decoder;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -51,7 +52,7 @@ public class JobCard extends AbstractAuditingEntity {
     @Column(nullable = false, name = "serial_number_4")
     private String serialNumber4;
 
-    @Column(nullable = false,name = "beforelight")
+    @Column(nullable = false, name = "beforelight")
     private String beforelight;
 
     @Column(nullable = false)
@@ -66,14 +67,14 @@ public class JobCard extends AbstractAuditingEntity {
     private City to;
 
     @Column(nullable = false, name = "date")
-    private Instant date;
+    private Instant date = Instant.now();
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.NEW;
 
     @JoinColumn(name = "MAIN_PLAN")
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     private PdfFile mainPlan;
 
 }

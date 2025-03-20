@@ -8,9 +8,6 @@ import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.HistoryDto;
 import uz.uat.backend.dto.RequestWorkDto;
 import uz.uat.backend.dto.ResponseWorkDto;
-import uz.uat.backend.dto.Worker;
-import uz.uat.backend.repository.EmployeeRepository;
-import uz.uat.backend.model.Employeer;
 import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.Services;
 import uz.uat.backend.model.Work;
@@ -19,13 +16,13 @@ import uz.uat.backend.repository.JobCarRepository;
 import uz.uat.backend.repository.ServicesRepository;
 import uz.uat.backend.repository.WorkRepository;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -37,16 +34,15 @@ public class TechnicianService {
     private final Notifier notifier;
     private final SpecialistService specialistService;
     private final HistoryService historyService;
-    private final EmployeeRepository employeerRepository;
 
 
     @Transactional
-    public List<ResponseWorkDto> addWork(RequestWorkDto workDto) {
-        JobCard jobCard = getById(workDto.jobCard_id());
-        Services service = getServiceById(workDto.service_id());
-        Employeer employeer = getEmployeer(workDto.workers_names());
-        Work work = getRequestWorkDto(workDto, service, jobCard, employeer);
-        Work save1 = workRepository.save(work);
+    public List<ResponseWorkDto> addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
+        JobCard jobCard = getById(jobCard_id);
+        List<Services> services = getServices();
+
+        List<Work> works = getWorkDto(workDtos, services, jobCard);
+        workRepository.saveAll(works);
         jobCard.setStatus(Status.PENDING);
         JobCard save = jobCarRepository.save(jobCard);
 
@@ -100,30 +96,39 @@ public class TechnicianService {
         return jobCardId;
     }
 
-    private Services getServiceById(String id) {
-        Optional<Services> optional = servicesRepository.findById(id);
+    private List<Services> getServices() {
+        List<Services> optional = servicesRepository.getAll();
         if (optional.isEmpty())
             throw new MyNotFoundException("service not found, may be Invalid service id");
-        return optional.get();
+        return optional;
     }
 
 
-    private Work getRequestWorkDto(RequestWorkDto workDto, Services service, JobCard jobCard, Employeer workers) {
-        return Work.builder()
-                .service_id(service)
-                .jobcard_id(jobCard)
-                .threshold(workDto.threshold())
-                .repeat_int(workDto.repeat_int())
-                .zone(workDto.zone())
-                .mrf(workDto.mrf())
-                .access(workDto.access())
-                .airplane_app(workDto.airplane_app())
-                .access_note(workDto.access_note())
-                .task_description(workDto.task_description())
-                .dit(workDto.dit() ? 1 : 0)
-                .workers_names(workers)
-                .build();
+    private List<Work> getWorkDto(List<RequestWorkDto> workDtoList, List<Services> services, JobCard jobCard) {
+        Map<String, Services> servicesMap = services.stream()
+                .collect(Collectors.toMap(Services::getId, Function.identity()));
+        return workDtoList.stream()
+                .map(dto -> Work.builder()
+                        .service_id(servicesMap.get(dto.service_id()))
+                        .jobcard_id(jobCard)
+                        .threshold(dto.threshold())
+                        .repeat_int(dto.repeat_int())
+                        .zone(dto.zone())
+                        .mrf(dto.mrf())
+                        .access(dto.access())
+                        .airplane_app(dto.airplane_app())
+                        .access_note(dto.access_note())
+                        .task_description(dto.task_description())
+                        .dit(dto.dit() ? 1 : 0)
+                        .avionic(dto.avionic() ? 1 : 0)
+                        .mechanic(dto.mechanic() ? 1 : 0)
+                        .cab_mechanic(dto.cab_mechanic() ? 1 : 0)
+                        .sheet_metal(dto.sheet_metal() ? 1 : 0)
+                        .ndt(dto.ndt() ? 1 : 0)
+                        .build())
+                .collect(Collectors.toList());
     }
+
 
     private List<ResponseWorkDto> getWorkDto(List<Work> workList) {
         List<ResponseWorkDto> workDtos = new ArrayList<>();
@@ -140,33 +145,15 @@ public class TechnicianService {
                     .access_note(work.getAccess_note())
                     .task_description(work.getTask_description())
                     .dit(work.getDit() == 1)
-                    .workers_names(work.getWorkers_names())
+                    .avionic(work.getAvionic() == 1)
+                    .mechanic(work.getMechanic() == 1)
+                    .cab_mechanic(work.getCab_mechanic() == 1)
+                    .sheet_metal(work.getSheet_metal() == 1)
+                    .ndt(work.getNdt() == 1)
                     .build()
             );
         }
         return workDtos;
     }
-
-
-    private Employeer getEmployeer(List<Worker> workers) {
-        Employeer employeer = new Employeer();
-
-        Map<String, Consumer<Employeer>> fieldMapping = Map.of(
-                "avionic", e -> e.setAvionic(1),
-                "mechanic", e -> e.setMechanic(1),
-                "cab_mechanic", e -> e.setCab_mechanic(1),
-                "sheet_metal", e -> e.setSheet_metal(1),
-                "ndt", e -> e.setNdt(1)
-        );
-
-        for (Worker worker : workers) {
-            if (worker.isChecked()) {
-                fieldMapping.getOrDefault(worker.name(), e -> {
-                }).accept(employeer);
-            }
-        }
-        return employeerRepository.save(employeer);
-    }
-
 
 }

@@ -1,14 +1,8 @@
 package uz.uat.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 
-
-
-
-@Builder
-public record RequestWorkDto(
-        @NotBlank String service_id,
+public record ToWorkMapper(
         @NotBlank String threshold,
         @NotBlank String repeat_int,
         @NotBlank String zone,
@@ -23,6 +17,5 @@ public record RequestWorkDto(
         @NotBlank boolean cab_mechanic,
         @NotBlank boolean sheet_metal,
         @NotBlank boolean ndt
-
 ) {
 }

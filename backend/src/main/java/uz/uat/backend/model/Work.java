@@ -46,6 +46,21 @@ public class Work extends AbstractAuditingEntity {
     @Column(nullable = false)
     private int dit;
 
+    @Column(name = "avionic")
+    private int avionic=0;
+
+    @Column(name = "mechanic")
+    private int mechanic=0;
+
+    @Column(name = "cab_mechanic")
+    private int cab_mechanic=0;
+
+    @Column(name = "sheet_metal")
+    private int sheet_metal=0;
+
+    @Column(name = "ndt")
+    private int ndt=0;
+
     @JoinColumn(name = "jobcard_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private JobCard jobcard_id;
@@ -54,9 +69,6 @@ public class Work extends AbstractAuditingEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Services service_id;
 
-    @JoinColumn(name = "workers_names")
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Employeer workers_names;
 
 
 }

@@ -99,8 +99,8 @@ public class EngineerService implements EngineerServiceIM {
                 Services.builder()
                         .serviceType(workListDto.serviceType())
                         .serviceName(serviceName)
+                        .revisionTime(LocalDate.now())
                         .revisionNumber(workListDto.revisionNumber())
-                        .revisionTime(workListDto.revisionTime())
                         .tasks(saved)
                         .build()
         );
@@ -117,14 +117,6 @@ public class EngineerService implements EngineerServiceIM {
         return getMainManu();
     }
 
-    @Override
-    public List<ServiceType> getServiceType() {
-        Optional<List<ServiceType>> optional = serviceTypeRepository.getServiceType();
-        if (optional.isEmpty() || optional.get().isEmpty())
-            throw new MyNotFoundException("serviceType is null");
-
-        return optional.get();
-    }
 
     @Override
     public List<ResponseServiceDto> getMainManu() {
@@ -145,10 +137,31 @@ public class EngineerService implements EngineerServiceIM {
 
 
     @Override
-    public List<ResponseServiceDto> searchByDate(@NotBlank LocalDate startDate, @NotBlank LocalDate endDate) {
+    public List<ResponseServiceDto> search(LocalDate startDate, LocalDate endDate, String search) {
+        if (search == null || search.isEmpty() && (startDate == null && endDate == null)) {
+            throw new MyConflictException("all search parameters are null");
+        } else if ((startDate == null && endDate == null)) {
+            return getBySearch(search);
+
+        } else if (startDate != null && endDate == null) {
+            return getByDate(startDate, LocalDate.now());
+        } else {
+            return getByDate(startDate, endDate);
+        }
+    }
+
+
+    private List<ResponseServiceDto> getByDate(LocalDate startDate, LocalDate endDate) {
         List<Services> services = servicesRepository.searchServicesByDate(startDate, endDate);
         if (services.isEmpty())
             throw new MyNotFoundException("services not found");
+        return fromEntity(services);
+    }
+
+    private List<ResponseServiceDto> getBySearch(String search) {
+        List<Services> services = servicesRepository.searchByNameOrType(search);
+        if (services.isEmpty())
+            getMainManu();
         return fromEntity(services);
     }
 

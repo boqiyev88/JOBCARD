@@ -58,9 +58,10 @@ public class EngineerController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchByDate(@Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                          @Valid @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<ResponseServiceDto> services = engineerService.searchByDate(startDate, endDate);
+    public ResponseEntity<?> searchByDate(@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                          @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                          @RequestParam("search") String search) {
+        List<ResponseServiceDto> services = engineerService.search(from, to, search);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(services);
     }
 
@@ -76,6 +77,8 @@ public class EngineerController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
+
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@Valid @PathVariable String id) {
         engineerService.getDeleteTask(id);
@@ -85,12 +88,6 @@ public class EngineerController {
     @GetMapping("/getServiceName")
     public ResponseEntity<?> getServiceName() {
         List<ServiceName> nameList = engineerService.getServiceName();
-        return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(nameList);
-    }
-
-    @GetMapping("/getServiceType")
-    public ResponseEntity<?> getServiceType() {
-        List<ServiceType> nameList = engineerService.getServiceType();
         return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(nameList);
     }
 

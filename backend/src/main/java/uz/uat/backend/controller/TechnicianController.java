@@ -2,11 +2,15 @@ package uz.uat.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import uz.uat.backend.dto.RequestWorkDto;
+import uz.uat.backend.dto.ResponseWorkDto;
 import uz.uat.backend.service.TechnicianService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/technician")
@@ -16,14 +20,15 @@ public class TechnicianController {
 
     private final TechnicianService technicianService;
 
-    @PostMapping("/addWork")
-    public ResponseEntity<?> addWork(@Valid @RequestBody RequestWorkDto workDto){
-        technicianService.addWork(workDto);
-        return null;
+    @PostMapping("/addWork,{jobId}")
+    public ResponseEntity<?> addWork(@Valid @PathVariable(name = "jobId") String jobCard_id,
+                                      @RequestBody List<RequestWorkDto> workDtos) {
+        List<ResponseWorkDto> list = technicianService.addWork(workDtos, jobCard_id);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
     @PostMapping("/closedWork")
-    public ResponseEntity<?> closedWork(@NonNull @RequestBody RequestWorkDto workDto){
+    public ResponseEntity<?> closedWork(@NonNull @RequestBody RequestWorkDto workDto) {
         technicianService.closedWork(workDto);
         return null;
     }
