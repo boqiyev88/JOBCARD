@@ -1,5 +1,6 @@
 package uz.uat.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -43,6 +44,7 @@ public class Services extends AbstractAuditingEntity {
     private String revisionNumber;
 
     @Column(nullable = false, name = "revisiontime")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate revisionTime = LocalDate.now();
 
 

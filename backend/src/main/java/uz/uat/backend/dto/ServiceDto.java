@@ -1,18 +1,14 @@
 package uz.uat.backend.dto;
 
-import lombok.Builder;
-import uz.uat.backend.model.ServiceName;
-import uz.uat.backend.model.ServiceType;
+
+import jakarta.validation.constraints.NotBlank;
 
 
+import java.util.List;
 
-import java.time.LocalDate;
 
-
-@Builder
-public record ServiceDto(
-        ServiceName serviceName,
-        ServiceType serviceType,
-        String revisonNumber,
-        LocalDate revisonTime) {
+public record ServiceDto(@NotBlank String serviceType,
+                         @NotBlank String serviceName_id,
+                         @NotBlank String revisionNumber,
+                         @NotBlank List<TaskDto> tasks) {
 }

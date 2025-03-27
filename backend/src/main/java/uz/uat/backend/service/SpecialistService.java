@@ -2,6 +2,8 @@ package uz.uat.backend.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
@@ -41,7 +43,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
     @Transactional
     @Override
-    public List<ResponseJobCardDto> addJobCard(JobCardDto jobCardDto) {
+    public ResponseJobCardDto addJobCard(JobCardDto jobCardDto) {
         if (jobCardDto == null) {
             throw new MyNotFoundException("jobCardDto is null");
         }
@@ -64,7 +66,7 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setTo(TO.get());
         specialist_jobCard.setDate(Instant.now());
         JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
-//            notifier.SpecialistMassageNotifier("New JobCard added");
+        notifier.SpecialistMassageNotifier("New JobCard added");
         /// historyga yozildi
         historyService.addHistory(HistoryDto.builder()
                 .tableID("Job Card table")
@@ -76,10 +78,9 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updTime(Instant.now())
                 .build());
 
-//            notifier.JobCardNotifier(saveTechnician);
-//            notifier.TechnicianMassageNotifier("New JobCard added");
+        notifier.TechnicianMassageNotifier("New JobCard added");
 
-        return getAll();
+        return getJobCard(jobCard);
     }
 
     @Override
@@ -100,7 +101,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
     @Transactional
     @Override
-    public void returned(RequestDto requestDto) {
+    public ResponseDto returned(RequestDto requestDto) {
         if (requestDto.id() == null || requestDto.massage() == null)
             throw new MyNotFoundException("invalid request id or massage is null");
 
@@ -122,39 +123,22 @@ public class SpecialistService implements SpecialistServiceIM {
 //        notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
 //        notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
 //        notifier.JobCardNotifier(getAll());               /// real timeda texnik tablega jo'natildi
-
+        return getAll(1);
     }
 
 
     @Transactional
     @Override
-    public void changeStatus(RequestStatusDto statusDto) {
-        switch (statusDto.status()) {
-            case 1: {
-                changed(statusDto.jobId(), Status.NEW, 1);
-                break;
-            }
-            case 2: {
-                changed(statusDto.jobId(), Status.PENDING, 2);
-                break;
-            }
-            case 3: {
-                changed(statusDto.jobId(), Status.IN_PROCESS, 3);
-                break;
-            }
-            case 4: {
-                changed(statusDto.jobId(), Status.CONFIRMED, 4);
-                break;
-            }
-            case 5: {
-                changed(statusDto.jobId(), Status.COMPLETED, 5);
-                break;
-            }
-            case 6: {
-                changed(statusDto.jobId(), Status.REJECTED, 6);
-                break;
-            }
-        }
+    public ResponseDto changeStatus(RequestStatusDto statusDto, int page) {
+        return switch (statusDto.status()) {
+            case 1 -> changed(statusDto.jobId(), Status.NEW, 1, page);
+            case 2 -> changed(statusDto.jobId(), Status.PENDING, 2, page);
+            case 3 -> changed(statusDto.jobId(), Status.IN_PROCESS, 3, page);
+            case 4 -> changed(statusDto.jobId(), Status.CONFIRMED, 4, page);
+            case 5 -> changed(statusDto.jobId(), Status.COMPLETED, 5, page);
+            case 6 -> changed(statusDto.jobId(), Status.REJECTED, 6, page);
+            default -> getAll(page);
+        };
     }
 
     @Override
@@ -166,40 +150,44 @@ public class SpecialistService implements SpecialistServiceIM {
     }
 
 
-    public List<ResponseJobCardDto> getByStatusNum(int status) {
+    public ResponseDto getByStatusNum(int status, int page) {
         switch (status) {
             case 1 -> {
-                return getByStatus(Status.NEW);
+                return getByStatus(Status.NEW, page);
             }
             case 2 -> {
-                return getByStatus(Status.PENDING);
+                return getByStatus(Status.PENDING, page);
             }
             case 3 -> {
-                return getByStatus(Status.IN_PROCESS);
+                return getByStatus(Status.IN_PROCESS, page);
             }
             case 4 -> {
-                return getByStatus(Status.CONFIRMED);
+                return getByStatus(Status.CONFIRMED, page);
             }
             case 5 -> {
-                return getByStatus(Status.COMPLETED);
+                return getByStatus(Status.COMPLETED, page);
             }
             case 6 -> {
-                return getByStatus(Status.REJECTED);
+                return getByStatus(Status.REJECTED, page);
             }
             default -> {
-                return getAll();
+                return getAll(page);
             }
         }
     }
 
-    public List<ResponseJobCardDto> getAll() {
-        List<JobCard> all = specialistJobCardRepository.getAll();
+    public ResponseDto getAll(int page) {
+        Page<JobCard> all = specialistJobCardRepository.getAll(PageRequest.of(page - 1, 10));
         if (all.isEmpty())
             throw new MyNotFoundException("job card is empty");
-        return getJobCard(all);
+        return ResponseDto.builder()
+                .page(page)
+                .total(all.getTotalElements())
+                .data(all.getContent())
+                .build();
     }
 
-    private void changed(String jobId, Status status, int check) {
+    private ResponseDto changed(String jobId, Status status, int check, int page) {
 
         if (!isValid(status, check)) {
             throw new MyConflictException("invalid change status " + status);
@@ -210,8 +198,8 @@ public class SpecialistService implements SpecialistServiceIM {
         jobCard.setStatus(status);
         JobCard specialist_jobCard = specialistJobCardRepository.save(jobCard);
 
-//        notifier.JobCardNotifier(getAll());
-//        notifier.TechnicianMassageNotifier(jobCard.getWorkOrderNumber() + "'s Job Completed by Specialist");
+        notifier.JobCardNotifier(getAll(page));
+        notifier.TechnicianMassageNotifier(jobCard.getId() + "'s Job Completed by Specialist");
 
         historyService.addHistory(HistoryDto.builder()
                 .tableID("Job Card table")
@@ -222,8 +210,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
-
-
+        return getAll(page);
     }
 
     private JobCard getById(String id) {
@@ -234,11 +221,16 @@ public class SpecialistService implements SpecialistServiceIM {
         return jobCardId;
     }
 
-    private List<ResponseJobCardDto> getByStatus(Status status) {
-        List<JobCard> jobCards = specialistJobCardRepository.findBySTATUS(status);
+    private ResponseDto getByStatus(Status status, int page) {
+        Page<JobCard> jobCards = specialistJobCardRepository.findBySTATUS(status, PageRequest.of(page - 1, 10));
         if (jobCards.isEmpty())
-            throw new MyNotFoundException("job card not found by this status : " + status);
-        return getJobCard(jobCards);
+            throw new MyNotFoundException("job card not found");
+        return ResponseDto.builder()
+                .page(page)
+                .total(jobCards.getTotalElements())
+                .data(getJobCards(jobCards.getContent()))
+                .build();
+
     }
 
 
@@ -250,26 +242,30 @@ public class SpecialistService implements SpecialistServiceIM {
         };
     }
 
-    private List<ResponseJobCardDto> getJobCard(List<JobCard> jobCards) {
+    private ResponseJobCardDto getJobCard(JobCard jobCard) {
+        return ResponseJobCardDto.builder()
+                .workOrder(jobCard.getWorkOrder())
+                .reg(jobCard.getReg())
+                .serialNumber1(jobCard.getSerialNumber1())
+                .engine_1(jobCard.getEngine_1())
+                .serialNumber2(jobCard.getSerialNumber2())
+                .engine_2(jobCard.getEngine_2())
+                .serialNumber3(jobCard.getSerialNumber3())
+                .apu(jobCard.getApu())
+                .serialNumber4(jobCard.getSerialNumber4())
+                .beforeLight(jobCard.getBeforelight())
+                .fh(jobCard.getFh())
+                .leg(jobCard.getLeg().getId())
+                .to(jobCard.getTo().getId())
+                .date(jobCard.getDate())
+                .status(jobCard.getStatus().name())
+                .build();
+    }
+
+    private List<ResponseJobCardDto> getJobCards(List<JobCard> jobCards) {
         List<ResponseJobCardDto> jobCardDtos = new ArrayList<>();
         for (JobCard jobCard : jobCards) {
-            jobCardDtos.add(ResponseJobCardDto.builder()
-                    .workOrder(jobCard.getWorkOrder())
-                    .reg(jobCard.getReg())
-                    .serialNumber1(jobCard.getSerialNumber1())
-                    .engine_1(jobCard.getEngine_1())
-                    .serialNumber2(jobCard.getSerialNumber2())
-                    .engine_2(jobCard.getEngine_2())
-                    .serialNumber3(jobCard.getSerialNumber3())
-                    .apu(jobCard.getApu())
-                    .serialNumber4(jobCard.getSerialNumber4())
-                    .beforeLight(jobCard.getBeforelight())
-                    .fh(jobCard.getFh())
-                    .leg(jobCard.getLeg().getId())
-                    .to(jobCard.getTo().getId())
-                    .date(jobCard.getDate())
-                    .status(jobCard.getStatus().name())
-                    .build());
+            jobCardDtos.add(getJobCard(jobCard));
         }
         return jobCardDtos;
     }

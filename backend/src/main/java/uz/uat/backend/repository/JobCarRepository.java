@@ -1,14 +1,14 @@
 package uz.uat.backend.repository;
 
 import feign.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.enums.Status;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface JobCarRepository extends JpaRepository<JobCard, String> {
@@ -19,16 +19,11 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
 
 
     @Transactional
-    @Query("select sj from JobCard sj where sj.status = :status and sj.isDeleted =0")
-    List<JobCard> findBySTATUS(@Param("status") Status status);
+    @Query("select sj from JobCard sj where sj.status = :status and sj.isDeleted =0 ORDER BY sj.createdDate desc , sj.updTime desc")
+    Page<JobCard> findBySTATUS(@Param("status") Status status, Pageable pageable);
 
-    @Query("select sj from JobCard sj where  sj.isDeleted =0")
-    List<JobCard> getAll();
-
-    @Transactional
-    @Modifying
-    @Query("update JobCard s set s.status = ?1 where s.id = ?2")
-    JobCard updateSTATUSById(Status STATUS, String id);
+    @Query("select sj from JobCard sj where  sj.isDeleted =0 ORDER BY sj.createdDate desc , sj.updTime desc ")
+    Page<JobCard> getAll(Pageable pageable);
 
     @Transactional
     @Query("select sj from JobCard sj where sj.workOrder= :workOrderNumber and  sj.isDeleted =0")

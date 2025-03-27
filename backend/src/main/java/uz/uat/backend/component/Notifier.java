@@ -19,7 +19,7 @@ public class Notifier {
 
 
     public void JobCardNotifier(Object jobCards) {
-        messagingTemplate.convertAndSend("/topic/technician", jobCards);
+        messagingTemplate.convertAndSend("/topic/jobcard", jobCards);
     }
 
     public void TechnicianMassageNotifier(String massage) {
@@ -27,7 +27,7 @@ public class Notifier {
     }
 
     public void SpecialistMassageNotifier(String massage) {
-        messagingTemplate.convertAndSend("/topic/technician", massage);
+        messagingTemplate.convertAndSend("/topic/specialist", massage);
     }
 
     public void EngineerNotifier(Object object) {

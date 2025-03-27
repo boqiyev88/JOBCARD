@@ -1,5 +1,6 @@
 package uz.uat.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import uz.uat.backend.model.Task;
 
@@ -12,6 +13,6 @@ public record ResponseServiceDto(
         String service_type,
         String service_name,
         String revisionNumber,
-        LocalDate revisionTime
+        @JsonFormat(pattern = "dd-MM-yyyy")LocalDate revisionTime
 ) {
 }

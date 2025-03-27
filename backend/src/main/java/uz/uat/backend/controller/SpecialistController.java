@@ -9,10 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uz.uat.backend.dto.JobCardDto;
-import uz.uat.backend.dto.RequestDto;
-import uz.uat.backend.dto.RequestStatusDto;
-import uz.uat.backend.dto.ResponseJobCardDto;
+import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.SpecialistService;
 
@@ -29,9 +26,9 @@ public class SpecialistController {
     private final SpecialistService specialistService;
 
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<?> addJobCard(@RequestBody @Valid JobCardDto jobCardDto) {
-        List<ResponseJobCardDto> resp = specialistService.addJobCard(jobCardDto);
+        ResponseJobCardDto resp = specialistService.addJobCard(jobCardDto);
         return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(resp);
     }
 
@@ -46,16 +43,15 @@ public class SpecialistController {
     }
 
     @PostMapping("/status")
-    public ResponseEntity<?> inChangeStatus(@RequestBody RequestStatusDto statusDto) {
-        specialistService.changeStatus(statusDto);
-        return ResponseEntity.status(200).body("status changed");
+    public ResponseEntity<?> inChangeStatus(@RequestBody RequestStatusDto statusDto, @RequestParam int page) {
+        ResponseDto dtos = specialistService.changeStatus(statusDto, page);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(dtos);
     }
 
     @PostMapping("/returned")
     public ResponseEntity<?> returned(@Valid @RequestBody RequestDto requestDto) {
-        ///  hali tayyormas
-        specialistService.returned(requestDto);
-        return ResponseEntity.status(200).build();
+        ResponseDto returned = specialistService.returned(requestDto);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(returned);
     }
 
 
@@ -70,9 +66,9 @@ public class SpecialistController {
     }
 
 
-    @GetMapping(value = "/tasks")
-    public ResponseEntity<Object> getTask(@RequestParam("status") int status) {
-        List<ResponseJobCardDto> list = specialistService.getByStatusNum(status);
+    @GetMapping
+    public ResponseEntity<Object> getTask(@RequestParam("status") int status, @RequestParam("page") int page) {
+        ResponseDto list = specialistService.getByStatusNum(status, page);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 

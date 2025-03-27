@@ -2,31 +2,25 @@ package uz.uat.backend.service.serviceIMPL;
 
 
 import org.springframework.web.multipart.MultipartFile;
-import uz.uat.backend.dto.ResponseServiceDto;
-import uz.uat.backend.dto.ServiceDto;
-import uz.uat.backend.dto.TaskDto;
-import uz.uat.backend.dto.WorkListDto;
+import uz.uat.backend.dto.*;
 import uz.uat.backend.model.*;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EngineerServiceIM {
     List<TaskDto> uploadfile(MultipartFile file);
 
-    List<ResponseServiceDto> getMainManu();
+    ResponseDto getMainManu(LocalDate from, LocalDate to, String search, int page);
 
-    void getDeleteTask(String id);
+    ResponseDto getDeleteTask(String id);
 
-    void editTask(String id, TaskDto taskDto);
+    ResponseDto editTask(String id, ServiceDto taskDto);
 
-    List<ServiceName> getServiceName();
+    List<ServiceNameDto> getServiceName();
 
-    List<ResponseServiceDto> search(LocalDate startDate, LocalDate endDate,String search);
 
-    List<ResponseServiceDto> addNewService(WorkListDto workListDto);
+    ResponseDto addNewService(ServiceDto workListDto);
 
 
 }
