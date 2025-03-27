@@ -29,7 +29,6 @@ public class HistoryService implements HistoryServiceIM {
         List<History> list = historyRepository.findAll();
         if (list.isEmpty())
             throw new MyNotFoundException("anything history found");
-
         return list;
     }
 }

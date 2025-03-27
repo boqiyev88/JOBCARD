@@ -1,17 +1,21 @@
 package uz.uat.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.uat.backend.component.Notifier;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.HistoryDto;
 import uz.uat.backend.dto.RequestWorkDto;
+import uz.uat.backend.dto.ResponseDto;
 import uz.uat.backend.dto.ResponseWorkDto;
 import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.Services;
 import uz.uat.backend.model.Work;
 import uz.uat.backend.model.enums.Status;
+import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.JobCarRepository;
 import uz.uat.backend.repository.ServicesRepository;
 import uz.uat.backend.repository.WorkRepository;
@@ -36,28 +40,30 @@ public class TechnicianService {
 
 
     @Transactional
-    public List<ResponseWorkDto> addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
+    public ResponseDto addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
         JobCard jobCard = getById(jobCard_id);
         List<Services> services = getServices();
 
         List<Work> works = getWorkDto(workDtos, services, jobCard);
-        workRepository.saveAll(works);
+        List<Work> saved = workRepository.saveAll(works);
         jobCard.setStatus(Status.PENDING);
         JobCard save = jobCarRepository.save(jobCard);
 
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Work table")
+                .tablename(TableName.work.name())
+                .tableID(" ")
                 .description("New Work added")
-                .rowName("")
-                .oldValue("")
-                .newValue(Status.NEW.name())
+                .rowName(" ")
+                .oldValue(" ")
+                .newValue(saved.toString())
                 .updatedBy(save.getUpdUser())
                 .updTime(Instant.now())
                 .build()
         );
 
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Job Card table")
+                .tablename(TableName.JOB.name())
+                .tableID(jobCard.getId())
                 .description("Job Card status updated")
                 .rowName("Status")
                 .oldValue(Status.NEW.name())
@@ -68,9 +74,9 @@ public class TechnicianService {
         );
 
 
-//        notifier.SpecialistMassageNotifier("Work added successfully");
-//        notifier.JobCardNotifier(specialistService.getAll());
-//        notifier.TechnicianMassageNotifier("Work added successfully");
+        notifier.SpecialistMassageNotifier("Work added successfully");
+        notifier.JobCardNotifier(specialistService.getAll(1));
+        notifier.TechnicianMassageNotifier("Work added successfully");
         return getWorkList();
     }
 
@@ -79,11 +85,15 @@ public class TechnicianService {
 
     }
 
-    public List<ResponseWorkDto> getWorkList() {
-        List<Work> works = workRepository.getAll();
+    public ResponseDto getWorkList() {
+        Page<Work> works = workRepository.getAll(PageRequest.of(1, 10));
         if (works.isEmpty())
             throw new MyNotFoundException("work list is empty");
-        return getWorkDto(works);
+        return ResponseDto.builder()
+                .page(1)
+                .total(works.getTotalElements())
+                .data(getWorkDto(works.getContent()))
+                .build();
     }
 
 

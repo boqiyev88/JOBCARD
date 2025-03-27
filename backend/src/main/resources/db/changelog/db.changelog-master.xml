@@ -472,13 +472,16 @@
                                  onDelete="CASCADE"/>
     </changeSet>
 
+    <!-- history jadvalini yaratish -->
     <changeSet id="16" author="user">
         <createTable tableName="HISOTRY" schemaName="uat">
             <column name="ID" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="TABLEID" type="VARCHAR">
+            <column name="TABLENAME" type="VARCHAR">
                 <constraints nullable="false"/>
+            </column>
+            <column name="TABLEID" type="VARCHAR">
             </column>
             <column name="DESCRITION" type="VARCHAR">
                 <constraints nullable="false"/>
@@ -494,66 +497,9 @@
             <column name="UPDATEDBY" type="VARCHAR">
             </column>
             <column name="UPDTIME" type="TIMESTAMP">
-                <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint
-                baseTableName="HISOTRY"
-                baseColumnNames="TABLEID"
-                constraintName="fk_Rtables_ids"
-                referencedTableName="RTABLES"
-                referencedColumnNames="id"
-                baseTableSchemaName="uat"
-                onDelete="CASCADE"/>
     </changeSet>
 
-    <changeSet id="18" author="user">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="RTABLES" schemaName="uat"/>
-            </not>
-        </preConditions>
-        <createTable tableName="RTABLES" schemaName="uat">
-            <column name="id" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="service_table_id" type="VARCHAR(55)">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="job_table_id" type="VARCHAR(55)">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="work_table_id" type="VARCHAR(55)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint
-                baseTableName="RTables"
-                baseColumnNames="service_table_id"
-                constraintName="fk_service_table_service_id"
-                referencedTableName="services"
-                referencedColumnNames="id"
-                baseTableSchemaName="uat"
-                onDelete="CASCADE"/>
-        <addForeignKeyConstraint
-                baseTableName="RTables"
-                baseColumnNames="work_table_id"
-                constraintName="fk_work_table_work_id"
-                referencedTableName="services"
-                referencedColumnNames="id"
-                baseTableSchemaName="uat"
-                onDelete="CASCADE"/>
-        <addForeignKeyConstraint
-                baseTableName="RTables"
-                baseColumnNames="job_table_id"
-                constraintName="fk_job_table_job_id"
-                referencedTableName="job"
-                referencedColumnNames="id"
-                baseTableSchemaName="uat"
-                onDelete="CASCADE"/>
-    </changeSet>
 
 </databaseChangeLog>

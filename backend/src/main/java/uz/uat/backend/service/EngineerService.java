@@ -19,6 +19,7 @@ import uz.uat.backend.dto.*;
 import uz.uat.backend.mapper.ServiceNameMapper;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
+import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 
@@ -104,9 +105,9 @@ public class EngineerService implements EngineerServiceIM {
                         .build()
         );
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Services table")
+                .tablename(TableName.services.name())
+                .tableID(" ")
                 .description("New Services added")
-                .rowName(" ")
                 .oldValue(" ")
                 .newValue(saveService.toString())
                 .updatedBy(saveService.getUpdUser())
@@ -167,11 +168,11 @@ public class EngineerService implements EngineerServiceIM {
         Services saveService = servicesRepository.save(services);
 
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Services table")
+                .tablename(TableName.services.name())
+                .tableID(services.getId())
                 .description("services updated")
-                .rowName("")
-                .newValue(saveService.toString())
                 .oldValue(services.toString())
+                .newValue(saveService.toString())
                 .updatedBy(saveService.getUpdUser())
                 .updTime(saveService.getUpdTime())
                 .build());
@@ -188,6 +189,15 @@ public class EngineerService implements EngineerServiceIM {
         Services service = optional.get();
         service.setIsDeleted(1);
         Services save = servicesRepository.save(service);
+        historyService.addHistory(HistoryDto.builder()
+                .tablename(TableName.services.name())
+                .tableID(service.getId())
+                .description("Services Deleted")
+                .oldValue(service.toString())
+                .newValue(save.toString())
+                .updatedBy(save.getUpdUser())
+                .updTime(save.getUpdTime())
+                .build());
         notifier.EngineerNotifier(save);
         return getPage(1);
     }
@@ -197,7 +207,7 @@ public class EngineerService implements EngineerServiceIM {
         Page<Services> services = servicesRepository.searchServicesByDate(startDate, endDate, PageRequest.of(page - 1, 10));
         if (services.isEmpty())
             throw new MyNotFoundException("services not found");
-        return  ResponseDto.builder()
+        return ResponseDto.builder()
                 .page(page)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
@@ -208,7 +218,7 @@ public class EngineerService implements EngineerServiceIM {
         Page<Services> services = servicesRepository.searchByNameOrType(search, PageRequest.of(page - 1, 10));
         if (services.isEmpty())
             getPage(page);
-        return  ResponseDto.builder()
+        return ResponseDto.builder()
                 .page(page)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
@@ -219,7 +229,7 @@ public class EngineerService implements EngineerServiceIM {
         Page<Services> services = servicesRepository.getByPage(PageRequest.of(page - 1, 10));
         if (services.isEmpty())
             throw new MyNotFoundException("services not found");
-        return  ResponseDto.builder()
+        return ResponseDto.builder()
                 .page(page)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))

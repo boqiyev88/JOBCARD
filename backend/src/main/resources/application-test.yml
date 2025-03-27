@@ -39,9 +39,9 @@ springdoc:
   swagger-ui:
     enabled: true
     try-it-out-enabled: on
+    disable-swagger-default-url: false
   api-docs:
     enabled: true
-
 
 
 

@@ -10,16 +10,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import uz.uat.backend.component.CustomAccessDeniedHandler;
+import uz.uat.backend.component.CustomAuthenticationEntryPoint;
 import uz.uat.backend.repository.UserRepository;
 import uz.uat.backend.service.UserDetailsServiceImpl;
 
@@ -32,10 +35,14 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, UserRepository userRepository, CustomAuthenticationEntryPoint authenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     // Password encoder
@@ -107,7 +114,9 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID") /// Cookie o'chirish
                         .permitAll()
                 )
-                .exceptionHandling(exception -> exception.accessDeniedPage("/maintenance/404")); // Ruxsat yo'qligi sahifasi
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())  // 401 xatolar uchun
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())); // Ruxsat yo'qligi sahifasi
         return http.build();
     }
 
@@ -116,7 +125,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*")); // Frontend domeni
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
 

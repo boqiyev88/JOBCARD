@@ -18,6 +18,7 @@ import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.model.enums.Status;
 
 
+import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.CityRepository;
 import uz.uat.backend.repository.JobCarRepository;
 import uz.uat.backend.repository.PDFfileRepository;
@@ -69,7 +70,8 @@ public class SpecialistService implements SpecialistServiceIM {
         notifier.SpecialistMassageNotifier("New JobCard added");
         /// historyga yozildi
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Job Card table")
+                .tablename(TableName.JOB.name())
+                .tableID(specialist_jobCard.toString())
                 .description("New Job Card added")
                 .rowName("Status")
                 .oldValue(" ")
@@ -110,11 +112,12 @@ public class SpecialistService implements SpecialistServiceIM {
         jobCardId.setStatus(Status.REJECTED);
         JobCard specialist_jobCard = specialistJobCardRepository.save(jobCardId);
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Job Card table")
+                .tablename(TableName.JOB.name())
+                .tableID(jobCardId.getId())
                 .description("Job Card status updated")
                 .rowName("Status")
                 .oldValue(jobCardId.getStatus().name())
-                .newValue(Status.REJECTED.name())
+                .newValue(specialist_jobCard.getStatus().name())
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
@@ -202,7 +205,8 @@ public class SpecialistService implements SpecialistServiceIM {
         notifier.TechnicianMassageNotifier(jobCard.getId() + "'s Job Completed by Specialist");
 
         historyService.addHistory(HistoryDto.builder()
-                .tableID("Job Card table")
+                .tablename(TableName.JOB.name())
+                .tableID(jobCard.getId())
                 .description("Job Card status updated")
                 .rowName("Status")
                 .oldValue(oldStatus.name())

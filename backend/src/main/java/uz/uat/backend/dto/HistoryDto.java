@@ -6,6 +6,7 @@ import java.time.Instant;
 
 @Builder
 public record HistoryDto(
+        String tablename,
         String tableID,
         String description,
         String rowName,

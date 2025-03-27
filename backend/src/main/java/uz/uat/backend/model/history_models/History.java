@@ -4,6 +4,7 @@ package uz.uat.backend.model.history_models;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
+import uz.uat.backend.model.enums.TableName;
 
 import java.time.Instant;
 
@@ -21,6 +22,9 @@ public class History {
     @UuidGenerator
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String ID;
+
+    @Column(name = "TABLENAME", nullable = false)
+    private TableName tablename;
 
     @Column(name = "TABLEID", nullable = false)
     private String tableID;
