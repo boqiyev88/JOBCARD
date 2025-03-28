@@ -26,6 +26,6 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
     Page<JobCard> getAll(Pageable pageable);
 
     @Transactional
-    @Query("select sj from JobCard sj where sj.workOrder= :workOrderNumber and  sj.isDeleted =0")
+    @Query("select sj from JobCard sj where sj.work_order= :workOrderNumber and  sj.isDeleted =0")
     Optional<JobCard> findByWorkOrderNumber(@Param("workOrderNumber") String workOrderNumber);
 }

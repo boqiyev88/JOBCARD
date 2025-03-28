@@ -340,7 +340,7 @@
             <column name="serial_number_4" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="beforelight" type="VARCHAR(50)">
+            <column name="before_flight" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="fh" type="VARCHAR(50)">
@@ -474,6 +474,11 @@
 
     <!-- history jadvalini yaratish -->
     <changeSet id="16" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="HISOTRY" schemaName="uat"/>
+            </not>
+        </preConditions>
         <createTable tableName="HISOTRY" schemaName="uat">
             <column name="ID" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>

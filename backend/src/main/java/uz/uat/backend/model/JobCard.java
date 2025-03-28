@@ -1,5 +1,6 @@
 package uz.uat.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import feign.codec.Decoder;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.UuidGenerator;
 import uz.uat.backend.model.enums.Status;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -26,34 +28,34 @@ public class JobCard extends AbstractAuditingEntity {
     private String id;
 
     @Column(nullable = false, name = "work_order")
-    private String workOrder;
+    private String work_order;
 
     @Column(nullable = false)
     private String reg;
 
     @Column(nullable = false, name = "serial_number_1")
-    private String serialNumber1;
+    private String serial_number1;
 
     @Column(nullable = false)
     private String engine_1;
 
     @Column(nullable = false, name = "serial_number_2")
-    private String serialNumber2;
+    private String serial_number2;
 
     @Column(nullable = false)
     private String engine_2;
 
     @Column(nullable = false, name = "serial_number_3")
-    private String serialNumber3;
+    private String serial_number3;
 
     @Column(nullable = false)
     private String apu;
 
     @Column(nullable = false, name = "serial_number_4")
-    private String serialNumber4;
+    private String serial_number4;
 
-    @Column(nullable = false, name = "beforelight")
-    private String beforelight;
+    @Column(nullable = false, name = "before_flight")
+    private String before_flight;
 
     @Column(nullable = false)
     private String fh;
@@ -67,7 +69,8 @@ public class JobCard extends AbstractAuditingEntity {
     private City to;
 
     @Column(nullable = false, name = "date")
-    private Instant date = Instant.now();
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private LocalDate date;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

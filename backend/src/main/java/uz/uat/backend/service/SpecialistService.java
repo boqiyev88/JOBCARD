@@ -1,6 +1,7 @@
 package uz.uat.backend.service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +55,7 @@ public class SpecialistService implements SpecialistServiceIM {
             throw new MyNotFoundException("city not found");
         }
         Optional<JobCard> optional =
-                specialistJobCardRepository.findByWorkOrderNumber(jobCardDto.workOrder());
+                specialistJobCardRepository.findByWorkOrderNumber(jobCardDto.work_order());
 
         if (optional.isPresent()) {
             throw new MyConflictException("jobCard already exists");
@@ -65,7 +66,7 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setStatus(Status.NEW);
         specialist_jobCard.setLeg(LEG.get());
         specialist_jobCard.setTo(TO.get());
-        specialist_jobCard.setDate(Instant.now());
+        specialist_jobCard.setDate(jobCardDto.date());
         JobCard jobCard = specialistJobCardRepository.save(specialist_jobCard);
         notifier.SpecialistMassageNotifier("New JobCard added");
         /// historyga yozildi
@@ -87,7 +88,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
     @Override
     @Transactional
-    public void addFileToJob(String jobId, MultipartFile file) {
+    public ResponseDto addFileToJob(String jobId, MultipartFile file) {
         try {
             JobCard jobCard = getById(jobId);
             PdfFile pdfFile = fileRepository.save(PdfFile.builder()
@@ -99,6 +100,7 @@ public class SpecialistService implements SpecialistServiceIM {
         } catch (Exception e) {
             throw new MyConflictException(e.getMessage());
         }
+        return getAll(1);
     }
 
     @Transactional
@@ -129,7 +131,6 @@ public class SpecialistService implements SpecialistServiceIM {
         return getAll(1);
     }
 
-
     @Transactional
     @Override
     public ResponseDto changeStatus(RequestStatusDto statusDto, int page) {
@@ -152,29 +153,44 @@ public class SpecialistService implements SpecialistServiceIM {
         return jobCardId.getMainPlan();
     }
 
+    @Override
+    public ResponseDto delete(@NotNull String jobId) {
+        if (jobId == null || jobId.isEmpty())
+            throw new MyNotFoundException("invalid job id");
+        JobCard jobCard = specialistJobCardRepository.findByJobCardId(jobId);
+        jobCard.setIsDeleted(1);
+        specialistJobCardRepository.save(jobCard);
+        return getAll(1);
+    }
 
     public ResponseDto getByStatusNum(int status, int page) {
+        boolean isValidStatus = status > 0 && status < 7;
+        int validPage = (page < 1) ? 0 : page;
+
+        if (!isValidStatus)
+            return getAll(validPage);
+
         switch (status) {
             case 1 -> {
-                return getByStatus(Status.NEW, page);
+                return getByStatus(Status.NEW, validPage);
             }
             case 2 -> {
-                return getByStatus(Status.PENDING, page);
+                return getByStatus(Status.PENDING, validPage);
             }
             case 3 -> {
-                return getByStatus(Status.IN_PROCESS, page);
+                return getByStatus(Status.IN_PROCESS, validPage);
             }
             case 4 -> {
-                return getByStatus(Status.CONFIRMED, page);
+                return getByStatus(Status.CONFIRMED, validPage);
             }
             case 5 -> {
-                return getByStatus(Status.COMPLETED, page);
+                return getByStatus(Status.COMPLETED, validPage);
             }
             case 6 -> {
-                return getByStatus(Status.REJECTED, page);
+                return getByStatus(Status.REJECTED, validPage);
             }
             default -> {
-                return getAll(page);
+                return getAll(validPage);
             }
         }
     }
@@ -186,7 +202,7 @@ public class SpecialistService implements SpecialistServiceIM {
         return ResponseDto.builder()
                 .page(page)
                 .total(all.getTotalElements())
-                .data(all.getContent())
+                .data(getJobCards(all.getContent()))
                 .build();
     }
 
@@ -248,16 +264,16 @@ public class SpecialistService implements SpecialistServiceIM {
 
     private ResponseJobCardDto getJobCard(JobCard jobCard) {
         return ResponseJobCardDto.builder()
-                .workOrder(jobCard.getWorkOrder())
+                .work_order(jobCard.getWork_order())
                 .reg(jobCard.getReg())
-                .serialNumber1(jobCard.getSerialNumber1())
+                .serial_number1(jobCard.getSerial_number1())
                 .engine_1(jobCard.getEngine_1())
-                .serialNumber2(jobCard.getSerialNumber2())
+                .serial_number2(jobCard.getSerial_number2())
                 .engine_2(jobCard.getEngine_2())
-                .serialNumber3(jobCard.getSerialNumber3())
+                .serial_number3(jobCard.getSerial_number3())
                 .apu(jobCard.getApu())
-                .serialNumber4(jobCard.getSerialNumber4())
-                .beforeLight(jobCard.getBeforelight())
+                .serial_number4(jobCard.getSerial_number4())
+                .before_flight(jobCard.getBefore_flight())
                 .fh(jobCard.getFh())
                 .leg(jobCard.getLeg().getId())
                 .to(jobCard.getTo().getId())

@@ -38,8 +38,8 @@ public class SpecialistController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addJobCard(@PathVariable("jobId") String jobId,
                                         @RequestPart("file") @Parameter(description = "PDF file") MultipartFile file) {
-        specialistService.addFileToJob(jobId, file);
-        return ResponseEntity.status(201).build();
+        ResponseDto job = specialistService.addFileToJob(jobId, file);
+        return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(job);
     }
 
     @PostMapping("/status")
@@ -67,9 +67,17 @@ public class SpecialistController {
 
 
     @GetMapping
-    public ResponseEntity<Object> getTask(@RequestParam("status") int status, @RequestParam("page") int page) {
+    public ResponseEntity<Object> getTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status,
+                                          @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
         ResponseDto list = specialistService.getByStatusNum(status, page);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
+    }
+
+    @DeleteMapping("/{jobId}")
+    public ResponseEntity<?> deleteJobCard(@Valid @PathVariable("jobId") String jobId) {
+        specialistService.delete(jobId);
+
+        return null;
     }
 
 
