@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +28,7 @@ import java.util.List;
 @CrossOrigin("*")
 public class EngineerController {
 
+    private static final Logger log = LoggerFactory.getLogger(EngineerController.class);
     @Autowired
     private final EngineerService engineerService;
 
@@ -61,13 +64,18 @@ public class EngineerController {
         return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getTask(@PathVariable("id") String service_id) {
+        ResponseDto tasks = engineerService.getServices(service_id);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tasks.data());
+    }
+
     @GetMapping
     public ResponseEntity<?> mainManu(@RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
                                       @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
                                       @RequestParam(value = "search", required = false) String search,
                                       @RequestParam(value = "page", defaultValue = "1") int page) {
-
-        ResponseDto response= engineerService.getMainManu(from, to, search, page);
+        ResponseDto response = engineerService.getMainManu(from, to, search, page);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 

@@ -23,4 +23,5 @@ public interface EngineerServiceIM {
     ResponseDto addNewService(ServiceDto workListDto);
 
 
+    ResponseDto getServices(String serviceId);
 }

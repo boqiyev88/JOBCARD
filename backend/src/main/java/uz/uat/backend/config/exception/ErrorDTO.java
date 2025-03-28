@@ -10,9 +10,11 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class ErrorDTO {
-    private String errorPath;
-    private Integer errorCode;
-    private Object errorBody;
+    private String requestId;
+    private String path;
+    private String method;
+    private String status;
+    private String message;
     @Builder.Default
     private LocalDateTime time = LocalDateTime.now();
 }

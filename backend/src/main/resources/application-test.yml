@@ -1,6 +1,6 @@
 # Server sozlamalari
 server:
-  port: 8090
+  port: 8091
 
 spring:
   application:
@@ -14,7 +14,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+  web:
+    resources:
+      add-mappings: false
 
 
 
@@ -39,7 +41,7 @@ springdoc:
   swagger-ui:
     enabled: true
     try-it-out-enabled: on
-    disable-swagger-default-url: false
+#    disable-swagger-default-url: false
   api-docs:
     enabled: true
 

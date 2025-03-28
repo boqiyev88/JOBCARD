@@ -479,20 +479,16 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="TABLENAME" type="VARCHAR">
-                <constraints nullable="false"/>
             </column>
             <column name="TABLEID" type="VARCHAR">
             </column>
             <column name="DESCRITION" type="VARCHAR">
-                <constraints nullable="false"/>
             </column>
             <column name="ROWNAME" type="VARCHAR">
             </column>
             <column name="OLDVALUE" type="VARCHAR">
-                <constraints nullable="false"/>
             </column>
             <column name="NEWVALUE" type="VARCHAR">
-                <constraints nullable="false"/>
             </column>
             <column name="UPDATEDBY" type="VARCHAR">
             </column>

@@ -72,6 +72,7 @@ public class EngineerService implements EngineerServiceIM {
     public List<TaskDto> uploadfile(@NotBlank MultipartFile file) {
         String contentType = file.getContentType();
         List<TaskDto> tasks;
+        assert contentType != null;
         if (contentType.equals("application/pdf")) {
             tasks = uploadPDF(file);
         } else if (contentType.equals("text/csv")) {
@@ -119,24 +120,32 @@ public class EngineerService implements EngineerServiceIM {
 
     @Override
     public ResponseDto getMainManu(LocalDate from, LocalDate to, String search, int page) {
-        if (search == null || search.isEmpty() && (from == null && to == null)) {
-            Page<Services> services = servicesRepository.getByPage(PageRequest.of(page - 1, 10));
-            if (services.isEmpty())
-                throw new MyNotFoundException("services not found");
+        boolean isSearchEmpty = (search == null || search.isEmpty());
+        boolean isDateEmpty = (from == null && to == null);
+        int validPage = (page < 1) ? 0 : (page - 1);
+
+        if (isSearchEmpty && isDateEmpty) {
+            Page<Services> services = servicesRepository.getByPage(PageRequest.of(validPage, 10));
+            if (services.isEmpty()) {
+                throw new MyNotFoundException("Services is empty");
+            }
             return ResponseDto.builder()
-                    .page(page)
+                    .page(1)
                     .total(services.getTotalElements())
                     .data(fromEntity(services.getContent()))
                     .build();
-
-        } else if ((from == null && to == null)) {
-            return getBySearch(search, page);
-
-        } else if (from != null && to == null) {
-            return getByDate(from, LocalDate.now(), page);
-        } else {
-            return getByDate(from, to, page);
         }
+        if (!isSearchEmpty && isDateEmpty) {
+            return getBySearch(search, validPage);
+        }
+        if (from != null && to == null) {
+            return getByDate(from, LocalDate.now(), validPage);
+        }
+        if (from == null && to != null) {
+            return getByToDate(to, validPage);
+        }
+
+        return getByDate(from, to, validPage);
     }
 
     @Override
@@ -145,6 +154,18 @@ public class EngineerService implements EngineerServiceIM {
         if (optionalList.isEmpty() || optionalList.get().isEmpty())
             throw new MyNotFoundException("serviceName is null");
         return serviceNameMapper.fromEntity(optionalList.get());
+    }
+
+    @Override
+    public ResponseDto getServices(String serviceId) {
+        Optional<Services> optional = servicesRepository.findById(serviceId);
+        if (optional.isEmpty())
+            throw new MyNotFoundException("serviceId not found by this service id: " + serviceId);
+        Services services = optional.get();
+        List<TaskDto> taskDtos = taskMapper.list(services.getTasks());
+        return ResponseDto.builder()
+                .data(taskDtos)
+                .build();
     }
 
     @Override
@@ -203,23 +224,34 @@ public class EngineerService implements EngineerServiceIM {
     }
 
 
-    private ResponseDto getByDate(LocalDate startDate, LocalDate endDate, int page) {
-        Page<Services> services = servicesRepository.searchServicesByDate(startDate, endDate, PageRequest.of(page - 1, 10));
+    private ResponseDto getByToDate(LocalDate from, int page) {
+        Page<Services> services = servicesRepository.getByToDate(from, PageRequest.of(page, 10));
         if (services.isEmpty())
-            throw new MyNotFoundException("services not found");
+            throw new MyNotFoundException("services is empty");
         return ResponseDto.builder()
-                .page(page)
+                .page(page + 1)
+                .total(services.getTotalElements())
+                .data(fromEntity(services.getContent()))
+                .build();
+    }
+
+    private ResponseDto getByDate(LocalDate startDate, LocalDate endDate, int page) {
+        Page<Services> services = servicesRepository.searchServicesByDate(startDate, endDate, PageRequest.of(page, 10));
+        if (services.isEmpty())
+            throw new MyNotFoundException("services is empty");
+        return ResponseDto.builder()
+                .page(page + 1)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
                 .build();
     }
 
     private ResponseDto getBySearch(String search, int page) {
-        Page<Services> services = servicesRepository.searchByNameOrType(search, PageRequest.of(page - 1, 10));
+        Page<Services> services = servicesRepository.searchByNameOrType(search, PageRequest.of(page, 10));
         if (services.isEmpty())
             getPage(page);
         return ResponseDto.builder()
-                .page(page)
+                .page(page + 1)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
                 .build();
@@ -228,7 +260,7 @@ public class EngineerService implements EngineerServiceIM {
     private ResponseDto getPage(@NotBlank int page) {
         Page<Services> services = servicesRepository.getByPage(PageRequest.of(page - 1, 10));
         if (services.isEmpty())
-            throw new MyNotFoundException("services not found");
+            throw new MyNotFoundException("services is empty");
         return ResponseDto.builder()
                 .page(page)
                 .total(services.getTotalElements())
@@ -243,8 +275,8 @@ public class EngineerService implements EngineerServiceIM {
                     .id(service.getId())
                     .service_type(service.getServiceType())
                     .service_name(service.getServiceName().getId())
-                    .revisionNumber(service.getRevisionNumber())
-                    .revisionTime(service.getRevisionTime())
+                    .revision_number(service.getRevisionNumber())
+                    .revision_time(service.getRevisionTime())
                     .build()
             );
         }

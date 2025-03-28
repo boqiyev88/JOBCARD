@@ -14,9 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -38,7 +36,10 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, UserRepository userRepository, CustomAuthenticationEntryPoint authenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService,
+                          UserRepository userRepository,
+                          CustomAuthenticationEntryPoint authenticationEntryPoint,
+                          CustomAccessDeniedHandler accessDeniedHandler) {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -115,8 +116,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())  // 401 xatolar uchun
-                        .accessDeniedHandler(new CustomAccessDeniedHandler())); // Ruxsat yo'qligi sahifasi
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler));
         return http.build();
     }
 

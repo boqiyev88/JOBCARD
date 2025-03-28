@@ -1,20 +1,45 @@
 package uz.uat.backend.component;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
+@Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationEntryPoint.class);
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON uchun
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        response.setContentType("application/json");
+        logger.warn("Unauthorized request to: {} | Error: {}", request.getRequestURI(), authException.getMessage());
+
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("error", "Unauthorized access");
+        errorDetails.put("message", "Full authentication is required to access this resource");
+        errorDetails.put("path", request.getRequestURI());
+        errorDetails.put("status", HttpStatus.UNAUTHORIZED.value());
+        errorDetails.put("timestamp", LocalDateTime.now().toString());
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("{\"error\": \"Avtorizatsiya talab qilinadi! global JWT token noto‘g‘ri yoki muddati tugagan!\"}");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(errorDetails));
     }
 }
+
+

@@ -23,28 +23,28 @@ public class History {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String ID;
 
-    @Column(name = "TABLENAME", nullable = false)
+    @Column(name = "TABLENAME")
     private TableName tablename;
 
-    @Column(name = "TABLEID", nullable = false)
+    @Column(name = "TABLEID")
     private String tableID;
 
-    @Column(name = "DESCRITION", nullable = false)
+    @Column(name = "DESCRITION")
     private String description;
 
-    @Column(name = "ROWNAME", nullable = false)
+    @Column(name = "ROWNAME")
     private String rowName;
 
-    @Column(name = "OLDVALUE", nullable = false)
+    @Column(name = "OLDVALUE")
     private String oldValue;
 
-    @Column(name = "NEWVALUE", nullable = false)
+    @Column(name = "NEWVALUE")
     private String newValue;
 
     @Column(name = "UPDATEDBY")
     private String updatedBy;
 
-    @Column(name = "UPDTIME", nullable = false)
+    @Column(name = "UPDTIME")
     private Instant updTime;
 
 
