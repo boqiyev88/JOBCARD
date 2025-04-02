@@ -14,6 +14,7 @@ import uz.uat.backend.dto.ResponseWorkDto;
 import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.Services;
 import uz.uat.backend.model.Work;
+import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.JobCarRepository;
@@ -52,7 +53,7 @@ public class TechnicianService {
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.work.name())
                 .tableID(" ")
-                .description("New Work added")
+                .OS(OperationStatus.CREATED.name())
                 .rowName(" ")
                 .oldValue(" ")
                 .newValue(saved.toString())
@@ -64,7 +65,7 @@ public class TechnicianService {
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.JOB.name())
                 .tableID(jobCard.getId())
-                .description("Job Card status updated")
+                .OS(OperationStatus.CREATED.name())
                 .rowName("Status")
                 .oldValue(Status.NEW.name())
                 .newValue(jobCard.getStatus().name())

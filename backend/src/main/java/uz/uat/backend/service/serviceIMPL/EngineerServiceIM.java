@@ -11,17 +11,17 @@ import java.util.List;
 public interface EngineerServiceIM {
     List<TaskDto> uploadfile(MultipartFile file);
 
-    ResponseDto getMainManu(LocalDate from, LocalDate to, String search, int page);
+    ResponsesDtos getMainManu(LocalDate from, LocalDate to, String search, int page);
 
-    ResponseDto getDeleteTask(String id);
+    ResponsesDtos getDeleteTask(String id);
 
-    ResponseDto editTask(String id, ServiceDto taskDto);
+    ResponsesDtos editTask(String id, ServiceDto taskDto);
 
     List<ServiceNameDto> getServiceName();
 
 
-    ResponseDto addNewService(ServiceDto workListDto);
+    ResponsesDtos addNewService(ServiceDto workListDto);
 
 
-    ResponseDto getServices(String serviceId);
+    ResponsesDtos getServices(String serviceId);
 }

@@ -11,21 +11,21 @@ import java.time.LocalDate;
 
 @Builder
 public record JobCardDto(
-        @NotBlank String work_order,
-        @NotBlank String reg,
-        @NotBlank String serial_number1,
-        @NotBlank String engine_1,
-        @NotBlank String serial_number2,
-        @NotBlank String engine_2,
-        @NotBlank String serial_number3,
-        @NotBlank String apu,
-        @NotBlank String serial_number4,
-        @NotBlank String before_flight,
-        @NotBlank String fh,
+        @NotBlank(message = "value is required") String work_order,
+        @NotBlank(message = "value is required") String reg,
+        @NotBlank(message = "value is required") String serial_number1,
+        @NotBlank(message = "value is required") String engine_1,
+        @NotBlank(message = "value is required") String serial_number2,
+        @NotBlank(message = "value is required") String engine_2,
+        @NotBlank(message = "value is required") String serial_number3,
+        @NotBlank(message = "value is required") String apu,
+        @NotBlank(message = "value is required") String serial_number4,
+        @NotBlank(message = "value is required") String before_flight,
+        @NotBlank(message = "value is required") String fh,
         @NotNull
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
         @Schema(type = "string", pattern = "dd-MM-yyyy", example = "28-03-2025")
         LocalDate date,
-        @NotNull String leg,
-        @NotNull String to) {
+        @NotNull(message = "value is required") String leg,
+        @NotNull(message = "value is required") String to) {
 }

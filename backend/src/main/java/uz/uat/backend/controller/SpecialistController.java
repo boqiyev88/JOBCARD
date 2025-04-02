@@ -59,25 +59,29 @@ public class SpecialistController {
     public ResponseEntity<?> getPDF(@PathVariable String jobId) {
         PdfFile pdfFile = specialistService.getPdfFromJob(jobId);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + pdfFile.getFileName() + "\"")
-                .body(pdfFile.getData());
+        if (pdfFile.getData() != null && pdfFile.getId() != null) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + pdfFile.getFileName() + "\"")
+                    .body(pdfFile.getData());
+        } else
+            return ResponseEntity.status(404).contentType(MediaType.APPLICATION_JSON).body("file not found");
     }
 
 
     @GetMapping
     public ResponseEntity<Object> getTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status,
-                                          @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
-        ResponseDto list = specialistService.getByStatusNum(status, page);
+                                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                          @RequestParam(value = "search", required = false) String search) {
+        ResponseDto list = specialistService.getByStatusNum(status, page,search);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
     @DeleteMapping("/{jobId}")
     public ResponseEntity<?> deleteJobCard(@Valid @PathVariable("jobId") String jobId) {
-        specialistService.delete(jobId);
+        ResponseDto delete = specialistService.delete(jobId);
 
-        return null;
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(delete);
     }
 
 

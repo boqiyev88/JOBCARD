@@ -8,7 +8,7 @@ import java.time.Instant;
 public record HistoryDto(
         String tablename,
         String tableID,
-        String description,
+        String OS,
         String rowName,
         String oldValue,
         String newValue,

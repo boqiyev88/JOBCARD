@@ -60,13 +60,13 @@ public class EngineerController {
 
     @PostMapping
     public ResponseEntity<?> addNewService(@Valid @RequestBody ServiceDto workListDto) {
-        ResponseDto response = engineerService.addNewService(workListDto);
+        ResponsesDtos response = engineerService.addNewService(workListDto);
         return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getTask(@PathVariable("id") String service_id) {
-        ResponseDto tasks = engineerService.getServices(service_id);
+        ResponsesDtos tasks = engineerService.getServices(service_id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tasks.data());
     }
 
@@ -75,14 +75,14 @@ public class EngineerController {
                                       @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
                                       @RequestParam(value = "search", required = false) String search,
                                       @RequestParam(value = "page", defaultValue = "1") int page) {
-        ResponseDto response = engineerService.getMainManu(from, to, search, page);
+        ResponsesDtos response = engineerService.getMainManu(from, to, search, page);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@Valid @PathVariable String id) {
-        ResponseDto response = engineerService.getDeleteTask(id);
+        ResponsesDtos response = engineerService.getDeleteTask(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
@@ -94,7 +94,7 @@ public class EngineerController {
 
     @PutMapping("/put/{id}")
     public ResponseEntity<?> put(@Valid @PathVariable String id, @Valid @RequestBody ServiceDto workListDto) {
-        ResponseDto response = engineerService.editTask(id, workListDto);
+        ResponsesDtos response = engineerService.editTask(id, workListDto);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 

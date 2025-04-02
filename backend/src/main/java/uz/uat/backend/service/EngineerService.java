@@ -19,6 +19,7 @@ import uz.uat.backend.dto.*;
 import uz.uat.backend.mapper.ServiceNameMapper;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
+import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
@@ -85,7 +86,7 @@ public class EngineerService implements EngineerServiceIM {
 
     @Transactional
     @Override
-    public ResponseDto addNewService(ServiceDto workListDto) {
+    public ResponsesDtos addNewService(ServiceDto workListDto) {
         if (workListDto == null)
             throw new MyNotFoundException("workList is null");
 
@@ -107,8 +108,8 @@ public class EngineerService implements EngineerServiceIM {
         );
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.services.name())
-                .tableID(" ")
-                .description("New Services added")
+                .tableID(saveService.getId())
+                .OS(OperationStatus.CREATED.name())
                 .oldValue(" ")
                 .newValue(saveService.toString())
                 .updatedBy(saveService.getUpdUser())
@@ -119,7 +120,7 @@ public class EngineerService implements EngineerServiceIM {
     }
 
     @Override
-    public ResponseDto getMainManu(LocalDate from, LocalDate to, String search, int page) {
+    public ResponsesDtos getMainManu(LocalDate from, LocalDate to, String search, int page) {
         boolean isSearchEmpty = (search == null || search.isEmpty());
         boolean isDateEmpty = (from == null && to == null);
         int validPage = (page < 1) ? 0 : (page - 1);
@@ -129,7 +130,7 @@ public class EngineerService implements EngineerServiceIM {
             if (services.isEmpty()) {
                 throw new MyNotFoundException("Services is empty");
             }
-            return ResponseDto.builder()
+            return ResponsesDtos.builder()
                     .page(1)
                     .total(services.getTotalElements())
                     .data(fromEntity(services.getContent()))
@@ -157,19 +158,19 @@ public class EngineerService implements EngineerServiceIM {
     }
 
     @Override
-    public ResponseDto getServices(String serviceId) {
+    public ResponsesDtos getServices(String serviceId) {
         Optional<Services> optional = servicesRepository.findById(serviceId);
         if (optional.isEmpty())
             throw new MyNotFoundException("serviceId not found by this service id: " + serviceId);
         Services services = optional.get();
         List<TaskDto> taskDtos = taskMapper.list(services.getTasks());
-        return ResponseDto.builder()
+        return ResponsesDtos.builder()
                 .data(taskDtos)
                 .build();
     }
 
     @Override
-    public ResponseDto editTask(@NotBlank String id, @NotBlank ServiceDto workListDto) {
+    public ResponsesDtos editTask(@NotBlank String id, @NotBlank ServiceDto workListDto) {
         if (workListDto == null || id == null)
             throw new MyNotFoundException("workList or id is null");
 
@@ -191,7 +192,7 @@ public class EngineerService implements EngineerServiceIM {
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.services.name())
                 .tableID(services.getId())
-                .description("services updated")
+                .OS(OperationStatus.UPDATED.name())
                 .oldValue(services.toString())
                 .newValue(saveService.toString())
                 .updatedBy(saveService.getUpdUser())
@@ -203,7 +204,7 @@ public class EngineerService implements EngineerServiceIM {
     }
 
     @Override
-    public ResponseDto getDeleteTask(@NotBlank String id) {
+    public ResponsesDtos getDeleteTask(@NotBlank String id) {
         Optional<Services> optional = servicesRepository.findById(id);
         if (optional.isEmpty())
             throw new MyNotFoundException("services not found by id " + id);
@@ -213,7 +214,7 @@ public class EngineerService implements EngineerServiceIM {
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.services.name())
                 .tableID(service.getId())
-                .description("Services Deleted")
+                .OS(OperationStatus.DELETED.name())
                 .oldValue(service.toString())
                 .newValue(save.toString())
                 .updatedBy(save.getUpdUser())
@@ -224,49 +225,50 @@ public class EngineerService implements EngineerServiceIM {
     }
 
 
-    private ResponseDto getByToDate(LocalDate from, int page) {
+    private ResponsesDtos getByToDate(LocalDate from, int page) {
         Page<Services> services = servicesRepository.getByToDate(from, PageRequest.of(page, 10));
         if (services.isEmpty())
             throw new MyNotFoundException("services is empty");
-        return ResponseDto.builder()
+        return ResponsesDtos.builder()
                 .page(page + 1)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
                 .build();
     }
 
-    private ResponseDto getByDate(LocalDate startDate, LocalDate endDate, int page) {
+    private ResponsesDtos getByDate(LocalDate startDate, LocalDate endDate, int page) {
         Page<Services> services = servicesRepository.searchServicesByDate(startDate, endDate, PageRequest.of(page, 10));
         if (services.isEmpty())
             throw new MyNotFoundException("services is empty");
-        return ResponseDto.builder()
+        return ResponsesDtos.builder()
                 .page(page + 1)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
                 .build();
     }
 
-    private ResponseDto getBySearch(String search, int page) {
+    private ResponsesDtos getBySearch(String search, int page) {
         Page<Services> services = servicesRepository.searchByNameOrType(search, PageRequest.of(page, 10));
         if (services.isEmpty())
             getPage(page);
-        return ResponseDto.builder()
+        return ResponsesDtos.builder()
                 .page(page + 1)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
                 .build();
     }
 
-    private ResponseDto getPage(@NotBlank int page) {
+    private ResponsesDtos getPage(@NotBlank int page) {
         Page<Services> services = servicesRepository.getByPage(PageRequest.of(page - 1, 10));
         if (services.isEmpty())
             throw new MyNotFoundException("services is empty");
-        return ResponseDto.builder()
+        return ResponsesDtos.builder()
                 .page(page)
                 .total(services.getTotalElements())
                 .data(fromEntity(services.getContent()))
                 .build();
     }
+
 
     private List<ResponseServiceDto> fromEntity(List<Services> services) {
         List<ResponseServiceDto> rsd = new ArrayList<>();

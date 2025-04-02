@@ -1,15 +1,13 @@
 package uz.uat.backend.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uz.uat.backend.model.history_models.History;
+import org.springframework.web.bind.annotation.*;
+import uz.uat.backend.dto.ResponsesDtos;
 import uz.uat.backend.service.HistoryService;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/history")
@@ -24,8 +22,14 @@ public class HistoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getHistory() {
-        List<History> history = historyService.getHistory();
+    public ResponseEntity<Object> getHistory(@RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
+                                             @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
+                                             @RequestParam(value = "search", required = false) String search,
+                                             @RequestParam(value = "page", defaultValue = "1") int page) {
+        ResponsesDtos history = historyService.getHistory(from, to, search, page);
+
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(history);
     }
+
+
 }

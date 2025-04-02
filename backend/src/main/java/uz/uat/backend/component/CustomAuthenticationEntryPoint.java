@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationEntryPoint.class);
-    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON uchun
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {

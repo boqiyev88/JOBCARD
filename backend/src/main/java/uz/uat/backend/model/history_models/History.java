@@ -4,6 +4,7 @@ package uz.uat.backend.model.history_models;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
+import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.TableName;
 
 import java.time.Instant;
@@ -24,13 +25,15 @@ public class History {
     private String ID;
 
     @Column(name = "TABLENAME")
+    @Enumerated(EnumType.STRING)
     private TableName tablename;
 
     @Column(name = "TABLEID")
     private String tableID;
 
-    @Column(name = "DESCRITION")
-    private String description;
+    @Column(name = "OS")
+    @Enumerated(EnumType.STRING)
+    private OperationStatus OS;
 
     @Column(name = "ROWNAME")
     private String rowName;

@@ -18,7 +18,7 @@ public interface SpecialistServiceIM {
 
     ResponseDto returned(RequestDto requestDto);
 
-    ResponseDto getByStatusNum(int status, int page);
+    ResponseDto getByStatusNum(int status, int page,String search);
 
     ResponseDto addFileToJob(String jobId, MultipartFile file);
 
