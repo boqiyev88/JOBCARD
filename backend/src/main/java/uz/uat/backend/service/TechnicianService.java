@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.uat.backend.component.Notifier;
 import uz.uat.backend.config.exception.MyNotFoundException;
-import uz.uat.backend.dto.HistoryDto;
-import uz.uat.backend.dto.RequestWorkDto;
-import uz.uat.backend.dto.ResponseDto;
-import uz.uat.backend.dto.ResponseWorkDto;
+import uz.uat.backend.dto.*;
 import uz.uat.backend.model.JobCard;
 import uz.uat.backend.model.Services;
 import uz.uat.backend.model.Work;
@@ -41,7 +38,7 @@ public class TechnicianService {
 
 
     @Transactional
-    public ResponseDto addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
+    public ResponsesDtos addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
         JobCard jobCard = getById(jobCard_id);
         List<Services> services = getServices();
 
@@ -73,12 +70,12 @@ public class TechnicianService {
                 .updTime(Instant.now())
                 .build()
         );
+        System.err.println("--------------------------------------------------------------------");
 
-
-        notifier.SpecialistMassageNotifier("Work added successfully");
-        notifier.JobCardNotifier(specialistService.getAll(1));
-        notifier.TechnicianMassageNotifier("Work added successfully");
-        return getWorkList();
+//        notifier.SpecialistMassageNotifier("Work added successfully");
+//        notifier.JobCardNotifier(specialistService.getAll(1));
+//        notifier.TechnicianMassageNotifier("Work added successfully");
+        return getWorkList(1);
     }
 
 
@@ -86,12 +83,17 @@ public class TechnicianService {
 
     }
 
-    public ResponseDto getWorkList() {
-        Page<Work> works = workRepository.getAll(PageRequest.of(1, 10));
-        if (works.isEmpty())
-            throw new MyNotFoundException("work list is empty");
-        return ResponseDto.builder()
-                .page(1)
+    private ResponsesDtos getWorkList(int page) {
+        Page<Work> works = workRepository.getAll(PageRequest.of(page - 1, 10));
+        if (works.isEmpty()) {
+            return ResponsesDtos.builder()
+                    .page(1)
+                    .total(works.getTotalElements())
+                    .data(getWorkDto(works.getContent()))
+                    .build();
+        }
+        return ResponsesDtos.builder()
+                .page(page)
                 .total(works.getTotalElements())
                 .data(getWorkDto(works.getContent()))
                 .build();
@@ -102,7 +104,6 @@ public class TechnicianService {
         JobCard jobCardId = jobCarRepository.findByJobCardId(id);
         if (jobCardId == null)
             throw new MyNotFoundException("job card not found, may be Invalid job card id");
-        /// job card va workni biriktirilgan holda qaytish kerak
         return jobCardId;
     }
 

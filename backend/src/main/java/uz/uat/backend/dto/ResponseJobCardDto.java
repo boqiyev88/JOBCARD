@@ -27,6 +27,7 @@ public record ResponseJobCardDto(
         @JsonFormat(pattern = "dd-MM-yyyy")
         @NotNull LocalDate date,
         @NotBlank String status,
-        boolean is_file
+        boolean is_file,
+        String filename
 ) {
 }

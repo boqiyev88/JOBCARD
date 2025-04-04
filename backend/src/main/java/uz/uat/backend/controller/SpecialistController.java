@@ -4,16 +4,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.SpecialistService;
-
-import java.util.List;
 
 
 @Slf4j
@@ -27,7 +23,7 @@ public class SpecialistController {
 
 
     @PostMapping
-    public ResponseEntity<?> addJobCard(@RequestBody @Valid JobCardDto jobCardDto) {
+    public ResponseEntity<?> addJobCard(@RequestBody @Valid RequestJobCardDto jobCardDto) {
         ResponseJobCardDto resp = specialistService.addJobCard(jobCardDto);
         return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(resp);
     }
@@ -73,8 +69,28 @@ public class SpecialistController {
     public ResponseEntity<Object> getTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status,
                                           @RequestParam(value = "page", required = false, defaultValue = "1") int page,
                                           @RequestParam(value = "search", required = false) String search) {
-        ResponseDto list = specialistService.getByStatusNum(status, page,search);
+        ResponseDto list = specialistService.getByStatusNum(status, page, search);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
+    }
+
+    @GetMapping("/{workid}")
+    public ResponseEntity<?> getWork(@PathVariable("workid") String workid) {
+        ResponseWork responseWork = specialistService.getWork(workid);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseWork);
+    }
+
+    @GetMapping("/job")
+    public ResponseEntity<?> getJob(@RequestParam(value = "jobid") String jobid,
+                                    @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
+        ResponsesDtos responseWork = specialistService.getJobWithAll(jobid, page);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseWork);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateJobCard(@PathVariable("id") String jobId,
+                                           @RequestBody @Valid JobCardDto jobCardDto) {
+        ResponseDto responseDto = specialistService.edit(jobId, jobCardDto);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseDto);
     }
 
     @DeleteMapping("/{jobId}")

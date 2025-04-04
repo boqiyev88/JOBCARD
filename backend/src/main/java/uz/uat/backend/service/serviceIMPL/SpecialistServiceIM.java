@@ -1,16 +1,14 @@
 package uz.uat.backend.service.serviceIMPL;
 
 
+import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 
-
-import java.util.List;
-
 public interface SpecialistServiceIM {
 
-    ResponseJobCardDto addJobCard(JobCardDto jobCardDto);
+    ResponseJobCardDto addJobCard(RequestJobCardDto jobCardDto);
 
     PdfFile getPdfFromJob(String jobId);
 
@@ -23,4 +21,9 @@ public interface SpecialistServiceIM {
     ResponseDto addFileToJob(String jobId, MultipartFile file);
 
     ResponseDto delete(String jobId);
+
+    ResponseDto edit(String jobId, @Valid JobCardDto jobCardDto);
+
+    ResponseWork getWork(String workid);
+    ResponsesDtos getJobWithAll(String jobid,int page);
 }

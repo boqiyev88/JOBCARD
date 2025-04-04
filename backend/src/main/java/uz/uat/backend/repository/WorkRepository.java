@@ -18,5 +18,6 @@ public interface WorkRepository extends JpaRepository<Work, String> {
     @Query("select w from Work w where w.isDeleted =0 ORDER BY w.updTime desc ,w.createdDate desc")
     Page<Work> getAll(Pageable pageable);
 
-
+    @Query("select w from Work w where w.isDeleted =0 and w.jobcard_id.id =:jobid ORDER BY w.updTime desc ,w.createdDate desc")
+    Page<Work> findByJobcard_id(@Param("jobid")String jobid, Pageable pageable);
 }

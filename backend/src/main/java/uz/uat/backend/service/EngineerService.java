@@ -23,6 +23,8 @@ import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
+import uz.uat.backend.service.utils.UtilsService;
+
 
 
 import java.io.IOException;
@@ -48,6 +50,7 @@ public class EngineerService implements EngineerServiceIM {
     private final Notifier notifier;
     private final HistoryService historyService;
     private final ServiceNameMapper serviceNameMapper;
+    private final UtilsService utilsService;
 
     public Resource generateCsvFile(@NotBlank String fileName) {
         try {
@@ -133,7 +136,7 @@ public class EngineerService implements EngineerServiceIM {
             return ResponsesDtos.builder()
                     .page(1)
                     .total(services.getTotalElements())
-                    .data(fromEntity(services.getContent()))
+                    .data(utilsService.fromEntityService(services.getContent()))
                     .build();
         }
         if (!isSearchEmpty && isDateEmpty) {
@@ -232,7 +235,7 @@ public class EngineerService implements EngineerServiceIM {
         return ResponsesDtos.builder()
                 .page(page + 1)
                 .total(services.getTotalElements())
-                .data(fromEntity(services.getContent()))
+                .data(utilsService.fromEntityService(services.getContent()))
                 .build();
     }
 
@@ -243,7 +246,7 @@ public class EngineerService implements EngineerServiceIM {
         return ResponsesDtos.builder()
                 .page(page + 1)
                 .total(services.getTotalElements())
-                .data(fromEntity(services.getContent()))
+                .data(utilsService.fromEntityService(services.getContent()))
                 .build();
     }
 
@@ -254,7 +257,7 @@ public class EngineerService implements EngineerServiceIM {
         return ResponsesDtos.builder()
                 .page(page + 1)
                 .total(services.getTotalElements())
-                .data(fromEntity(services.getContent()))
+                .data(utilsService.fromEntityService(services.getContent()))
                 .build();
     }
 
@@ -265,25 +268,10 @@ public class EngineerService implements EngineerServiceIM {
         return ResponsesDtos.builder()
                 .page(page)
                 .total(services.getTotalElements())
-                .data(fromEntity(services.getContent()))
+                .data(utilsService.fromEntityService(services.getContent()))
                 .build();
     }
 
-
-    private List<ResponseServiceDto> fromEntity(List<Services> services) {
-        List<ResponseServiceDto> rsd = new ArrayList<>();
-        for (Services service : services) {
-            rsd.add(ResponseServiceDto.builder()
-                    .id(service.getId())
-                    .service_type(service.getServiceType())
-                    .service_name(service.getServiceName().getId())
-                    .revision_number(service.getRevisionNumber())
-                    .revision_time(service.getRevisionTime())
-                    .build()
-            );
-        }
-        return rsd;
-    }
 
     private List<TaskDto> uploadPDF(MultipartFile file) {
         List<Task> taskList = new ArrayList<>();
