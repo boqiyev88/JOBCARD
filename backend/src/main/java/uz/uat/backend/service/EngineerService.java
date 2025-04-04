@@ -61,7 +61,7 @@ public class EngineerService implements EngineerServiceIM {
             }
 
             // Faylni vaqtinchalik yaratish
-            Path filePath = Files.createTempFile("tasks", ".csv");
+            Path filePath = Files.createTempFile("service", ".csv");
             Files.write(filePath, csvContent.toString().getBytes());
 
             // Faylni yuklash uchun resurs yaratish

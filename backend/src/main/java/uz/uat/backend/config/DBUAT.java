@@ -44,7 +44,7 @@ public class DBUAT {
         hikariConfig.setDriverClassName("org.postgresql.Driver");
 //        hikariConfig.setConnectionTestQuery("select current_timestamp cts from sysibm.sysdummy1");  ibm uchun
         hikariConfig.setConnectionTestQuery("select current_timestamp");
-        hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/JOBCARD");
+        hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5455/JOBCARD");
         hikariConfig.setUsername("postgres");
         hikariConfig.setPassword("1122");
         hikariConfig.setConnectionTimeout(30000);

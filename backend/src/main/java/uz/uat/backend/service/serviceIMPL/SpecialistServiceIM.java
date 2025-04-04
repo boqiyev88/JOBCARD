@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 
+import java.util.List;
+
 public interface SpecialistServiceIM {
 
     ResponseJobCardDto addJobCard(RequestJobCardDto jobCardDto);
@@ -24,6 +26,9 @@ public interface SpecialistServiceIM {
 
     ResponseDto edit(String jobId, @Valid JobCardDto jobCardDto);
 
-    ResponseWork getWork(String workid);
-    ResponsesDtos getJobWithAll(String jobid,int page);
+    ResultJob getWork(String workid);
+    ResultJob getJobWithAll(String jobid);
+
+    List<ResultWork> getWorks(String jobid);
+
 }

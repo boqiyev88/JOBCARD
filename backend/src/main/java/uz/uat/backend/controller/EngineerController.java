@@ -52,7 +52,7 @@ public class EngineerController {
     public ResponseEntity<?> generateCSV(@Valid @RequestParam String fileName) {
         Resource resource = engineerService.generateCsvFile(fileName);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tasks.csv")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=service.csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(resource);
     }

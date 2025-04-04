@@ -11,6 +11,8 @@ import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.SpecialistService;
 
+import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -64,6 +66,12 @@ public class SpecialistController {
             return ResponseEntity.status(404).contentType(MediaType.APPLICATION_JSON).body("file not found");
     }
 
+    @GetMapping("/services/{jobid}")
+    ResponseEntity<?> getWork(@PathVariable String jobid) {
+        List<ResultWork> resultWorks = specialistService.getWorks(jobid);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(resultWorks);
+    }
+
 
     @GetMapping
     public ResponseEntity<Object> getTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status,
@@ -73,16 +81,15 @@ public class SpecialistController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
-    @GetMapping("/{workid}")
-    public ResponseEntity<?> getWork(@PathVariable("workid") String workid) {
-        ResponseWork responseWork = specialistService.getWork(workid);
+    @GetMapping("/work/{workid}")
+    public ResponseEntity<?> getWorks(@PathVariable("workid") String workid) {
+        ResultJob responseWork = specialistService.getWork(workid);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseWork);
     }
 
-    @GetMapping("/job")
-    public ResponseEntity<?> getJob(@RequestParam(value = "jobid") String jobid,
-                                    @RequestParam(value = "page", required = false, defaultValue = "1") int page) {
-        ResponsesDtos responseWork = specialistService.getJobWithAll(jobid, page);
+    @GetMapping("/toconfirmation/{jobid}")
+    public ResponseEntity<?> getJob(@PathVariable(value = "jobid") String jobid) {
+        ResultJob responseWork = specialistService.getJobWithAll(jobid);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseWork);
     }
 

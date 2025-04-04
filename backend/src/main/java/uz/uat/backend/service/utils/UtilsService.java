@@ -10,7 +10,6 @@ import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.repository.PDFfileRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,13 +32,31 @@ public class UtilsService {
                 .toList();
     }
 
-    public List<ResponseService> getTasks(List<Services> services) {
+    public ResponseServiceDto fromEntityService(Services service) {
+        return ResponseServiceDto.builder()
+                .id(service.getId())
+                .service_type(service.getServiceType())
+                .service_name(service.getServiceName().getId())
+                .revision_number(service.getRevisionNumber())
+                .revision_time(service.getRevisionTime())
+                .build();
+
+    }
+
+    public List<ResponseService> getTasksFromService(List<Services> services) {
         return services.stream()
                 .map(service -> ResponseService.builder()
                         .service(fromEntityService(List.of(service)))
                         .tasks(taskMapper.list(service.getTasks()) != null ? taskMapper.list(service.getTasks()) : new ArrayList<>())
                         .build())
                 .toList();
+    }
+
+    public ResponseService getTaskFromService(Services service) {
+        return ResponseService.builder()
+                .service(fromEntityService(service))
+                .tasks(taskMapper.list(service.getTasks()))
+                .build();
     }
 
     public List<ResponseJobCardDto> getJobCards(List<JobCard> jobCards) {
@@ -107,25 +124,30 @@ public class UtilsService {
         return 0;
     }
 
-    public List<ResponseWorkDto> getWorkDto(List<Work> workList) {
+    public List<ResponseWorkDto> getWorksDto(List<Work> workList) {
         return workList.stream()
-                .map(work -> ResponseWorkDto.builder()
-                        .threshold(work.getThreshold())
-                        .repeat_int(work.getRepeat_int())
-                        .zone(work.getZone())
-                        .mrf(work.getMrf())
-                        .access(work.getAccess())
-                        .airplane_app(work.getAirplane_app())
-                        .access_note(work.getAccess_note())
-                        .task_description(work.getTask_description())
-                        .dit(work.getDit() == 1)
-                        .avionic(work.getAvionic() == 1)
-                        .mechanic(work.getMechanic() == 1)
-                        .cab_mechanic(work.getCab_mechanic() == 1)
-                        .sheet_metal(work.getSheet_metal() == 1)
-                        .ndt(work.getNdt() == 1)
-                        .build())
+                .map(this::getWork)
                 .toList();
+    }
+
+    public ResponseWorkDto getWork(Work work) {
+        return ResponseWorkDto.builder()
+                .threshold(work.getThreshold())
+                .repeat_int(work.getRepeat_int())
+                .zone(work.getZone())
+                .mrf(work.getMrf())
+                .access(work.getAccess())
+                .airplane_app(work.getAirplane_app())
+                .access_note(work.getAccess_note())
+                .task_description(work.getTask_description())
+                .dit(work.getDit() == 1)
+                .avionic(work.getAvionic() == 1)
+                .mechanic(work.getMechanic() == 1)
+                .cab_mechanic(work.getCab_mechanic() == 1)
+                .sheet_metal(work.getSheet_metal() == 1)
+                .ndt(work.getNdt() == 1)
+                .build();
+
     }
 
 

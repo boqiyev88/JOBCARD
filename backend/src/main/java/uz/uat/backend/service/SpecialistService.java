@@ -20,11 +20,10 @@ import uz.uat.backend.repository.*;
 import uz.uat.backend.service.serviceIMPL.SpecialistServiceIM;
 import uz.uat.backend.service.utils.UtilsService;
 
+import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -42,8 +41,8 @@ public class SpecialistService implements SpecialistServiceIM {
     private final PDFfileRepository fileRepository;
     private final UtilsService utilsService;
 
-    @Transactional
     @Override
+    @Transactional
     public ResponseJobCardDto addJobCard(RequestJobCardDto jobCardDto) {
         if (jobCardDto == null) {
             throw new MyNotFoundException("jobCardDto is null");
@@ -88,22 +87,49 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     @Transactional
     public ResponseDto addFileToJob(String jobId, MultipartFile file) {
+        JobCard jobCard = getById(jobId);
+        PdfFile existingFile = jobCard.getMainPlan();
         try {
-            JobCard jobCard = getById(jobId);
-            PdfFile pdfFile = fileRepository.save(PdfFile.builder()
-                    .fileName(file.getName())
+
+            if (existingFile != null &&
+                    existingFile.getFileName().equals(file.getOriginalFilename()) &&
+                    Arrays.equals(existingFile.getData(), file.getBytes())) {
+                jobCard.setUpdTime(Instant.now());
+                jobCardRepository.save(jobCard);
+                return getAll(0);
+            }
+
+            if (existingFile != null && !existingFile.getFileName().equals(file.getOriginalFilename())
+                    && !Arrays.equals(existingFile.getData(), file.getBytes())) {
+                existingFile.setIsDeleted(1);
+                fileRepository.save(existingFile);
+                PdfFile newFile = fileRepository.save(PdfFile.builder()
+                        .fileName(file.getOriginalFilename())
+                        .data(file.getBytes())
+                        .build());
+
+                jobCard.setMainPlan(newFile);
+                jobCardRepository.save(jobCard);
+                return getAll(0);
+            }
+
+            PdfFile newFile = fileRepository.save(PdfFile.builder()
+                    .fileName(file.getOriginalFilename())
                     .data(file.getBytes())
                     .build());
-            jobCard.setMainPlan(pdfFile);
+
+            jobCard.setMainPlan(newFile);
             jobCardRepository.save(jobCard);
-        } catch (Exception e) {
-            throw new MyConflictException(e.getMessage());
+
+        } catch (IOException e) {
+            throw new MyConflictException("Faylni o‘qishda xatolik: " + e.getMessage());
         }
-        return getAll(1);
+
+        return getAll(0);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public ResponseDto returned(RequestDto requestDto) {
         if (requestDto.id() == null || requestDto.massage() == null)
             throw new MyNotFoundException("invalid request id or massage is null");
@@ -181,44 +207,54 @@ public class SpecialistService implements SpecialistServiceIM {
         return getAll(0);
     }
 
+    /// work id orqali work ga tegishli barcha malumotlar
     @Override
     @Transactional
-    public ResponseWork getWork(String workid) {
+    public ResultJob getWork(String workid) {
         Work work = getWorkById(workid);
         Services service = getServiceById(work.getService_id().getId());
         ResponseJobCardDto responseJobCard = utilsService.getJobCard(getById(work.getJobcard_id().getId()));
-        List<ResponseWorkDto> responseWork = utilsService.getWorkDto(Collections.singletonList(work));
-        return ResponseWork.builder()
-                .job(responseJobCard)
-                .work(responseWork)
-                .tasks(service.getTasks())
-                .build();
+        ResponseWorkDto responseWork = utilsService.getWork(work);
+        ResultJob resultJob = jobCardMapper.fromDto(responseJobCard);
+        resultJob.setServices(utilsService.getTaskFromService(service));
+        resultJob.setWork(responseWork);
+        return resultJob;
     }
 
 
+    /// job id orqali barcha work va servicelarni olish
     @Override
     @Transactional
-    public ResponsesDtos getJobWithAll(String jobid, int page) {
-        int validPage = page <= 0 ? 0 : page - 1;
+    public List<ResultWork> getWorks(String jobid) {
+        List<Work> workPage = workRepository.findByJobcard_id(jobid);
+        if (workPage.isEmpty())
+            return Collections.emptyList();
+        return workPage.stream()
+                .map(work -> new ResultWork(
+                        work.getId(),
+                        utilsService.fromEntityService(work.getService_id())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    ///  job id orqali barcha worklarni olib kelish
+    @Override
+    @Transactional
+    public ResultJob getJobWithAll(String jobid) {
         JobCard jobCard = getById(jobid);
-        Page<Work> workPage = workRepository.findByJobcard_id(jobid, PageRequest.of(validPage, 10));
-        List<Work> workList = workPage.getContent();
-        List<Services> servicesList = new ArrayList<>();
-        for (Work work : workList) {
-            servicesList.add(work.getService_id());
-        }
+        List<Work> workList = workRepository.findByJobcard_id(jobid);
+
+        List<Services> servicesList = workList.stream()
+                .map(Work::getService_id)
+                .collect(Collectors.toList());
+
         ResponseJobCardDto responseJobCard = utilsService.getJobCard(jobCard);
-        List<ResponseWorkDto> responseWork = utilsService.getWorkDto(workList);
-        List<ResponseService> responseServices = utilsService.getTasks(servicesList);
-        return ResponsesDtos.builder()
-                .page(validPage + 1)
-                .total(workPage.getTotalElements())
-                .data(ResponseWork.builder()
-                        .job(responseJobCard)
-                        .work(responseWork)
-                        .tasks(responseServices)
-                        .build())
-                .build();
+        ResultJob resultJob = jobCardMapper.fromDto(responseJobCard);
+        List<ResponseWorkDto> responseWork = utilsService.getWorksDto(workList);
+        List<ResponseService> responseServices = utilsService.getTasksFromService(servicesList);
+        resultJob.setServices(responseServices);
+        resultJob.setWork(responseWork);
+        return resultJob;
     }
 
 
