@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import uz.uat.backend.dto.RequestWorkDto;
+import uz.uat.backend.dto.ResponseDto;
 import uz.uat.backend.dto.ResponsesDtos;
 import uz.uat.backend.service.TechnicianService;
 
@@ -29,9 +30,20 @@ public class TechnicianController {
 
     @PostMapping("/closedWork")
     public ResponseEntity<?> closedWork(@NonNull @RequestBody RequestWorkDto workDto) {
-        technicianService.closedWork(workDto);
+//        technicianService.closedWork(workDto);
         return null;
     }
+
+    @GetMapping
+    public ResponseEntity<Object> getTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status,
+                                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                          @RequestParam(value = "search", required = false) String search) {
+        ResponseDto list = technicianService.getByStatusNum(status, page, search);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
+    }
+
+
+
 
 
 }

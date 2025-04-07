@@ -35,11 +35,11 @@ public class SpecialistService implements SpecialistServiceIM {
     private final JobCarRepository jobCardRepository;
     private final Notifier notifier;
     private final WorkRepository workRepository;
-    private final ServicesRepository servicesRepository;
     private final HistoryService historyService;
     private final CityRepository cityRepository;
     private final PDFfileRepository fileRepository;
     private final UtilsService utilsService;
+    private final JobService jobService;
 
     @Override
     @Transactional
@@ -87,7 +87,7 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     @Transactional
     public ResponseDto addFileToJob(String jobId, MultipartFile file) {
-        JobCard jobCard = getById(jobId);
+        JobCard jobCard = utilsService.getJobById(jobId);
         PdfFile existingFile = jobCard.getMainPlan();
         try {
 
@@ -96,7 +96,7 @@ public class SpecialistService implements SpecialistServiceIM {
                     Arrays.equals(existingFile.getData(), file.getBytes())) {
                 jobCard.setUpdTime(Instant.now());
                 jobCardRepository.save(jobCard);
-                return getAll(0);
+                return jobService.getAll(0);
             }
 
             if (existingFile != null && !existingFile.getFileName().equals(file.getOriginalFilename())
@@ -110,7 +110,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
                 jobCard.setMainPlan(newFile);
                 jobCardRepository.save(jobCard);
-                return getAll(0);
+                return jobService.getAll(0);
             }
 
             PdfFile newFile = fileRepository.save(PdfFile.builder()
@@ -125,7 +125,7 @@ public class SpecialistService implements SpecialistServiceIM {
             throw new MyConflictException("Faylni o‘qishda xatolik: " + e.getMessage());
         }
 
-        return getAll(0);
+        return jobService.getAll(0);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class SpecialistService implements SpecialistServiceIM {
         if (requestDto.id() == null || requestDto.massage() == null)
             throw new MyNotFoundException("invalid request id or massage is null");
 
-        JobCard jobCardId = getById(requestDto.id());
+        JobCard jobCardId = utilsService.getJobById(requestDto.id());
 
         jobCardId.setStatus(Status.REJECTED);
         JobCard specialist_jobCard = jobCardRepository.save(jobCardId);
@@ -153,7 +153,7 @@ public class SpecialistService implements SpecialistServiceIM {
 //        notifier.SpecialistNotifier(getAll());                /// real timeda specialist tablega jo'natildi
 //        notifier.TechnicianMassageNotifier("Sizda Tasdiqdan o'tmagan ish mavjud");    /// uvidemleniyaga ish reject bo'lgani haqida habar jo'natildi
 //        notifier.JobCardNotifier(getAll());               /// real timeda texnik tablega jo'natildi
-        return getAll(1);
+        return jobService.getAll(1);
     }
 
     @Transactional
@@ -167,16 +167,13 @@ public class SpecialistService implements SpecialistServiceIM {
             case 4 -> changed(statusDto.jobId(), Status.CONFIRMED, 4, validPage);
             case 5 -> changed(statusDto.jobId(), Status.COMPLETED, 5, validPage);
             case 6 -> changed(statusDto.jobId(), Status.REJECTED, 6, validPage);
-            default -> getAll(0);
+            default -> jobService.getAll(0);
         };
     }
 
     @Override
     public PdfFile getPdfFromJob(String jobId) {
-        JobCard jobCardId = jobCardRepository.findByJobCardId(jobId);
-        if (jobCardId == null)
-            throw new MyNotFoundException("job card not found");
-        return getFile(jobCardId);
+        return jobService.getPdfFromJob(jobId);
     }
 
     @Override
@@ -187,7 +184,7 @@ public class SpecialistService implements SpecialistServiceIM {
         }
         jobCard.setIsDeleted(1);
         jobCardRepository.save(jobCard);
-        return getAll(0);
+        return jobService.getAll(0);
     }
 
     @Override
@@ -204,16 +201,16 @@ public class SpecialistService implements SpecialistServiceIM {
         }
         JobCard jobCard = editJobCard(jobCardId, jobCardDto, LEG.get(), TO.get());
         jobCardRepository.save(jobCard);
-        return getAll(0);
+        return jobService.getAll(0);
     }
 
     /// work id orqali work ga tegishli barcha malumotlar
     @Override
     @Transactional
     public ResultJob getWork(String workid) {
-        Work work = getWorkById(workid);
-        Services service = getServiceById(work.getService_id().getId());
-        ResponseJobCardDto responseJobCard = utilsService.getJobCard(getById(work.getJobcard_id().getId()));
+        Work work = utilsService.getWorkById(workid);
+        Services service = utilsService.getServiceById(work.getService_id().getId());
+        ResponseJobCardDto responseJobCard = utilsService.getJobCard(utilsService.getJobById(work.getJobcard_id().getId()));
         ResponseWorkDto responseWork = utilsService.getWork(work);
         ResultJob resultJob = jobCardMapper.fromDto(responseJobCard);
         resultJob.setServices(utilsService.getTaskFromService(service));
@@ -241,7 +238,7 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     @Transactional
     public ResultJob getJobWithAll(String jobid) {
-        JobCard jobCard = getById(jobid);
+        JobCard jobCard = utilsService.getJobById(jobid);
         List<Work> workList = workRepository.findByJobcard_id(jobid);
 
         List<Services> servicesList = workList.stream()
@@ -259,44 +256,9 @@ public class SpecialistService implements SpecialistServiceIM {
 
 
     public ResponseDto getByStatusNum(int status, int page, String search) {
-        int validPage = page <= 0 ? 0 : page - 1;
-        boolean isValidStatus = status > 0 && status < 7;
-        boolean hasSearch = (search != null && !search.trim().isEmpty());
-
-        if (!isValidStatus && !hasSearch) {
-            return getAll(validPage);
-        }
-        if (!isValidStatus) {
-            return getBySearch(search, validPage);
-        }
-        Status selectedStatus = switch (status) {
-            case 1 -> Status.NEW;
-            case 2 -> Status.PENDING;
-            case 3 -> Status.IN_PROCESS;
-            case 4 -> Status.CONFIRMED;
-            case 5 -> Status.COMPLETED;
-            case 6 -> Status.REJECTED;
-            default -> null;
-        };
-        if (hasSearch) {
-            return getByStatusAndSearch(selectedStatus, search, validPage);
-        }
-        return getByStatus(selectedStatus, validPage);
+        return jobService.getByStatusNum(status, page, search);
     }
-
-    private Work getWorkById(String id) {
-        Optional<Work> optional = workRepository.findById(id);
-        if (optional.isEmpty())
-            throw new MyNotFoundException("work not found by this id: {}" + id);
-        return optional.get();
-    }
-
-    private Services getServiceById(String id) {
-        Optional<Services> optional = servicesRepository.findById(id);
-        if (optional.isEmpty())
-            throw new MyNotFoundException("work not found by this id: {}" + id);
-        return optional.get();
-    }
+    
 
     private JobCard editJobCard(JobCard jobCardId, JobCardDto jobCardDto, City LEG, City TO) {
         jobCardId.setWork_order(jobCardDto.work_order() != null ? jobCardDto.work_order() : jobCardId.getWork_order());
@@ -316,66 +278,17 @@ public class SpecialistService implements SpecialistServiceIM {
         return jobCardId;
     }
 
-    private ResponseDto getByStatusAndSearch(Status selectedStatus, String search, int page) {
-        Page<JobCard> jobCards = jobCardRepository.findByStatusAndSearch(selectedStatus, search, PageRequest.of(page, 10));
-        if (jobCards.isEmpty()) {
-            return getStatusCount(ResponseDto.builder()
-                    .page(1)
-                    .total(jobCards.getTotalElements())
-                    .data(new ArrayList<>())
-                    .build());
-        }
-        return getStatusCount(ResponseDto.builder()
-                .page(page + 1)
-                .total(jobCards.getTotalElements())
-                .data(utilsService.getJobCards(jobCards.getContent()))
-                .build());
-    }
-
-
-    private ResponseDto getBySearch(String search, int page) {
-        Page<JobCard> jobCards = jobCardRepository.findBySearch(search, PageRequest.of(page - 1, 10));
-        if (jobCards.isEmpty()) {
-            return getStatusCount(ResponseDto.builder()
-                    .page(1)
-                    .total(jobCards.getTotalElements())
-                    .data(new ArrayList<>())
-                    .build());
-        }
-        return getStatusCount(ResponseDto.builder()
-                .page(page)
-                .total(jobCards.getTotalElements())
-                .data(utilsService.getJobCards(jobCards.getContent()))
-                .build());
-    }
-
-    private ResponseDto getAll(int page) {
-        Page<JobCard> all = jobCardRepository.getAll(PageRequest.of(page, 10));
-        if (all.isEmpty())
-            getStatusCount(ResponseDto.builder()
-                    .page(page + 1)
-                    .total(all.getTotalElements())
-                    .data(utilsService.getJobCards(all.getContent()))
-                    .build());
-
-        return getStatusCount(ResponseDto.builder()
-                .page(page + 1)
-                .total(all.getTotalElements())
-                .data(utilsService.getJobCards(all.getContent()))
-                .build());
-    }
-
     private ResponseDto changed(String jobId, Status status, int check, int page) {
         if (isValid(status, check)) {
             throw new MyConflictException("invalid change status " + status);
         }
 
-        JobCard jobCard = getById(jobId);
+        JobCard jobCard = utilsService.getJobById(jobId);
         Status oldStatus = jobCard.getStatus();
         jobCard.setStatus(status);
         JobCard specialist_jobCard = jobCardRepository.save(jobCard);
 
-        notifier.JobCardNotifier(getAll(page));
+        notifier.JobCardNotifier(jobService.getAll(page));
         notifier.TechnicianMassageNotifier(jobCard.getId() + "'s Job Completed by Specialist");
 
         historyService.addHistory(HistoryDto.builder()
@@ -388,63 +301,9 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
-        return getAll(page);
+        return jobService.getAll(page);
     }
 
-    private PdfFile getFile(JobCard jobCard) {
-        if (jobCard.getMainPlan() == null)
-            return new PdfFile();
-        Optional<PdfFile> optional = fileRepository.findById(String.valueOf(jobCard.getMainPlan().getId()));
-        if (optional.isEmpty())
-            throw new MyNotFoundException("file not found");
-        return optional.get();
-    }
-
-    private JobCard getById(String id) {
-        JobCard jobCardId = jobCardRepository.findByJobCardId(id);
-        if (jobCardId == null)
-            throw new MyNotFoundException("job card not found, may be Invalid job card id");
-        return jobCardId;
-    }
-
-    private ResponseDto getByStatus(Status status, int page) {
-        Page<JobCard> jobCards = jobCardRepository.findBySTATUS(status, PageRequest.of(page, 10));
-        if (jobCards.isEmpty()) {
-            return getStatusCount(ResponseDto.builder()
-                    .page(1)
-                    .total(jobCards.getTotalElements())
-                    .data(new ArrayList<>())
-                    .build());
-        }
-        return getStatusCount(ResponseDto.builder()
-                .page(page + 1)
-                .total(jobCards.getTotalElements())
-                .data(utilsService.getJobCards(jobCards.getContent()))
-                .build());
-
-    }
-
-    private ResponseDto getStatusCount(ResponseDto responseDto) {
-        List<StatusCountDto> dto = jobCardRepository.getByStatusCount();
-        Long newCount = dto.stream().filter(d -> "NEW".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long pendingCount = dto.stream().filter(d -> "PENDING".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long inProcessCount = dto.stream().filter(d -> "IN_PROCESS".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long confirmedCount = dto.stream().filter(d -> "CONFIRMED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long completedCount = dto.stream().filter(d -> "COMPLETED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long rejectedCount = dto.stream().filter(d -> "REJECTED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        return ResponseDto.builder()
-                .page(responseDto.page())
-                .total(responseDto.total())
-                .data(responseDto.data())
-                .all(newCount + pendingCount + inProcessCount + confirmedCount + completedCount + rejectedCount)
-                .New(newCount)
-                .Pending(pendingCount)
-                .In_process(inProcessCount)
-                .Confirmed(confirmedCount)
-                .Completed(completedCount)
-                .Rejected(rejectedCount)
-                .build();
-    }
 
     private boolean isValid(Status oldStatus, int newStatus) {
         return switch (newStatus) {

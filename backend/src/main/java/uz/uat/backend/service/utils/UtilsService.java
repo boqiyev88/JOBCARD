@@ -7,7 +7,10 @@ import uz.uat.backend.dto.*;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
 import uz.uat.backend.model.enums.Status;
+import uz.uat.backend.repository.JobCarRepository;
 import uz.uat.backend.repository.PDFfileRepository;
+import uz.uat.backend.repository.ServicesRepository;
+import uz.uat.backend.repository.WorkRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,9 @@ public class UtilsService {
 
     private final PDFfileRepository fileRepository;
     private final TaskMapper taskMapper;
+    private final ServicesRepository servicesRepository;
+    private final WorkRepository workRepository;
+    private final JobCarRepository jobCarRepository;
 
     public List<ResponseServiceDto> fromEntityService(List<Services> services) {
         return services.stream()
@@ -150,5 +156,25 @@ public class UtilsService {
 
     }
 
+    public Services getServiceById(String id) {
+        Optional<Services> optional = servicesRepository.findById(id);
+        if (optional.isEmpty())
+            throw new MyNotFoundException("work not found by this id: {}" + id);
+        return optional.get();
+    }
+
+    public Work getWorkById(String id) {
+        Optional<Work> optional = workRepository.findById(id);
+        if (optional.isEmpty())
+            throw new MyNotFoundException("work not found by this id: {}" + id);
+        return optional.get();
+    }
+
+    public JobCard getJobById(String id) {
+        JobCard jobCardId = jobCarRepository.findByJobCardId(id);
+        if (jobCardId == null)
+            throw new MyNotFoundException("job card not found, may be Invalid job card id");
+        return jobCardId;
+    }
 
 }

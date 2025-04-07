@@ -17,6 +17,7 @@ import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.JobCarRepository;
 import uz.uat.backend.repository.ServicesRepository;
 import uz.uat.backend.repository.WorkRepository;
+import uz.uat.backend.service.utils.UtilsService;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,13 +34,14 @@ public class TechnicianService {
     private final WorkRepository workRepository;
     private final ServicesRepository servicesRepository;
     private final Notifier notifier;
-    private final SpecialistService specialistService;
+    private final JobService jobService;
     private final HistoryService historyService;
+    private final UtilsService utilsService;
 
 
     @Transactional
     public ResponsesDtos addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
-        JobCard jobCard = getById(jobCard_id);
+        JobCard jobCard = utilsService.getJobById(jobCard_id);
         List<Services> services = getServices();
 
         List<Work> works = getWorkDto(workDtos, services, jobCard);
@@ -73,15 +75,19 @@ public class TechnicianService {
         System.err.println("--------------------------------------------------------------------");
 
 //        notifier.SpecialistMassageNotifier("Work added successfully");
-//        notifier.JobCardNotifier(specialistService.getAll(1));
+//        notifier.JobCardNotifier(getAll(1));
 //        notifier.TechnicianMassageNotifier("Work added successfully");
         return getWorkList(1);
     }
 
 
-    public void closedWork(RequestWorkDto workDto) {
-
+    public ResponseDto getByStatusNum(int status, int page, String search) {
+        return jobService.getByStatusNum(status, page, search);
     }
+
+//    public void closedWork(RequestWorkDto workDto) {
+//
+//    }
 
     private ResponsesDtos getWorkList(int page) {
         Page<Work> works = workRepository.getAll(PageRequest.of(page - 1, 10));
@@ -99,13 +105,6 @@ public class TechnicianService {
                 .build();
     }
 
-
-    private JobCard getById(String id) {
-        JobCard jobCardId = jobCarRepository.findByJobCardId(id);
-        if (jobCardId == null)
-            throw new MyNotFoundException("job card not found, may be Invalid job card id");
-        return jobCardId;
-    }
 
     private List<Services> getServices() {
         List<Services> optional = servicesRepository.getAll();
@@ -166,5 +165,4 @@ public class TechnicianService {
         }
         return workDtos;
     }
-
 }
