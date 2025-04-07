@@ -9,6 +9,7 @@ import uz.uat.backend.component.Notifier;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.model.JobCard;
+import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.model.Services;
 import uz.uat.backend.model.Work;
 import uz.uat.backend.model.enums.OperationStatus;
@@ -164,5 +165,9 @@ public class TechnicianService {
             );
         }
         return workDtos;
+    }
+
+    public PdfFile getPdfFromJob(String jobId) {
+        return jobService.getPdfFromJob(jobId);
     }
 }

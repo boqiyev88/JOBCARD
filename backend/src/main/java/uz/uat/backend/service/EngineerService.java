@@ -26,7 +26,6 @@ import uz.uat.backend.service.serviceIMPL.EngineerServiceIM;
 import uz.uat.backend.service.utils.UtilsService;
 
 
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -126,15 +125,19 @@ public class EngineerService implements EngineerServiceIM {
     public ResponsesDtos getMainManu(LocalDate from, LocalDate to, String search, int page) {
         boolean isSearchEmpty = (search == null || search.isEmpty());
         boolean isDateEmpty = (from == null && to == null);
-        int validPage = (page < 1) ? 0 : (page - 1);
+        int validPage = (page <= 0) ? 0 : (page - 1);
 
         if (isSearchEmpty && isDateEmpty) {
             Page<Services> services = servicesRepository.getByPage(PageRequest.of(validPage, 10));
             if (services.isEmpty()) {
-                throw new MyNotFoundException("Services is empty");
+                return ResponsesDtos.builder()
+                        .page(validPage + 1)
+                        .total(services.getTotalElements())
+                        .data(utilsService.fromEntityService(services.getContent()))
+                        .build();
             }
             return ResponsesDtos.builder()
-                    .page(1)
+                    .page(validPage + 1)
                     .total(services.getTotalElements())
                     .data(utilsService.fromEntityService(services.getContent()))
                     .build();
@@ -271,7 +274,6 @@ public class EngineerService implements EngineerServiceIM {
                 .data(utilsService.fromEntityService(services.getContent()))
                 .build();
     }
-
 
     private List<TaskDto> uploadPDF(MultipartFile file) {
         List<Task> taskList = new ArrayList<>();

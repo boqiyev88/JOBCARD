@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/engineer")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class EngineerController {
 
-    private static final Logger log = LoggerFactory.getLogger(EngineerController.class);
-    @Autowired
     private final EngineerService engineerService;
-
-    public EngineerController(EngineerService engineerService) {
-        this.engineerService = engineerService;
-    }
-
 
     @PostMapping(
             path = "/upload",
