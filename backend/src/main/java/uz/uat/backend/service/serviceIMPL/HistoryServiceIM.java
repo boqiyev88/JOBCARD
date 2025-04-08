@@ -11,6 +11,6 @@ public interface HistoryServiceIM {
 
     void addHistory(HistoryDto specialistHDto);
 
-    ResponsesDtos getHistory(LocalDate from, LocalDate to, String search, int page);
+    ResponsesDtos getHistory(LocalDate from, LocalDate to,  int page);
 
 }

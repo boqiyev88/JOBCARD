@@ -41,8 +41,8 @@ public class SpecialistController {
     }
 
     @PostMapping("/status")
-    public ResponseEntity<?> inChangeStatus(@RequestBody RequestStatusDto statusDto, @RequestParam int page) {
-        ResponseDto dtos = specialistService.changeStatus(statusDto, page);
+    public ResponseEntity<?> inChangeStatus(@RequestBody RequestStatusDto statusDto) {
+        ResponseDto dtos = specialistService.changeStatus(statusDto);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(dtos);
     }
 

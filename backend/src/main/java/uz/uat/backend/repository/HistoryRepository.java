@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import uz.uat.backend.model.Services;
 import uz.uat.backend.model.history_models.History;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -20,4 +21,7 @@ public interface HistoryRepository extends JpaRepository<History, String> {
 
     @Query("SELECT s FROM History s where LOWER(s.tablename) LIKE LOWER(CONCAT('%', :search, '%')) ")
     Page<History> searchByTablename(@Param("search") String search, Pageable page);
+
+    @Query("select h from History h where h.updTime BETWEEN :startDate AND :endDate")
+    Page<History> getByDate(LocalDate startDate, LocalDate endDate, PageRequest of);
 }

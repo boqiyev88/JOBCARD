@@ -24,10 +24,8 @@ public class HistoryController {
     @GetMapping
     public ResponseEntity<Object> getHistory(@RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
                                              @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
-                                             @RequestParam(value = "search", required = false) String search,
                                              @RequestParam(value = "page", defaultValue = "1") int page) {
-        ResponsesDtos history = historyService.getHistory(from, to, search, page);
-
+        ResponsesDtos history = historyService.getHistory(from, to, page);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(history);
     }
 

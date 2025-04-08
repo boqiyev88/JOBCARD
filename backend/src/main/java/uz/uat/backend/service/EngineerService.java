@@ -118,7 +118,7 @@ public class EngineerService implements EngineerServiceIM {
                 .updTime(saveService.getUpdTime())
                 .build());
         notifier.EngineerNotifier(saveService);
-        return getPage(1);
+        return getPage(0);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class EngineerService implements EngineerServiceIM {
     }
 
     private ResponsesDtos getBySearch(String search, int page) {
-        Page<Services> services = servicesRepository.searchByNameOrType(search, PageRequest.of(page, 10));
+        Page<Services> services = servicesRepository.searchByNameOrType(search, PageRequest.of(page - 1, 10));
         if (services.isEmpty())
             getPage(page);
         return ResponsesDtos.builder()
@@ -265,11 +265,11 @@ public class EngineerService implements EngineerServiceIM {
     }
 
     private ResponsesDtos getPage(@NotBlank int page) {
-        Page<Services> services = servicesRepository.getByPage(PageRequest.of(page - 1, 10));
+        Page<Services> services = servicesRepository.getByPage(PageRequest.of(page, 10));
         if (services.isEmpty())
             throw new MyNotFoundException("services is empty");
         return ResponsesDtos.builder()
-                .page(page)
+                .page(page + 1)
                 .total(services.getTotalElements())
                 .data(utilsService.fromEntityService(services.getContent()))
                 .build();

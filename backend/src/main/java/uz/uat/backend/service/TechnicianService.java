@@ -47,6 +47,7 @@ public class TechnicianService {
 
         List<Work> works = getWorkDto(workDtos, services, jobCard);
         List<Work> saved = workRepository.saveAll(works);
+
         jobCard.setStatus(Status.PENDING);
         JobCard save = jobCarRepository.save(jobCard);
 
@@ -56,7 +57,7 @@ public class TechnicianService {
                 .OS(OperationStatus.CREATED.name())
                 .rowName(" ")
                 .oldValue(" ")
-                .newValue(saved.toString())
+                .newValue(utilsService.getWork(saved).toString())
                 .updatedBy(save.getUpdUser())
                 .updTime(Instant.now())
                 .build()
@@ -86,9 +87,6 @@ public class TechnicianService {
         return jobService.getByStatusNum(status, page, search);
     }
 
-//    public void closedWork(RequestWorkDto workDto) {
-//
-//    }
 
     private ResponsesDtos getWorkList(int page) {
         Page<Work> works = workRepository.getAll(PageRequest.of(page - 1, 10));
@@ -96,13 +94,13 @@ public class TechnicianService {
             return ResponsesDtos.builder()
                     .page(1)
                     .total(works.getTotalElements())
-                    .data(getWorkDto(works.getContent()))
+                    .data(utilsService.getWork(works.getContent()))
                     .build();
         }
         return ResponsesDtos.builder()
                 .page(page)
                 .total(works.getTotalElements())
-                .data(getWorkDto(works.getContent()))
+                .data(utilsService.getWork(works.getContent()))
                 .build();
     }
 
@@ -125,9 +123,10 @@ public class TechnicianService {
                         .threshold(dto.threshold())
                         .repeat_int(dto.repeat_int())
                         .zone(dto.zone())
-                        .mrf(dto.mrf())
+                        .mpr(dto.mpr())
                         .access(dto.access())
                         .airplane_app(dto.airplane_app())
+                        .description(dto.description())
                         .access_note(dto.access_note())
                         .task_description(dto.task_description())
                         .dit(dto.dit() ? 1 : 0)
@@ -140,32 +139,6 @@ public class TechnicianService {
                 .collect(Collectors.toList());
     }
 
-
-    private List<ResponseWorkDto> getWorkDto(List<Work> workList) {
-        List<ResponseWorkDto> workDtos = new ArrayList<>();
-        for (Work work : workList) {
-            workDtos.add(ResponseWorkDto.builder()
-                    .jobCard_id(work.getService_id().getId())
-                    .service_id(work.getService_id().getId())
-                    .threshold(work.getThreshold())
-                    .repeat_int(work.getRepeat_int())
-                    .zone(work.getZone())
-                    .mrf(work.getMrf())
-                    .access(work.getAccess())
-                    .airplane_app(work.getAirplane_app())
-                    .access_note(work.getAccess_note())
-                    .task_description(work.getTask_description())
-                    .dit(work.getDit() == 1)
-                    .avionic(work.getAvionic() == 1)
-                    .mechanic(work.getMechanic() == 1)
-                    .cab_mechanic(work.getCab_mechanic() == 1)
-                    .sheet_metal(work.getSheet_metal() == 1)
-                    .ndt(work.getNdt() == 1)
-                    .build()
-            );
-        }
-        return workDtos;
-    }
 
     public PdfFile getPdfFromJob(String jobId) {
         return jobService.getPdfFromJob(jobId);

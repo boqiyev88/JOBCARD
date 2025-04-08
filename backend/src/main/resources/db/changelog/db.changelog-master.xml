@@ -416,13 +416,16 @@
             <column name="zone" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="mrf" type="VARCHAR(50)">
+            <column name="mpr" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="access" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="airplane_app" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="access_note" type="VARCHAR(50)">

@@ -14,6 +14,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "services", schema = "uat")
 @Builder
 public class Services extends AbstractAuditingEntity {

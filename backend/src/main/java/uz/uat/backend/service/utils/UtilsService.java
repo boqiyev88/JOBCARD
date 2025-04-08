@@ -12,6 +12,9 @@ import uz.uat.backend.repository.PDFfileRepository;
 import uz.uat.backend.repository.ServicesRepository;
 import uz.uat.backend.repository.WorkRepository;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +39,33 @@ public class UtilsService {
                         .revision_time(service.getRevisionTime())
                         .build())
                 .toList();
+    }
+
+    public List<ResponseWorkDto> getWork(List<Work> workList) {
+        List<ResponseWorkDto> workDtos = new ArrayList<>();
+        for (Work work : workList) {
+            workDtos.add(ResponseWorkDto.builder()
+                    .jobCard_id(work.getService_id().getId())
+                    .service_id(work.getService_id().getId())
+                    .threshold(work.getThreshold())
+                    .repeat_int(work.getRepeat_int())
+                    .zone(work.getZone())
+                    .mpr(work.getMpr())
+                    .access(work.getAccess())
+                    .airplane_app(work.getAirplane_app())
+                    .description(work.getDescription())
+                    .access_note(work.getAccess_note())
+                    .task_description(work.getTask_description())
+                    .dit(work.getDit() == 1)
+                    .avionic(work.getAvionic() == 1)
+                    .mechanic(work.getMechanic() == 1)
+                    .cab_mechanic(work.getCab_mechanic() == 1)
+                    .sheet_metal(work.getSheet_metal() == 1)
+                    .ndt(work.getNdt() == 1)
+                    .build()
+            );
+        }
+        return workDtos;
     }
 
     public ResponseServiceDto fromEntityService(Services service) {
@@ -141,7 +171,7 @@ public class UtilsService {
                 .threshold(work.getThreshold())
                 .repeat_int(work.getRepeat_int())
                 .zone(work.getZone())
-                .mrf(work.getMrf())
+                .mpr(work.getMpr())
                 .access(work.getAccess())
                 .airplane_app(work.getAirplane_app())
                 .access_note(work.getAccess_note())
@@ -177,4 +207,8 @@ public class UtilsService {
         return jobCardId;
     }
 
+
+    public Instant getTashkentNow() {
+        return ZonedDateTime.now(ZoneId.of("Asia/Tashkent")).toInstant();
+    }
 }

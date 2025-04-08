@@ -3,8 +3,6 @@ package uz.uat.backend.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.component.Notifier;
@@ -80,6 +78,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
         notifier.TechnicianMassageNotifier("New JobCard added");
 
+        System.err.println(jobCard.getUpdTime() + ": {} updTime");
         return utilsService.getJobCard(jobCard);
 
     }
@@ -158,17 +157,17 @@ public class SpecialistService implements SpecialistServiceIM {
 
     @Transactional
     @Override
-    public ResponseDto changeStatus(RequestStatusDto statusDto, int page) {
-        int validPage = page <= 0 ? 0 : page - 1;
+    public ResponseDto changeStatus(RequestStatusDto statusDto) {
+        if (statusDto.status() != 3 && statusDto.status() != 5 && statusDto.status() != 6)
+            throw new MyConflictException("invalid status or massage is null");
+
         return switch (statusDto.status()) {
-            case 1 -> changed(statusDto.jobId(), Status.NEW, 1, validPage);
-            case 2 -> changed(statusDto.jobId(), Status.PENDING, 2, validPage);
-            case 3 -> changed(statusDto.jobId(), Status.IN_PROCESS, 3, validPage);
-            case 4 -> changed(statusDto.jobId(), Status.CONFIRMED, 4, validPage);
-            case 5 -> changed(statusDto.jobId(), Status.COMPLETED, 5, validPage);
-            case 6 -> changed(statusDto.jobId(), Status.REJECTED, 6, validPage);
+            case 3 -> changed(statusDto.jobId(), Status.IN_PROCESS, 3);
+            case 5 -> changed(statusDto.jobId(), Status.COMPLETED, 5);
+            case 6 -> changed(statusDto.jobId(), Status.REJECTED, 6);
             default -> jobService.getAll(0);
         };
+
     }
 
     @Override
@@ -258,7 +257,7 @@ public class SpecialistService implements SpecialistServiceIM {
     public ResponseDto getByStatusNum(int status, int page, String search) {
         return jobService.getByStatusNum(status, page, search);
     }
-    
+
 
     private JobCard editJobCard(JobCard jobCardId, JobCardDto jobCardDto, City LEG, City TO) {
         jobCardId.setWork_order(jobCardDto.work_order() != null ? jobCardDto.work_order() : jobCardId.getWork_order());
@@ -278,7 +277,7 @@ public class SpecialistService implements SpecialistServiceIM {
         return jobCardId;
     }
 
-    private ResponseDto changed(String jobId, Status status, int check, int page) {
+    private ResponseDto changed(String jobId, Status status, int check) {
         if (isValid(status, check)) {
             throw new MyConflictException("invalid change status " + status);
         }
@@ -288,7 +287,7 @@ public class SpecialistService implements SpecialistServiceIM {
         jobCard.setStatus(status);
         JobCard specialist_jobCard = jobCardRepository.save(jobCard);
 
-        notifier.JobCardNotifier(jobService.getAll(page));
+        notifier.JobCardNotifier(jobService.getAll(0));
         notifier.TechnicianMassageNotifier(jobCard.getId() + "'s Job Completed by Specialist");
 
         historyService.addHistory(HistoryDto.builder()
@@ -301,7 +300,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
-        return jobService.getAll(page);
+        return jobService.getAll(0);
     }
 
 

@@ -13,6 +13,7 @@ import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.repository.*;
 import uz.uat.backend.service.utils.UtilsService;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +31,13 @@ public class JobService {
     private final UtilsService utilsService;
 
 
-
     public ResponseDto getByStatusNum(int status, int page, String search) {
         int validPage = page <= 0 ? 0 : page - 1;
         boolean isValidStatus = status > 0 && status < 7;
         boolean hasSearch = (search != null && !search.trim().isEmpty());
 
         if (!isValidStatus && !hasSearch) {
+            System.err.println(Instant.now() + ": Invalid search parameter");
             return getAll(validPage);
         }
         if (!isValidStatus) {

@@ -19,9 +19,9 @@ spring:
       add-mappings: false
   jackson:
     date-format: dd-MM-yyyy
+    time-zone: Asia/Tashkent
     serialization:
       write-dates-as-timestamps: false
-
 
     # Spring Boot Actuator endpointlarini yoqish
     # Micrometer Tracing (Prometheus monitoring)

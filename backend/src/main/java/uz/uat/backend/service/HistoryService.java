@@ -31,47 +31,28 @@ public class HistoryService implements HistoryServiceIM {
     }
 
     @Override
-    public ResponsesDtos getHistory(LocalDate from, LocalDate to, String search, int page) {
-//        boolean isSearchEmpty = (search == null || search.isEmpty());
-//        boolean isDateEmpty = (from == null && to == null);
-//        int validPage = (page < 1) ? 0 : (page - 1);
-//
-//        if (isSearchEmpty && isDateEmpty) {
-//            return getAlls(validPage);
-//        }
-//
-//        if (!isSearchEmpty && isDateEmpty) {
-//            return getBySearch(search, validPage);
-//        }
-//        if (from != null && to == null) {
-//            return getByDate(from, LocalDate.now(), validPage);
-//        }
-////        if (from == null && to != null) {
-////            return getByToDate(to, validPage);
-////        }
-//
-//        return getByDate(from, to, validPage);
+    public ResponsesDtos getHistory(LocalDate from, LocalDate to, int page) {
+        boolean isDateEmpty = (from == null && to == null);
+        int validPage = (page <= 0) ? 0 : (page - 1);
 
-//        List<History> list = historyRepository.findAll();
-//        if (list.isEmpty())
-//            throw new MyNotFoundException("anything history found");
-//        return list;
-        return null;
+        if (isDateEmpty)
+            return getAlls(validPage);
+
+        if (to != null)
+            return getByDate(LocalDate.now(), to, validPage);
+
+        return getByDate(from, LocalDate.now(), validPage);
     }
 
-    private ResponsesDtos getByDate(LocalDate from, LocalDate now, int validPage) {
-
-        return null;
-    }
-
-    private ResponsesDtos getBySearch(String search, int validPage) {
-        Page<History> page = historyRepository.searchByTablename(search, PageRequest.of(validPage, 10));
+    private ResponsesDtos getByDate(LocalDate from, LocalDate to, int validPage) {
+        Page<History> page = historyRepository.getByDate(from, to, PageRequest.of(validPage, 10));
         return ResponsesDtos.builder()
                 .page(validPage + 1)
                 .total(page.getTotalElements())
                 .data(page.getContent())
                 .build();
     }
+
 
     private ResponsesDtos getAlls(int validPage) {
         Page<History> page1 = historyRepository.getAll(PageRequest.of(validPage, 10));

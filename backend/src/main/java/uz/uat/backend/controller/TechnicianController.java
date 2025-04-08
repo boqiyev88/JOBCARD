@@ -13,6 +13,7 @@ import uz.uat.backend.dto.ResponseDto;
 import uz.uat.backend.dto.ResponsesDtos;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.EngineerService;
+import uz.uat.backend.service.JobService;
 import uz.uat.backend.service.TechnicianService;
 
 import java.time.LocalDate;
@@ -27,24 +28,12 @@ public class TechnicianController {
     private final TechnicianService technicianService;
     private final EngineerService engineerService;
 
-    @PostMapping("/send/{jobId}")
-    public ResponseEntity<?> addWorkBySendStatus(@Valid @PathVariable(name = "jobId") String jobCard_id,
-                                                 @RequestBody List<RequestWorkDto> workDtos) {
-        ResponsesDtos list = technicianService.addWork(workDtos, jobCard_id);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
-    }
 
     @PostMapping("/{jobId}")
     public ResponseEntity<?> addWorkBySaveStatus(@Valid @PathVariable(name = "jobId") String jobCard_id,
                                                  @RequestBody List<RequestWorkDto> workDtos) {
         ResponsesDtos list = technicianService.addWork(workDtos, jobCard_id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
-    }
-
-    @PostMapping("/closedWork")
-    public ResponseEntity<?> closedWork(@NonNull @RequestBody RequestWorkDto workDto) {
-//        technicianService.closedWork(workDto);
-        return null;
     }
 
     @GetMapping("/service")

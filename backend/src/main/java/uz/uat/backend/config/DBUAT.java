@@ -8,13 +8,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 import static uz.uat.backend.BackendApplication.MODEL_PACKAGE;
@@ -44,7 +48,7 @@ public class DBUAT {
         hikariConfig.setDriverClassName("org.postgresql.Driver");
 //        hikariConfig.setConnectionTestQuery("select current_timestamp cts from sysibm.sysdummy1");  ibm uchun
         hikariConfig.setConnectionTestQuery("select current_timestamp");
-        hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5455/JOBCARD");
+        hikariConfig.setJdbcUrl("jdbc:postgresql://localhost:5432/JOBCARD");
         hikariConfig.setUsername("postgres");
         hikariConfig.setPassword("1122");
         hikariConfig.setConnectionTimeout(30000);
@@ -85,6 +89,12 @@ public class DBUAT {
     @Bean
     public PlatformTransactionManager transactionManagerUAT(final @Qualifier("entityManagerFactoryUAT") LocalContainerEntityManagerFactoryBean entityManagerFactoryUAT) {
         return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactoryUAT.getObject()));
+    }
+
+    @Primary
+    @Bean
+    public DateTimeProvider dateTimeProvider() {
+        return () -> Optional.of(ZonedDateTime.now(ZoneId.of("Asia/Tashkent")).toInstant());
     }
 }
 

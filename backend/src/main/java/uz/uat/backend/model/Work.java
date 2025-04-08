@@ -29,13 +29,16 @@ public class Work extends AbstractAuditingEntity {
     private String zone;
 
     @Column(nullable = false)
-    private String mrf;
+    private String mpr;
 
     @Column(nullable = false)
     private String access;
 
     @Column(nullable = false)
     private String airplane_app;
+
+    @Column(nullable = false)
+    private String description;
 
     @Column(nullable = false)
     private String access_note;

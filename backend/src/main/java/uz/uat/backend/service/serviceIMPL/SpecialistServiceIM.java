@@ -14,7 +14,7 @@ public interface SpecialistServiceIM {
 
     PdfFile getPdfFromJob(String jobId);
 
-    ResponseDto changeStatus(RequestStatusDto requestStatusDto, int page);
+    ResponseDto changeStatus(RequestStatusDto requestStatusDto);
 
     ResponseDto returned(RequestDto requestDto);
 

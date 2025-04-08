@@ -24,10 +24,10 @@ public interface JobCarRepository extends JpaRepository<JobCard, String> {
     List<StatusCountDto> getByStatusCount();
 
     @Transactional
-    @Query("select sj from JobCard sj where sj.status = :status and sj.isDeleted =0 ORDER BY sj.createdDate desc , sj.updTime desc")
+    @Query("select sj from JobCard sj where sj.status = :status and sj.isDeleted =0 ORDER BY sj.updTime desc , sj.createdDate desc ")
     Page<JobCard> findBySTATUS(@Param("status") Status status, Pageable pageable);
 
-    @Query("select sj from JobCard sj where  sj.isDeleted =0 ORDER BY sj.createdDate desc , sj.updTime desc ")
+    @Query("select sj from JobCard sj where  sj.isDeleted =0 ORDER BY sj.updTime desc , sj.createdDate desc ")
     Page<JobCard> getAll(Pageable pageable);
 
     @Transactional
