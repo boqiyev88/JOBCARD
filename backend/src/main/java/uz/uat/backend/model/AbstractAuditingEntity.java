@@ -23,24 +23,26 @@ public abstract class AbstractAuditingEntity {
     @Column(name = "INSUSER", length = 50, updatable = false)
     private String insUser;
 
-    @CreatedDate
-    @Column(name = "INSTIME", updatable = false)
-    private Instant createdDate;
-
     @LastModifiedBy
     @Column(name = "UPDUSER")
     private String updUser;
+
+    @CreatedDate
+    @Column(name = "INSTIME", updatable = false)
+    private Instant createdDate;
 
     @LastModifiedDate
     @Column(name = "UPDTIME")
     private Instant updTime;
 
-    @Column(name = "DELUSER")
-    private String delUser;
-
     @Column(name = "DELTIME")
     private Instant delTime;
 
+    @Column(name = "DELUSER")
+    private String delUser;
+
     @Column(name = "ISDELETED", columnDefinition = " SMALLINT DEFAULT 0")
     private int isDeleted = 0;
+
+
 }

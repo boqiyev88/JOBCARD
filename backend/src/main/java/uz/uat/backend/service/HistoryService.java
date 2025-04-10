@@ -4,18 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.HistoryDto;
-import uz.uat.backend.dto.ResponseDto;
 import uz.uat.backend.dto.ResponsesDtos;
 import uz.uat.backend.mapper.HistoryMapper;
-import uz.uat.backend.model.Services;
 import uz.uat.backend.model.history_models.History;
 import uz.uat.backend.repository.HistoryRepository;
 import uz.uat.backend.service.serviceIMPL.HistoryServiceIM;
+import uz.uat.backend.service.utils.UtilsService;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +20,7 @@ public class HistoryService implements HistoryServiceIM {
 
     private final HistoryMapper historyMapper;
     private final HistoryRepository historyRepository;
+    private final UtilsService utilsService;
 
     @Override
     public void addHistory(HistoryDto specialistHDto) {
@@ -49,7 +47,7 @@ public class HistoryService implements HistoryServiceIM {
         return ResponsesDtos.builder()
                 .page(validPage + 1)
                 .total(page.getTotalElements())
-                .data(page.getContent())
+                .data(utilsService.getHistorys(page.getContent()))
                 .build();
     }
 
@@ -59,7 +57,7 @@ public class HistoryService implements HistoryServiceIM {
         return ResponsesDtos.builder()
                 .page(validPage + 1)
                 .total(page1.getTotalElements())
-                .data(page1.getContent())
+                .data(utilsService.getHistorys(page1.getContent()))
                 .build();
     }
 }

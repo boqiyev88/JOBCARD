@@ -16,7 +16,7 @@ public class Employeer {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "id", columnDefinition = "VARCHAR(50)")
+    @Column(name = "jobid", columnDefinition = "VARCHAR(50)")
     private String id;
 
     @Column(name = "avionic")

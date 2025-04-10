@@ -21,7 +21,7 @@ public class WorkType extends AbstractAuditingEntity {
     @Id
     @GeneratedValue(generator = "uuid4")
     @UuidGenerator
-    @Column(name = "id", columnDefinition = "VARCHAR(50)")
+    @Column(name = "jobid", columnDefinition = "VARCHAR(50)")
     private String ID;
 
     @Column(nullable = false)

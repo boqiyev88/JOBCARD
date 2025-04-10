@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
+import uz.uat.backend.dto.RequestEditWork;
 import uz.uat.backend.dto.RequestWorkDto;
 import uz.uat.backend.dto.ResponseDto;
 import uz.uat.backend.dto.ResponsesDtos;
@@ -53,10 +54,15 @@ public class TechnicianController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
+    @PutMapping("/{jobid}")
+    public ResponseEntity<?> updateWorkById(@PathVariable(name = "jobid") String jobid, @RequestBody List<RequestEditWork> workDto) {
+        ResponseDto responseDto = technicianService.edit(jobid, workDto);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseDto);
+    }
+
     @GetMapping("/pdf/{jobId}")
     public ResponseEntity<?> getPDF(@PathVariable String jobId) {
         PdfFile pdfFile = technicianService.getPdfFromJob(jobId);
-
         if (pdfFile.getData() != null && pdfFile.getId() != null) {
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
@@ -64,6 +70,12 @@ public class TechnicianController {
                     .body(pdfFile.getData());
         } else
             return ResponseEntity.status(404).contentType(MediaType.APPLICATION_JSON).body("file not found");
+    }
+
+    @DeleteMapping("/{workid}")
+    public ResponseEntity<?> deleteWorkById(@PathVariable(name = "workid") String workid) {
+        ResponseDto response = technicianService.delete(workid);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
 

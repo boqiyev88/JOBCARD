@@ -167,7 +167,7 @@ public class EngineerService implements EngineerServiceIM {
     public ResponsesDtos getServices(String serviceId) {
         Optional<Services> optional = servicesRepository.findById(serviceId);
         if (optional.isEmpty())
-            throw new MyNotFoundException("serviceId not found by this service id: " + serviceId);
+            throw new MyNotFoundException("serviceId not found by this service jobid: " + serviceId);
         Services services = optional.get();
         List<TaskDto> taskDtos = taskMapper.list(services.getTasks());
         return ResponsesDtos.builder()
@@ -178,7 +178,7 @@ public class EngineerService implements EngineerServiceIM {
     @Override
     public ResponsesDtos editTask(@NotBlank String id, @NotBlank ServiceDto workListDto) {
         if (workListDto == null || id == null)
-            throw new MyNotFoundException("workList or id is null");
+            throw new MyNotFoundException("workList or jobid is null");
 
         Optional<Services> optional1 = servicesRepository.findById(id);
         Optional<ServiceName> optional = serviceNameRepository.findByName(workListDto.serviceName_id());
@@ -213,7 +213,7 @@ public class EngineerService implements EngineerServiceIM {
     public ResponsesDtos getDeleteTask(@NotBlank String id) {
         Optional<Services> optional = servicesRepository.findById(id);
         if (optional.isEmpty())
-            throw new MyNotFoundException("services not found by id " + id);
+            throw new MyNotFoundException("services not found by jobid " + id);
         Services service = optional.get();
         service.setIsDeleted(1);
         Services save = servicesRepository.save(service);

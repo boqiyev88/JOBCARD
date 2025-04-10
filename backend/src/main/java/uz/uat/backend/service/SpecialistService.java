@@ -20,6 +20,7 @@ import uz.uat.backend.service.utils.UtilsService;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,7 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setLeg(LEG.get());
         specialist_jobCard.setTo(TO.get());
         specialist_jobCard.setDate(jobCardDto.date());
+        specialist_jobCard.setCreatedDate(Instant.now());
         JobCard jobCard = jobCardRepository.save(specialist_jobCard);
         notifier.SpecialistMassageNotifier("New JobCard added");
         /// historyga yozildi
@@ -78,7 +80,7 @@ public class SpecialistService implements SpecialistServiceIM {
 
         notifier.TechnicianMassageNotifier("New JobCard added");
 
-        System.err.println(jobCard.getUpdTime() + ": {} updTime");
+        System.err.println(Instant.now());
         return utilsService.getJobCard(jobCard);
 
     }
@@ -108,6 +110,7 @@ public class SpecialistService implements SpecialistServiceIM {
                         .build());
 
                 jobCard.setMainPlan(newFile);
+                jobCard.setUpdTime(Instant.now());
                 jobCardRepository.save(jobCard);
                 return jobService.getAll(0);
             }
@@ -118,6 +121,7 @@ public class SpecialistService implements SpecialistServiceIM {
                     .build());
 
             jobCard.setMainPlan(newFile);
+            jobCard.setUpdTime(Instant.now());
             jobCardRepository.save(jobCard);
 
         } catch (IOException e) {
@@ -130,10 +134,10 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     @Transactional
     public ResponseDto returned(RequestDto requestDto) {
-        if (requestDto.id() == null || requestDto.massage() == null)
-            throw new MyNotFoundException("invalid request id or massage is null");
+        if (requestDto.jobid() == null || requestDto.message() == null)
+            throw new MyNotFoundException("invalid request jobid or message is null");
 
-        JobCard jobCardId = utilsService.getJobById(requestDto.id());
+        JobCard jobCardId = utilsService.getJobById(requestDto.jobid());
 
         jobCardId.setStatus(Status.REJECTED);
         JobCard specialist_jobCard = jobCardRepository.save(jobCardId);
@@ -159,7 +163,7 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     public ResponseDto changeStatus(RequestStatusDto statusDto) {
         if (statusDto.status() != 3 && statusDto.status() != 5 && statusDto.status() != 6)
-            throw new MyConflictException("invalid status or massage is null");
+            throw new MyConflictException("invalid status or message is null");
 
         return switch (statusDto.status()) {
             case 3 -> changed(statusDto.jobId(), Status.IN_PROCESS, 3);
@@ -179,9 +183,10 @@ public class SpecialistService implements SpecialistServiceIM {
     public ResponseDto delete(@NotNull String jobId) {
         JobCard jobCard = jobCardRepository.findByJobCardId(jobId);
         if (jobId == null || jobId.isEmpty() || jobCard == null) {
-            throw new MyNotFoundException("job card not found by this id:{} " + jobId);
+            throw new MyNotFoundException("job card not found by this jobid:{} " + jobId);
         }
         jobCard.setIsDeleted(1);
+        jobCard.setDelTime(Instant.now());
         jobCardRepository.save(jobCard);
         return jobService.getAll(0);
     }
@@ -191,7 +196,7 @@ public class SpecialistService implements SpecialistServiceIM {
     public ResponseDto edit(String jobId, JobCardDto jobCardDto) {
         JobCard jobCardId = jobCardRepository.findByJobCardId(jobId);
         if (jobCardId == null) {
-            throw new MyNotFoundException("job card not found by this id: {}" + jobId);
+            throw new MyNotFoundException("job card not found by this jobid: {}" + jobId);
         }
         Optional<City> LEG = cityRepository.findById(jobCardDto.leg());
         Optional<City> TO = cityRepository.findById(jobCardDto.to());
@@ -199,11 +204,12 @@ public class SpecialistService implements SpecialistServiceIM {
             throw new MyNotFoundException("city not found");
         }
         JobCard jobCard = editJobCard(jobCardId, jobCardDto, LEG.get(), TO.get());
+        jobCard.setUpdTime(Instant.now());
         jobCardRepository.save(jobCard);
         return jobService.getAll(0);
     }
 
-    /// work id orqali work ga tegishli barcha malumotlar
+    /// work jobid orqali work ga tegishli barcha malumotlar
     @Override
     @Transactional
     public ResultJob getWork(String workid) {
@@ -218,7 +224,7 @@ public class SpecialistService implements SpecialistServiceIM {
     }
 
 
-    /// job id orqali barcha work va servicelarni olish
+    /// job jobid orqali barcha work va servicelarni olish
     @Override
     @Transactional
     public List<ResultWork> getWorks(String jobid) {
@@ -233,7 +239,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .collect(Collectors.toList());
     }
 
-    ///  job id orqali barcha worklarni olib kelish
+    ///  job jobid orqali barcha worklarni olib kelish
     @Override
     @Transactional
     public ResultJob getJobWithAll(String jobid) {
@@ -285,6 +291,7 @@ public class SpecialistService implements SpecialistServiceIM {
         JobCard jobCard = utilsService.getJobById(jobId);
         Status oldStatus = jobCard.getStatus();
         jobCard.setStatus(status);
+        jobCard.setUpdTime(Instant.now());
         JobCard specialist_jobCard = jobCardRepository.save(jobCard);
 
         notifier.JobCardNotifier(jobService.getAll(0));
@@ -312,6 +319,9 @@ public class SpecialistService implements SpecialistServiceIM {
         };
     }
 
+    private String getInstant(Instant instant) {
+        return instant.atZone(ZoneId.of("Asia/Tashkent")).toInstant().toString();
+    }
 
 }
 
