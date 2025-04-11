@@ -8,10 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
-import uz.uat.backend.dto.RequestEditWork;
-import uz.uat.backend.dto.RequestWorkDto;
-import uz.uat.backend.dto.ResponseDto;
-import uz.uat.backend.dto.ResponsesDtos;
+import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.EngineerService;
 import uz.uat.backend.service.JobService;
@@ -52,6 +49,12 @@ public class TechnicianController {
                                           @RequestParam(value = "search", required = false) String search) {
         ResponseDto list = technicianService.getByStatusNum(status, page, search);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
+    }
+
+    @GetMapping("/work/{jobid}")
+    ResponseEntity<?> getWorkByJobId(@PathVariable(name = "jobid") String jobCard_id) {
+        ResponseWork responseWork = technicianService.showWorksWithService(jobCard_id);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseWork);
     }
 
     @PutMapping("/{jobid}")

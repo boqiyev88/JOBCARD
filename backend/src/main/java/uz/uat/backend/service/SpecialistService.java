@@ -79,8 +79,6 @@ public class SpecialistService implements SpecialistServiceIM {
                 .build());
 
         notifier.TechnicianMassageNotifier("New JobCard added");
-
-        System.err.println(Instant.now());
         return utilsService.getJobCard(jobCard);
 
     }

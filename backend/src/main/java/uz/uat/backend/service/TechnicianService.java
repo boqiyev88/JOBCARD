@@ -22,6 +22,7 @@ import uz.uat.backend.service.utils.UtilsService;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -226,5 +227,16 @@ public class TechnicianService {
                 .build());
 
         return jobService.getAll(1);
+    }
+
+    public ResponseWork showWorksWithService(String jobCardId) {
+        JobCard jobCard = utilsService.getJobById(jobCardId);
+        List<Work> works = workRepository.findByJobcard_id(jobCard.getId());
+        if (works.isEmpty())
+            throw new MyNotFoundException("works not found, may be Invalid jobid");
+        return ResponseWork.builder()
+                .job_status(String.valueOf(utilsService.getStatus(jobCard.getStatus())))
+                .work(works.stream().map(work -> utilsService.getWork(work, work.getService_id())).collect(Collectors.toList()))
+                .build();
     }
 }

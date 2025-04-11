@@ -189,6 +189,28 @@ public class UtilsService {
 
     }
 
+    public ResultWorkDto getWork(Work work, Services service) {
+        return ResultWorkDto.builder()
+                .work_id(work.getId())
+                .threshold(work.getThreshold())
+                .repeat_int(work.getRepeat_int())
+                .zone(work.getZone())
+                .mpr(work.getMpr())
+                .access(work.getAccess())
+                .airplane_app(work.getAirplane_app())
+                .access_note(work.getAccess_note())
+                .task_description(work.getTask_description())
+                .dit(work.getDit() == 1)
+                .avionic(work.getAvionic() == 1)
+                .mechanic(work.getMechanic() == 1)
+                .cab_mechanic(work.getCab_mechanic() == 1)
+                .sheet_metal(work.getSheet_metal() == 1)
+                .ndt(work.getNdt() == 1)
+                .service(fromEntityService(service))
+                .build();
+
+    }
+
     public Services getServiceById(String id) {
         Optional<Services> optional = servicesRepository.findById(id);
         if (optional.isEmpty())

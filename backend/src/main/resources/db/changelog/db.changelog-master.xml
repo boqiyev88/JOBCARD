@@ -506,4 +506,27 @@
     </changeSet>
 
 
+    <!-- message jadvalini yaratish -->
+    <changeSet id="17" author="user">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="message" schemaName="uat"/>
+            </not>
+        </preConditions>
+        <createTable tableName="message" schemaName="uat">
+            <column name="id" type="VARCHAR(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR">
+            </column>
+            <column name="from_user" type="VARCHAR">
+            </column>
+            <column name="to_user" type="VARCHAR">
+            </column>
+            <column name="is_deleted" type="VARCHAR">
+            </column>
+        </createTable>
+    </changeSet>
+
+
 </databaseChangeLog>
