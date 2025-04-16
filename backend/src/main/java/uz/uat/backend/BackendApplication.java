@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @SpringBootApplication
 @EnableScheduling
+@EnableJpaAuditing
 public class BackendApplication {
     public final static String MODEL_PACKAGE = "uz.uat.backend.model";
     public static void main(String[] args) {

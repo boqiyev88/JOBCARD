@@ -213,7 +213,7 @@ public class EngineerService implements EngineerServiceIM {
     public ResponsesDtos getDeleteTask(@NotBlank String id) {
         Optional<Services> optional = servicesRepository.findById(id);
         if (optional.isEmpty())
-            throw new MyNotFoundException("services not found by jobid " + id);
+            throw new MyNotFoundException("services not found by service " + id);
         Services service = optional.get();
         service.setIsDeleted(1);
         Services save = servicesRepository.save(service);

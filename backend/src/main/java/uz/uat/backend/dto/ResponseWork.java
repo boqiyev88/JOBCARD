@@ -3,5 +3,5 @@ package uz.uat.backend.dto;
 import lombok.Builder;
 
 @Builder
-public record ResponseWork(String job_status,Object work) {
+public record ResponseWork(Object jobcard, Object work) {
 }

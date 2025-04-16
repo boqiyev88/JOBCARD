@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -21,11 +23,16 @@ public class Message {
     @Column(nullable = false, length = 500)
     private String title;
 
-    @Column(nullable = false)
-    private String fromUser;
+    @JoinColumn(name = "from_user")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    private User fromUser;
+
+    @JoinColumn(name = "to_user")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    private User toUser;
 
     @Column(nullable = false)
-    private String toUser;
+    private LocalDateTime created_date = LocalDateTime.now();
 
     @Column(nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
     private int isDeleted = 0;

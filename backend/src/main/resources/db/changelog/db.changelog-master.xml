@@ -525,7 +525,24 @@
             </column>
             <column name="is_deleted" type="VARCHAR">
             </column>
+            <column name="created_date" type="timestamp">
+            </column>
         </createTable>
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="from_user"
+                                 constraintName="fk_from_user"
+                                 referencedTableName="USER"
+                                 referencedColumnNames="id"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="to_user"
+                                 constraintName="fk_to_user"
+                                 referencedTableName="USER"
+                                 referencedColumnNames="id"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
 

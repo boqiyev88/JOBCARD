@@ -1,5 +1,6 @@
 package uz.uat.backend.controller;
 
+import org.springframework.security.core.Authentication;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -76,8 +77,9 @@ public class TechnicianController {
     }
 
     @DeleteMapping("/{workid}")
-    public ResponseEntity<?> deleteWorkById(@PathVariable(name = "workid") String workid) {
-        ResponseDto response = technicianService.delete(workid);
+    public ResponseEntity<?> deleteWorkById(@PathVariable(name = "workid") String workid, @RequestBody DeleteWorkDto deleteWorkDto) {
+
+        ResponseWork response = technicianService.delete(workid, deleteWorkDto);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 

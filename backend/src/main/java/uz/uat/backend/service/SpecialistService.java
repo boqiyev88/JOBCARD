@@ -51,11 +51,11 @@ public class SpecialistService implements SpecialistServiceIM {
         if (LEG.isEmpty() || TO.isEmpty()) {
             throw new MyNotFoundException("city not found");
         }
-        Optional<JobCard> optional = jobCardRepository.findByWorkOrderNumber(jobCardDto.work_order());
-
-        if (optional.isPresent()) {
-            throw new MyConflictException("jobCard already exists");
-        }
+//        Optional<JobCard> optional = jobCardRepository.findByWorkOrderNumber(jobCardDto.work_order());
+//
+//        if (optional.isPresent()) {
+//            throw new MyConflictException("jobCard already exists");
+//        }
 
         JobCardDtoMapper dtoMapper = jobCardMapper.toDtoMapper(jobCardDto);
         JobCard specialist_jobCard = jobCardMapper.toEntity(dtoMapper);
@@ -65,7 +65,7 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setDate(jobCardDto.date());
         specialist_jobCard.setCreatedDate(Instant.now());
         JobCard jobCard = jobCardRepository.save(specialist_jobCard);
-        notifier.SpecialistMassageNotifier("New JobCard added");
+        notifier.SpecialistMassageNotifier("New JobCard added",utilsService.getUser(jobCard.getInsUser()));
         /// historyga yozildi
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.JOB.name())
@@ -78,7 +78,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updTime(Instant.now())
                 .build());
 
-        notifier.TechnicianMassageNotifier("New JobCard added");
+//        notifier.TechnicianMassageNotifier("New JobCard added");
         return utilsService.getJobCard(jobCard);
 
     }
@@ -317,9 +317,6 @@ public class SpecialistService implements SpecialistServiceIM {
         };
     }
 
-    private String getInstant(Instant instant) {
-        return instant.atZone(ZoneId.of("Asia/Tashkent")).toInstant().toString();
-    }
 
 }
 

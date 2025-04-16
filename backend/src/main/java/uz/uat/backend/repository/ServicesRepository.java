@@ -12,6 +12,7 @@ import uz.uat.backend.model.Services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ServicesRepository extends JpaRepository<Services, String> {
@@ -36,4 +37,7 @@ public interface ServicesRepository extends JpaRepository<Services, String> {
 
     @Query("SELECT s FROM Services s WHERE s.isDeleted=0 and s.revisionTime <= :toDate ORDER BY s.updTime desc ,s.createdDate desc")
     Page<Services> getByToDate(@Param("toDate") LocalDate toDate, Pageable pageable);
+
+    @Query("SELECT s FROM Services s WHERE s.isDeleted=0 and s.id IN :ids")
+    List<Services> findAllByIds(@Param("ids") Set<String> ids);
 }

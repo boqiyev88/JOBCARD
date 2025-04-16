@@ -5,13 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
 import uz.uat.backend.component.Notifier;
+import uz.uat.backend.config.exception.MyConflictException;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.*;
-import uz.uat.backend.model.JobCard;
-import uz.uat.backend.model.PdfFile;
-import uz.uat.backend.model.Services;
-import uz.uat.backend.model.Work;
+import uz.uat.backend.model.*;
 import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.model.enums.TableName;
@@ -21,11 +20,10 @@ import uz.uat.backend.repository.WorkRepository;
 import uz.uat.backend.service.utils.UtilsService;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,37 +42,45 @@ public class TechnicianService {
     @Transactional
     public ResponsesDtos addWork(List<RequestWorkDto> workDtos, String jobCard_id) {
         JobCard jobCard = utilsService.getJobById(jobCard_id);
-        Map<String, Services> servicesMap = servicesMap();
-        List<Work> works = getWorkDto(workDtos, servicesMap, jobCard);
-        List<Work> saved = workRepository.saveAll(works);
+        if (jobCard.getStatus().equals(Status.NEW)) {
+            Set<String> requestedServiceIds = workDtos.stream()
+                    .map(RequestWorkDto::service_id)
+                    .collect(Collectors.toSet());
+            List<Work> works = getWorkDto(workDtos, getServices(requestedServiceIds), jobCard);
+            for (Work work : works) {
+                work.setCreatedDate(Instant.now());
+            }
+            List<Work> saved = workRepository.saveAll(works);
 
-        jobCard.setStatus(Status.PENDING);
-        JobCard save = jobCarRepository.save(jobCard);
+            jobCard.setStatus(Status.PENDING);
+            jobCard.setUpdTime(Instant.now());
+            JobCard save = jobCarRepository.save(jobCard);
 
-        historyService.addHistory(HistoryDto.builder()
-                .tablename(TableName.work.name())
-                .tableID(" ")
-                .OS(OperationStatus.CREATED.name())
-                .rowName(" ")
-                .oldValue(" ")
-                .newValue(utilsService.getWork(saved).toString())
-                .updatedBy(save.getUpdUser())
-                .updTime(Instant.now())
-                .build()
-        );
+            historyService.addHistory(HistoryDto.builder()
+                    .tablename(TableName.work.name())
+                    .tableID(" ")
+                    .OS(OperationStatus.CREATED.name())
+                    .rowName(" ")
+                    .oldValue(" ")
+                    .newValue(utilsService.getWork(saved).toString())
+                    .updatedBy(save.getUpdUser())
+                    .updTime(Instant.now())
+                    .build()
+            );
 
-        historyService.addHistory(HistoryDto.builder()
-                .tablename(TableName.JOB.name())
-                .tableID(jobCard.getId())
-                .OS(OperationStatus.CREATED.name())
-                .rowName("Status")
-                .oldValue(Status.NEW.name())
-                .newValue(jobCard.getStatus().name())
-                .updatedBy(save.getUpdUser())
-                .updTime(Instant.now())
-                .build()
-        );
-
+            historyService.addHistory(HistoryDto.builder()
+                    .tablename(TableName.JOB.name())
+                    .tableID(jobCard.getId())
+                    .OS(OperationStatus.CREATED.name())
+                    .rowName("Status")
+                    .oldValue(Status.NEW.name())
+                    .newValue(jobCard.getStatus().name())
+                    .updatedBy(save.getUpdUser())
+                    .updTime(Instant.now())
+                    .build()
+            );
+        } else
+            throw new MyConflictException("You are trying to log in with an invalid job status");
 //        notifier.SpecialistMassageNotifier("Work added successfully");
 //        notifier.JobCardNotifier(getAll(1));
 //        notifier.TechnicianMassageNotifier("Work added successfully");
@@ -94,41 +100,84 @@ public class TechnicianService {
     @Transactional
     public ResponseDto edit(String jobid, List<RequestEditWork> workDto) {
         JobCard jobCard = utilsService.getJobById(jobid);
-        Map<String, Services> servicesMap = servicesMap();
-        List<Work> works = getEditWorkDto(workDto, servicesMap, jobCard);
-        List<Work> saved = workRepository.saveAll(works);
-        jobCard.setStatus(Status.PENDING);
-        JobCard save = jobCarRepository.save(jobCard);
 
-        notifier.SpecialistMassageNotifier("Work successfully updated");
-        notifier.JobCardNotifier(jobService.getAll(1));
-        notifier.TechnicianMassageNotifier("Work successfully updated");
+        if (jobCard.getStatus().equals(Status.NEW) || jobCard.getStatus().equals(Status.REJECTED)) {
 
-        historyService.addHistory(HistoryDto.builder()
-                .tablename(TableName.work.name())
-                .tableID(jobid)
-                .OS(OperationStatus.UPDATED.name())
-                .rowName("Status")
-                .oldValue(workDto.toString())
-                .newValue(utilsService.getWork(saved).toString())
-                .updatedBy(save.getUpdUser())
-                .updTime(Instant.now())
-                .build()
-        );
+            Set<String> requestedServiceIds = workDto.stream()
+                    .map(RequestEditWork::service_id)
+                    .collect(Collectors.toSet());
 
-        historyService.addHistory(HistoryDto.builder()
-                .tablename(TableName.JOB.name())
-                .tableID(jobCard.getId())
-                .OS(OperationStatus.UPDATED.name())
-                .rowName("Status")
-                .oldValue(jobCard.getStatus().name())
-                .newValue(save.getStatus().name())
-                .updatedBy(save.getUpdUser())
-                .updTime(Instant.now())
-                .build()
-        );
+            List<Work> works = getEditWorkDto(workDto, getServices(requestedServiceIds), jobCard);
+            List<Work> saved = workRepository.saveAll(works);
+            jobCard.setStatus(Status.PENDING);
+            JobCard save = jobCarRepository.save(jobCard);
+
+//            notifier.SpecialistMassageNotifier("Work successfully updated");
+//            notifier.JobCardNotifier(jobService.getAll(1));
+//            notifier.TechnicianMassageNotifier("Work successfully updated");
+
+            historyService.addHistory(HistoryDto.builder()
+                    .tablename(TableName.work.name())
+                    .tableID(jobid)
+                    .OS(OperationStatus.UPDATED.name())
+                    .rowName("Status")
+                    .oldValue(workDto.toString())
+                    .newValue(utilsService.getWork(saved).toString())
+                    .updatedBy(save.getUpdUser())
+                    .updTime(Instant.now())
+                    .build()
+            );
+
+            historyService.addHistory(HistoryDto.builder()
+                    .tablename(TableName.JOB.name())
+                    .tableID(jobCard.getId())
+                    .OS(OperationStatus.UPDATED.name())
+                    .rowName("Status")
+                    .oldValue(jobCard.getStatus().name())
+                    .newValue(save.getStatus().name())
+                    .updatedBy(save.getUpdUser())
+                    .updTime(Instant.now())
+                    .build()
+            );
+        } else
+            throw new MyConflictException("You are trying to log in with an invalid job status");
 
         return jobService.getAll(1);
+    }
+
+
+    @Transactional
+    public ResponseWork delete(String workid, DeleteWorkDto deleteWorkDto) {
+        Work work = utilsService.getWorkById(workid);
+//        User user = utilsService.getAuthenticatedUser();
+        work.setIsDeleted(1);
+//        work.setDelUser(user.getId());
+        work.setDelTime(Instant.now());
+        Work save = workRepository.save(work);
+        historyService.addHistory(HistoryDto.builder()
+                .tablename(TableName.work.name())
+                .tableID(work.getId())
+                .OS(OperationStatus.DELETED.name())
+                .rowName("table")
+                .oldValue(utilsService.getWork(work).toString())
+                .newValue(utilsService.getWork(save).toString())
+                .updatedBy(save.getUpdUser())
+                .updTime(Instant.now())
+                .build());
+
+        return showWorksWithService(deleteWorkDto.jobid());
+    }
+
+    public ResponseWork showWorksWithService(String jobCardId) {
+        JobCard jobCard = utilsService.getJobById(jobCardId);
+        List<Work> works = workRepository.findByJobcard_id(jobCard.getId());
+        if (works.isEmpty())
+            throw new MyNotFoundException("works not found, may be Invalid jobid");
+        ResponseJobCardDto responseJobCard = utilsService.getJobCard(jobCard);
+        return ResponseWork.builder()
+                .jobcard(responseJobCard)
+                .work(works.stream().map(work -> utilsService.getWork(work, work.getService_id())).collect(Collectors.toList()))
+                .build();
     }
 
 
@@ -148,13 +197,22 @@ public class TechnicianService {
                 .build();
     }
 
-    private List<Services> getServices() {
-        List<Services> optional = servicesRepository.getAll();
-        if (optional.isEmpty())
-            throw new MyNotFoundException("service not found, may be Invalid service jobid");
-        return optional;
-    }
+    private Map<String, Services> getServices(Set<String> requestedServiceIds) {
+        List<Services> list = servicesRepository.findAllByIds(requestedServiceIds);
 
+        Set<String> foundIds = list.stream()
+                .map(Services::getId)
+                .collect(Collectors.toSet());
+
+        List<String> missingServices = requestedServiceIds.stream()
+                .filter(id -> !foundIds.contains(id))
+                .toList();
+
+        if (!missingServices.isEmpty())
+            throw new MyNotFoundException("Service not found by ids");
+
+        return list.stream().collect(Collectors.toMap(Services::getId, services -> services));
+    }
 
     private List<Work> getWorkDto(List<RequestWorkDto> workDtoList, Map<String, Services> servicesMap, JobCard jobCard) {
         return workDtoList.stream()
@@ -180,9 +238,8 @@ public class TechnicianService {
                 .collect(Collectors.toList());
     }
 
-    private Map<String, Services> servicesMap() {
-        return getServices().stream()
-                .collect(Collectors.toMap(Services::getId, Function.identity()));
+    private Map<String, Services> servicesMap(List<Services> servicesList) {
+        return servicesList.stream().collect(Collectors.toMap(Services::getId, services -> services));
     }
 
     private List<Work> getEditWorkDto(List<RequestEditWork> workDtoList, Map<String, Services> servicesMap, JobCard jobCard) {
@@ -210,33 +267,4 @@ public class TechnicianService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseDto delete(String workid) {
-        Work work = utilsService.getWorkById(workid);
-        work.setIsDeleted(1);
-        Work save = workRepository.save(work);
-
-        historyService.addHistory(HistoryDto.builder()
-                .tablename(TableName.work.name())
-                .tableID(work.getId())
-                .OS(OperationStatus.DELETED.name())
-                .rowName("table")
-                .oldValue(utilsService.getWork(work).toString())
-                .newValue(utilsService.getWork(save).toString())
-                .updatedBy(save.getUpdUser())
-                .updTime(Instant.now())
-                .build());
-
-        return jobService.getAll(1);
-    }
-
-    public ResponseWork showWorksWithService(String jobCardId) {
-        JobCard jobCard = utilsService.getJobById(jobCardId);
-        List<Work> works = workRepository.findByJobcard_id(jobCard.getId());
-        if (works.isEmpty())
-            throw new MyNotFoundException("works not found, may be Invalid jobid");
-        return ResponseWork.builder()
-                .job_status(String.valueOf(utilsService.getStatus(jobCard.getStatus())))
-                .work(works.stream().map(work -> utilsService.getWork(work, work.getService_id())).collect(Collectors.toList()))
-                .build();
-    }
 }

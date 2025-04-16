@@ -1,23 +1,23 @@
 package uz.uat.backend.service.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import uz.uat.backend.config.exception.MyConflictException;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.mapper.TaskMapper;
 import uz.uat.backend.model.*;
-import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.Status;
-import uz.uat.backend.model.enums.TableName;
+import org.springframework.security.core.Authentication;
 import uz.uat.backend.model.history_models.History;
-import uz.uat.backend.repository.JobCarRepository;
-import uz.uat.backend.repository.PDFfileRepository;
-import uz.uat.backend.repository.ServicesRepository;
-import uz.uat.backend.repository.WorkRepository;
+import uz.uat.backend.repository.*;
+import uz.uat.backend.service.UserDetailsServiceImpl;
 
-import java.time.Instant;
+
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +31,8 @@ public class UtilsService {
     private final ServicesRepository servicesRepository;
     private final WorkRepository workRepository;
     private final JobCarRepository jobCarRepository;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final UserRepository userRepository;
 
     public List<ResponseServiceDto> fromEntityService(List<Services> services) {
         return services.stream()
@@ -197,6 +199,7 @@ public class UtilsService {
                 .zone(work.getZone())
                 .mpr(work.getMpr())
                 .access(work.getAccess())
+                .description(work.getDescription())
                 .airplane_app(work.getAirplane_app())
                 .access_note(work.getAccess_note())
                 .task_description(work.getTask_description())
@@ -219,7 +222,7 @@ public class UtilsService {
     }
 
     public Work getWorkById(String id) {
-        Optional<Work> optional = workRepository.findById(id);
+        Optional<Work> optional = workRepository.findWorkById(id);
         if (optional.isEmpty())
             throw new MyNotFoundException("work not found by this jobid: {}" + id);
         return optional.get();
@@ -237,6 +240,41 @@ public class UtilsService {
                 .map(this::getHistory)
                 .toList();
     }
+
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new MyConflictException("Unauthenticated user");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User) {
+            return (User) principal;
+        } else if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            return (User) userDetailsService.loadUserByUsername(username);
+        }
+
+        throw new MyConflictException("Unauthenticated user");
+    }
+
+    public Message getMessage(String message, User from_user, User to_user) {
+        return Message.builder()
+                .title(message)
+                .fromUser(from_user)
+                .toUser(to_user)
+                .created_date(LocalDateTime.now())
+                .build();
+    }
+
+    public User getUser(String userid) {
+        Optional<User> optional = userRepository.findById(userid);
+        if (optional.isEmpty())
+            throw new MyNotFoundException("user not found");
+        return optional.get();
+    }
+
 
     private ResponseHistoryDto getHistory(History history) {
         return ResponseHistoryDto.builder()
