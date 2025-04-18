@@ -46,6 +46,8 @@ public class SpecialistService implements SpecialistServiceIM {
         if (jobCardDto == null) {
             throw new MyNotFoundException("jobCardDto is null");
         }
+        System.err.println(jobCardDto.leg());
+        System.err.println(jobCardDto.to());
         Optional<City> LEG = cityRepository.findById(jobCardDto.leg());
         Optional<City> TO = cityRepository.findById(jobCardDto.to());
         if (LEG.isEmpty() || TO.isEmpty()) {
@@ -65,7 +67,7 @@ public class SpecialistService implements SpecialistServiceIM {
         specialist_jobCard.setDate(jobCardDto.date());
         specialist_jobCard.setCreatedDate(Instant.now());
         JobCard jobCard = jobCardRepository.save(specialist_jobCard);
-        notifier.SpecialistMassageNotifier("New JobCard added",utilsService.getUser(jobCard.getInsUser()));
+//        notifier.SpecialistMassageNotifier("New JobCard added",utilsService.getUser(jobCard.getInsUser()));
         /// historyga yozildi
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.JOB.name())

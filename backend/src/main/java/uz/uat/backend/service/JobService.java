@@ -66,7 +66,7 @@ public class JobService {
     }
 
     public ResponseDto getBySearch(String search, int page) {
-        Page<JobCard> jobCards = jobCardRepository.findBySearch(search, PageRequest.of(page - 1, 10));
+        Page<JobCard> jobCards = jobCardRepository.findBySearch(search, PageRequest.of(page , 10));
         if (jobCards.isEmpty()) {
             return getStatusCount(ResponseDto.builder()
                     .page(1)

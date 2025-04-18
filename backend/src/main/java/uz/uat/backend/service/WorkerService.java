@@ -8,7 +8,7 @@ public class WorkerService implements WorkerServiceIM {
 
 
     @Override
-    public void showTasks(int status, int page) {
+    public void showTasks(int status) {
         
     }
 }

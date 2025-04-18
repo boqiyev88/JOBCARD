@@ -268,12 +268,12 @@ public class UtilsService {
                 .build();
     }
 
-    public User getUser(String userid) {
-        Optional<User> optional = userRepository.findById(userid);
-        if (optional.isEmpty())
-            throw new MyNotFoundException("user not found");
-        return optional.get();
-    }
+//    public User getUser(String userid) {
+//        Optional<User> optional = userRepository.findById(userid);
+//        if (optional.isEmpty())
+//            throw new MyNotFoundException("user not found");
+//        return optional.get();
+//    }
 
 
     private ResponseHistoryDto getHistory(History history) {
