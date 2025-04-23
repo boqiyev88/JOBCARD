@@ -263,6 +263,7 @@ public class TechnicianService {
                         .cab_mechanic(dto.cab_mechanic() ? 1 : 0)
                         .sheet_metal(dto.sheet_metal() ? 1 : 0)
                         .ndt(dto.ndt() ? 1 : 0)
+                        .status(Status.NEW)
                         .build())
                 .collect(Collectors.toList());
     }

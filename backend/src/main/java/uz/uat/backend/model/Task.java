@@ -10,7 +10,7 @@ import org.hibernate.annotations.UuidGenerator;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "task" ,schema = "uat")
+@Table(name = "task", schema = "uat")
 @Builder
 public class Task {
 
@@ -20,10 +20,20 @@ public class Task {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column(nullable = false,name = "number")
+    @Column(nullable = false, name = "number")
     private String number;
 
     @Column(nullable = false, name = "description")
     private String description;
+
+    @Column(name = "pref")
+    private int pref;
+
+    @Column(name = "insp")
+    private int insp;
+
+    @JoinColumn(name = "userId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User userId;
 
 }

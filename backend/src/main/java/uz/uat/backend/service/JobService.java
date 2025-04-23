@@ -161,4 +161,21 @@ public class JobService {
                 .build();
     }
 
+    private ResponseDto getWorkStatusCount() {
+        List<StatusCountDto> dto = workRepository.getByStatusCount();
+        Long newCount = dto.stream().filter(d -> "NEW".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
+        Long inProcessCount = dto.stream().filter(d -> "IN_PROCESS".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
+        Long confirmedCount = dto.stream().filter(d -> "CONFIRMED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
+        Long completedCount = dto.stream().filter(d -> "COMPLETED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
+        Long rejectedCount = dto.stream().filter(d -> "REJECTED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
+        return ResponseDto.builder()
+                .all(newCount  + inProcessCount + confirmedCount + completedCount + rejectedCount)
+                .New(newCount)
+                .In_process(inProcessCount)
+                .Confirmed(confirmedCount)
+                .Completed(completedCount)
+                .Rejected(rejectedCount)
+                .build();
+    }
+
 }
