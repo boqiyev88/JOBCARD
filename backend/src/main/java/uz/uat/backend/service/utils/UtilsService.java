@@ -191,6 +191,21 @@ public class UtilsService {
 
     }
 
+    public JobWithService getJobWithService(String jobId) {
+        JobCard jobCard = getJobById(jobId);
+        List<Work> works = workRepository.findByJobcard_id(jobCard.getId());
+        if (works.isEmpty())
+            throw new MyNotFoundException("Work not found by this jobId");
+        return new JobWithService(
+                getJobCard(jobCard),
+                fromEntityService(
+                        works.stream()
+                                .map(Work::getService_id)
+                                .toList()
+                )
+        );
+    }
+
     public ResultWorkDto getWork(Work work, Services service) {
         return ResultWorkDto.builder()
                 .work_id(work.getId())
@@ -217,7 +232,7 @@ public class UtilsService {
     public Services getServiceById(String id) {
         Optional<Services> optional = servicesRepository.findById(id);
         if (optional.isEmpty())
-            throw new MyNotFoundException("work not found by this jobid: {}" + id);
+            throw new MyNotFoundException("service not found by this id");
         return optional.get();
     }
 

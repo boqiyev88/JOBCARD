@@ -3,5 +3,5 @@ package uz.uat.backend.dto;
 import lombok.Builder;
 
 @Builder
-public record Worker(String name ,boolean isChecked) {
+public record JobWithService(Object job, Object service) {
 }

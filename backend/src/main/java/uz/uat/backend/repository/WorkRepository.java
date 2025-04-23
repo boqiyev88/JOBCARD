@@ -24,6 +24,4 @@ public interface WorkRepository extends JpaRepository<Work, String> {
     @Query("select w from Work w where w.isDeleted=0 and w.id =:workid")
     Optional<Work> findWorkById(@Param("workid")String workid);
 
-    @Query("SELECT s FROM Work s WHERE s.isDeleted=0 and s.id IN :ids")
-    List<Work> findAllByIds(Set<String> workids);
 }

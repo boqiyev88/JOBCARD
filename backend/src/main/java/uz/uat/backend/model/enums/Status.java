@@ -5,6 +5,7 @@ public enum Status {
     PENDING,      ///  tasdiqlashga kelganda     2
     IN_PROCESS,   ///  ish bajarilyapti          3
     CONFIRMED,    ///  tasdiqlandi               4
-    REJECTED,    ///   rad etildi                5
-    COMPLETED,   ///   to'liq tugatildi          6
+    COMPLETED,   ///   to'liq tugatildi          5
+    REJECTED,    ///   rad etildi                6
+
 }

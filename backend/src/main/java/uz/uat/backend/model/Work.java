@@ -3,6 +3,7 @@ package uz.uat.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
+import uz.uat.backend.model.enums.Status;
 
 @Entity
 @Data
@@ -60,6 +61,9 @@ public class Work extends AbstractAuditingEntity {
 
     @Column(name = "sheet_metal")
     private int sheet_metal=0;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column(name = "ndt")
     private int ndt=0;

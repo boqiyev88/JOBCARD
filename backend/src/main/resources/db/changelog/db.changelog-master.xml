@@ -437,6 +437,9 @@
             <column name="dit" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
             <column name="avionic" type="int"/>
             <column name="mechanic" type="int"/>
             <column name="cab_mechanic" type="int"/>

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.uat.backend.dto.RespJob;
 import uz.uat.backend.service.WorkerService;
 
 @RestController
@@ -14,11 +15,23 @@ public class EmployeeController {
 
     private final WorkerService workerService;
 
-    @GetMapping
-    public ResponseEntity<Object> showTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status) {
-        workerService.showTasks(status);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("hali tayyormas");
+    @GetMapping("/tasks")
+    public ResponseEntity<Object> showTasks(@RequestParam(value = "status", required = false, defaultValue = "0") int status) {
+        RespJob tasks = workerService.showTasks(status);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tasks);
 
+    }
+
+    @GetMapping("/{jobId}")
+    public ResponseEntity<Object> getJob(@PathVariable String jobId) {
+        RespJob result = workerService.getById(jobId);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
+    }
+
+    @GetMapping("/{serviceId}")
+    public ResponseEntity<Object> getService(@PathVariable String serviceId) {
+        workerService.getService(serviceId);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("result");
     }
 
     @PostMapping(value = "/login", produces = {MediaType.APPLICATION_JSON_VALUE})

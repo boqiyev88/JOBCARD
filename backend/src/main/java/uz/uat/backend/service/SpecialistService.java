@@ -162,17 +162,21 @@ public class SpecialistService implements SpecialistServiceIM {
     @Transactional
     @Override
     public ResponseDto changeStatus(RequestStatusDto statusDto) {
-        if (statusDto.status() != 3 && statusDto.status() != 5 && statusDto.status() != 6)
-            throw new MyConflictException("invalid status or message is null");
+        JobCard jobCard = utilsService.getJobById(statusDto.jobId());
+
+        if (!isValid(jobCard.getStatus(), statusDto.status()))
+            throw new MyConflictException("you are trying change to invalid status");
 
         return switch (statusDto.status()) {
-            case 3 -> changed(statusDto.jobId(), Status.IN_PROCESS, 3);
-            case 5 -> changed(statusDto.jobId(), Status.COMPLETED, 5);
-            case 6 -> changed(statusDto.jobId(), Status.REJECTED, 6);
+            case 3 -> changed(jobCard, Status.IN_PROCESS);
+            case 5 -> changed(jobCard, Status.REJECTED);
+            case 6 -> changed(jobCard, Status.COMPLETED);
             default -> jobService.getAll(0);
         };
 
+
     }
+
 
     @Override
     public PdfFile getPdfFromJob(String jobId) {
@@ -283,14 +287,9 @@ public class SpecialistService implements SpecialistServiceIM {
         return jobCardId;
     }
 
-    private ResponseDto changed(String jobId, Status status, int check) {
-        if (isValid(status, check)) {
-            throw new MyConflictException("invalid change status " + status);
-        }
-
-        JobCard jobCard = utilsService.getJobById(jobId);
+    private ResponseDto changed(JobCard jobCard, Status newStatus) {
         Status oldStatus = jobCard.getStatus();
-        jobCard.setStatus(status);
+        jobCard.setStatus(newStatus);
         jobCard.setUpdTime(Instant.now());
         JobCard specialist_jobCard = jobCardRepository.save(jobCard);
 
