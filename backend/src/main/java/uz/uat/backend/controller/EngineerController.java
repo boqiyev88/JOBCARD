@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.uat.backend.dto.*;
@@ -28,6 +29,8 @@ public class EngineerController {
 
     private final EngineerService engineerService;
 
+
+////    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @PostMapping(
             path = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -39,6 +42,7 @@ public class EngineerController {
     }
 
     /// Faqat CSV file generatsiya qilish uchun
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @GetMapping("/generateCSV")
     public ResponseEntity<?> generateCSV(@Valid @RequestParam String fileName) {
         Resource resource = engineerService.generateCsvFile(fileName);
@@ -48,19 +52,20 @@ public class EngineerController {
                 .body(resource);
     }
 
-
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @PostMapping
     public ResponseEntity<?> addNewService(@Valid @RequestBody ServiceDto workListDto) {
         ResponsesDtos response = engineerService.addNewService(workListDto);
         return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(response);
     }
-
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getTask(@PathVariable("id") String service_id) {
         ResponsesDtos tasks = engineerService.getServices(service_id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tasks.data());
     }
 
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @GetMapping
     public ResponseEntity<?> mainManu(@RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
                                       @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
@@ -71,18 +76,21 @@ public class EngineerController {
     }
 
 
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@Valid @PathVariable String id) {
         ResponsesDtos response = engineerService.getDeleteTask(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @GetMapping("/getServiceName")
     public ResponseEntity<?> getServiceName() {
         List<ServiceNameDto> nameList = engineerService.getServiceName();
         return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).body(nameList);
     }
 
+//    @PreAuthorize("hasRole('ROLE_ENGINEER')")
     @PutMapping("/put/{id}")
     public ResponseEntity<?> put(@Valid @PathVariable String id, @Valid @RequestBody ServiceDto workListDto) {
         ResponsesDtos response = engineerService.editTask(id, workListDto);

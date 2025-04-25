@@ -1,18 +1,17 @@
 package uz.uat.backend.controller;
 
-import org.springframework.security.core.Authentication;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.uat.backend.dto.*;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.service.EngineerService;
-import uz.uat.backend.service.JobService;
 import uz.uat.backend.service.TechnicianService;
 
 import java.time.LocalDate;
@@ -28,6 +27,7 @@ public class TechnicianController {
     private final EngineerService engineerService;
 
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @PostMapping("/{jobId}")
     public ResponseEntity<?> addWorkBySaveStatus(@Valid @PathVariable(name = "jobId") String jobCard_id,
                                                  @RequestBody List<RequestWorkDto> workDtos) {
@@ -35,6 +35,7 @@ public class TechnicianController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @GetMapping("/service")
     public ResponseEntity<?> getServices(@RequestParam(value = "from", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate from,
                                          @RequestParam(value = "to", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate to,
@@ -44,6 +45,7 @@ public class TechnicianController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @GetMapping
     public ResponseEntity<Object> getTask(@RequestParam(value = "status", required = false, defaultValue = "0") int status,
                                           @RequestParam(value = "page", required = false, defaultValue = "1") int page,
@@ -52,18 +54,21 @@ public class TechnicianController {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(list);
     }
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @GetMapping("/work/{jobid}")
     ResponseEntity<?> getWorkByJobId(@PathVariable(name = "jobid") String jobCard_id) {
         ResponseWork responseWork = technicianService.showWorksWithService(jobCard_id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseWork);
     }
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @PutMapping("/{jobid}")
     public ResponseEntity<?> updateWorkById(@PathVariable(name = "jobid") String jobid, @RequestBody List<RequestEditWork> workDto) {
         ResponseDto responseDto = technicianService.edit(jobid, workDto);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseDto);
     }
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @GetMapping("/pdf/{jobId}")
     public ResponseEntity<?> getPDF(@PathVariable String jobId) {
         PdfFile pdfFile = technicianService.getPdfFromJob(jobId);
@@ -76,6 +81,7 @@ public class TechnicianController {
             return ResponseEntity.status(404).contentType(MediaType.APPLICATION_JSON).body("file not found");
     }
 
+//    @PreAuthorize("hasRole('ROLE_TECHNICIAN')")
     @DeleteMapping("/{workid}")
     public ResponseEntity<?> deleteWorkById(@PathVariable(name = "workid") String workid, @RequestBody DeleteWorkDto deleteWorkDto) {
 

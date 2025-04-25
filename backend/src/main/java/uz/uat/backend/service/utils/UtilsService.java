@@ -1,6 +1,9 @@
 package uz.uat.backend.service.utils;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,11 +19,11 @@ import uz.uat.backend.repository.*;
 import uz.uat.backend.service.UserDetailsServiceImpl;
 
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -303,5 +306,20 @@ public class UtilsService {
                 .build();
     }
 
-
+    public String generateJwtToken(User user) {
+        String secretKey = Base64.getEncoder().encodeToString(
+                "3FJ8vN^yZQ!6sD@WqK9pLrXeTm#G2YB&".getBytes(StandardCharsets.UTF_8)
+        );
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        Date issuedAt = new Date();
+        Date expiration = new Date(issuedAt.getTime() + 86400000);
+        return Jwts.builder()
+                .claim("id", user.getId())
+                .claim("username", user.getUsername())
+                .claim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()) // 🛠 ROLES ni JSON formatga o'tkazish
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiration)
+                .signWith(key)
+                .compact();
+    }
 }

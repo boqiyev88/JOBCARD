@@ -51,22 +51,22 @@ public class Work extends AbstractAuditingEntity {
     private int dit;
 
     @Column(name = "avionic")
-    private int avionic=0;
+    private int avionic = 0;
 
     @Column(name = "mechanic")
-    private int mechanic=0;
+    private int mechanic = 0;
 
     @Column(name = "cab_mechanic")
-    private int cab_mechanic=0;
+    private int cab_mechanic = 0;
 
     @Column(name = "sheet_metal")
-    private int sheet_metal=0;
+    private int sheet_metal = 0;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.NEW;
 
     @Column(name = "ndt")
-    private int ndt=0;
+    private int ndt = 0;
 
     @JoinColumn(name = "jobcard_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -75,7 +75,6 @@ public class Work extends AbstractAuditingEntity {
     @JoinColumn(name = "service_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Services service_id;
-
 
 
 }

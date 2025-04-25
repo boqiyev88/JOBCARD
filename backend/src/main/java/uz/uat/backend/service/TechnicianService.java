@@ -47,9 +47,12 @@ public class TechnicianService {
                     .map(RequestWorkDto::service_id)
                     .collect(Collectors.toSet());
             List<Work> works = getWorkDto(workDtos, getServices(requestedServiceIds), jobCard);
+
             for (Work work : works) {
                 work.setCreatedDate(Instant.now());
+//                work.setStatus(Status.NEW);
             }
+
             List<Work> saved = workRepository.saveAll(works);
 
             jobCard.setStatus(Status.PENDING);

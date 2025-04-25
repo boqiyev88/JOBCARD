@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import uz.uat.backend.model.User;
 import uz.uat.backend.service.UserDetailsServiceImpl;
+import uz.uat.backend.service.utils.UtilsService;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -38,7 +39,10 @@ public class LoginController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private UtilsService utilsService;
 
     @PostMapping(value = "/login", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -56,7 +60,7 @@ public class LoginController {
             User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
 
             // JWT token generatsiya qilish
-            String token = generateJwtToken(user);
+            String token = utilsService.generateJwtToken(user);
 
             return ResponseEntity.ok(Map.of(
                     "jwtToken", token,
@@ -68,23 +72,6 @@ public class LoginController {
         }
     }
 
-
-    public String generateJwtToken(User user) {
-        String secretKey = Base64.getEncoder().encodeToString(
-                "3FJ8vN^yZQ!6sD@WqK9pLrXeTm#G2YB&".getBytes(StandardCharsets.UTF_8)
-        );
-        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        Date issuedAt = new Date();
-        Date expiration = new Date(issuedAt.getTime() + 86400000);
-        return Jwts.builder()
-                .claim("id", user.getId())
-                .claim("username", user.getUsername())
-                .claim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()) // 🛠 ROLES ni JSON formatga o'tkazish
-                .setIssuedAt(issuedAt)
-                .setExpiration(expiration)
-                .signWith(key)
-                .compact();
-    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
