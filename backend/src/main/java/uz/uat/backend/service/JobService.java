@@ -8,6 +8,7 @@ import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.dto.ResponseDto;
 import uz.uat.backend.dto.StatusCountDto;
 import uz.uat.backend.model.JobCard;
+import uz.uat.backend.model.Message;
 import uz.uat.backend.model.PdfFile;
 import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.repository.*;
@@ -67,6 +68,7 @@ public class JobService {
 
     public ResponseDto getBySearch(String search, int page) {
         Page<JobCard> jobCards = jobCardRepository.findBySearch(search, PageRequest.of(page , 10));
+
         if (jobCards.isEmpty()) {
             return getStatusCount(ResponseDto.builder()
                     .page(1)
@@ -161,21 +163,6 @@ public class JobService {
                 .build();
     }
 
-    private ResponseDto getWorkStatusCount() {
-        List<StatusCountDto> dto = workRepository.getByStatusCount();
-        Long newCount = dto.stream().filter(d -> "NEW".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long inProcessCount = dto.stream().filter(d -> "IN_PROCESS".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long confirmedCount = dto.stream().filter(d -> "CONFIRMED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long completedCount = dto.stream().filter(d -> "COMPLETED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        Long rejectedCount = dto.stream().filter(d -> "REJECTED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
-        return ResponseDto.builder()
-                .all(newCount  + inProcessCount + confirmedCount + completedCount + rejectedCount)
-                .New(newCount)
-                .In_process(inProcessCount)
-                .Confirmed(confirmedCount)
-                .Completed(completedCount)
-                .Rejected(rejectedCount)
-                .build();
-    }
+
 
 }

@@ -14,12 +14,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-@Entity
+@Entity(name = "users")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "USER")
+@Table(name = "users",schema = "uat")
 public class User extends AbstractAuditingEntity implements UserDetails {
 
     @Id
@@ -28,110 +28,113 @@ public class User extends AbstractAuditingEntity implements UserDetails {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
 
-    @Column(nullable = false, name = "USERNAME", columnDefinition = "VARCHAR(20)")
+    @Column(nullable = false, name = "username", columnDefinition = "VARCHAR(20)")
     private String username;
 
-    @Column(nullable = false, name = "PASSWORD", columnDefinition = "VARCHAR(100)")
+    @Column(nullable = false, name = "password", columnDefinition = "VARCHAR(100)")
     private String password;
 
-    @Column(nullable = false, name = "PASSWORDOPEN", columnDefinition = "VARCHAR(20)")
+    @Column(nullable = false, name = "passwordopen", columnDefinition = "VARCHAR(20)")
     private String passwordOpen;
 
-    @Column(name = "PINFL", columnDefinition = "VARCHAR(14)")
+    @Column(name = "pinfl", columnDefinition = "VARCHAR(14)")
     private String pinfl;
 
-    @Column(name = "FIRSTNAME", columnDefinition = "VARCHAR(600) CCSID 1208")
+    @Column(name = "firstname", columnDefinition = "VARCHAR(600) CCSID 1208")
     private String firstName;
 
-    @Column(name = "LASTNAME", columnDefinition = "VARCHAR(600) CCSID 1208")
+    @Column(name = "lastname", columnDefinition = "VARCHAR(600) CCSID 1208")
     private String lastName;
 
-    @Column(name = "FATHERNAME", columnDefinition = "VARCHAR(600) CCSID 1208")
+    @Column(name = "fathername", columnDefinition = "VARCHAR(600) CCSID 1208")
     private String fatherName;
 
-    @Column(name = "FULLNAME", columnDefinition = "VARCHAR(1800) CCSID 1208")
+    @Column(name = "fullname", columnDefinition = "VARCHAR(1800) CCSID 1208")
     private String fullName;
 
-    @Column(name = "PASSPORT_NO", columnDefinition = "VARCHAR(10)")
+    @Column(name = "passport_no", columnDefinition = "VARCHAR(10)")
     private String passportNo = "";
 
-    @Column(name = "PASSPORT_DATE")
+    @Column(name = "passport_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
     private Date passportDate;
 
-    @Column(name = "PASSPORT_ISSUED", columnDefinition = "VARCHAR(600) CCSID 1208")
+    @Column(name = "passport_issued", columnDefinition = "VARCHAR(600) CCSID 1208")
     private String passportIssued = "";
 
-    @Column(name = "PASSPORT_BIRTHDATE")
+    @Column(name = "passport_birthdate")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
     private Date passportBirthDate;
 
-    @Column(name = "ADDRESS", columnDefinition = "VARCHAR(600) CCSID 1208")
+    @Column(name = "address", columnDefinition = "VARCHAR(600) CCSID 1208")
     private String address = "";
 
-    @Column(name = "PHONE", columnDefinition = "VARCHAR(20)")
+    @Column(name = "phone", columnDefinition = "VARCHAR(20)")
     private String phone = "";
 
-    @Column(name = "EMAIL", columnDefinition = "VARCHAR(30)")
+    @Column(name = "email", columnDefinition = "VARCHAR(30)")
     private String email;
 
-    @Column(name = "IDDEVICE", columnDefinition = "VARCHAR(50)")
+    @Column(name = "iddevice", columnDefinition = "VARCHAR(50)")
     private String idDevice = "";
 
-    @Column(name = "VERSION", columnDefinition = "VARCHAR(10)")
+    @Column(name = "version", columnDefinition = "VARCHAR(10)")
     private String version = "";
 
-    @Column(name = "CATEGORY", columnDefinition = "VARCHAR(2)")
+    @Column(name = "category", columnDefinition = "VARCHAR(2)")
     private String category = "";
 
-    @Column(name = "SPECIALTY", columnDefinition = "SMALLINT")
+    @Column(name = "specialty", columnDefinition = "SMALLINT")
     private Short specialty = 0;
 
-    @Column(name = "CONFIRMTYPE", columnDefinition = "SMALLINT")
+    @Column(name = "confirmtype", columnDefinition = "SMALLINT")
     private Short confirmType = 0;
 
-    @Column(name = "NATIONALITY", columnDefinition = "SMALLINT")
+    @Column(name = "nationality", columnDefinition = "SMALLINT")
     private Short nationality;
 
-    @Column(name = "DEPARTMENT", columnDefinition = "SMALLINT")
+    @Column(name = "department", columnDefinition = "SMALLINT")
     private Short department;
 
-    @Column(name = "CITIZENSHIP", columnDefinition = "SMALLINT")
+    @Column(name = "citizenship", columnDefinition = "SMALLINT")
     private Short citizenship;
 
-    @Column(name = "GENDER", columnDefinition = "VARCHAR(30) CCSID 1208")
+    @Column(name = "gender", columnDefinition = "VARCHAR(30) CCSID 1208")
     private String gender;
 
-    @Column(name = "ORGANIZATION", columnDefinition = "SMALLINT")
+    @Column(name = "organization", columnDefinition = "SMALLINT")
     private Short organization = 0;
 
-    @Column(name = "JOBTITLE", columnDefinition = "SMALLINT")
+    @Column(name = "jobtitle", columnDefinition = "SMALLINT")
     private Short jobTitle = 0;
 
-    @Column(name = "ISCONFIRMED", columnDefinition = "SMALLINT DEFAULT 0")
+    @Column(name = "isconfirmed", columnDefinition = "SMALLINT DEFAULT 0")
     private Short isConfirmed = 0;
 
-    @Column(name = "CONTRACT_NO", columnDefinition = "VARCHAR(20)")
+    @Column(name = "contract_no", columnDefinition = "VARCHAR(20)")
     private String contractNo;
 
-    @Column(name = "CONTRACT_DATE")
+    @Column(name = "contract_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
     private Date contractDate;
 
-    @Column(name = "CONTRACT_END")
+    @Column(name = "contract_end")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
     private Date contractEnd;
 
-    @Column(name = "PHOTO", length = 5242880)
+    @Column(name = "photo", length = 5242880)
     @Lob
     private byte[] photo;
 
+
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+    @JoinTable(name = "USER_ROLES",
+            schema = "uat",
+            joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private Set<Role> roles;
 
     @Override

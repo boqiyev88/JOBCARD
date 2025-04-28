@@ -39,6 +39,7 @@ public class SpecialistService implements SpecialistServiceIM {
     private final PDFfileRepository fileRepository;
     private final UtilsService utilsService;
     private final JobService jobService;
+    private final MessageRepository messageRepository;
 
     @Override
     @Transactional
@@ -263,6 +264,11 @@ public class SpecialistService implements SpecialistServiceIM {
         return resultJob;
     }
 
+    @Override
+    public ResponseJobCardDto getJob(String jobId) {
+        JobCard jobCard = utilsService.getJobById(jobId);
+        return utilsService.getJobCard(jobCard);
+    }
 
     public ResponseDto getByStatusNum(int status, int page, String search) {
         return jobService.getByStatusNum(status, page, search);
@@ -293,9 +299,10 @@ public class SpecialistService implements SpecialistServiceIM {
         jobCard.setUpdTime(Instant.now());
         JobCard specialist_jobCard = jobCardRepository.save(jobCard);
 
+        Message message = utilsService.getMessage(jobCard.getId());
+
         notifier.JobCardNotifier(jobService.getAll(0));
         notifier.TechnicianMassageNotifier(jobCard.getId() + "'s Job Completed by Specialist");
-
         historyService.addHistory(HistoryDto.builder()
                 .tablename(TableName.JOB.name())
                 .tableID(jobCard.getId())
@@ -306,7 +313,20 @@ public class SpecialistService implements SpecialistServiceIM {
                 .updatedBy(specialist_jobCard.getUpdUser())
                 .updTime(Instant.now())
                 .build());
-        return jobService.getAll(0);
+        ResponseDto responseDto = jobService.getAll(0);
+        return ResponseDto.builder()
+                .page(responseDto.page())
+                .total(responseDto.total())
+                .data(responseDto.data())
+                .all(responseDto.all())
+                .New(responseDto.New())
+                .Pending(responseDto.Pending())
+                .In_process(responseDto.In_process())
+                .Confirmed(responseDto.Confirmed())
+                .Completed(responseDto.Completed())
+                .Rejected(responseDto.Rejected())
+                .message(message.getTitle())
+                .build();
     }
 
 

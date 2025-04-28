@@ -6,10 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
-@Entity
+@Entity(name = "ROLE")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "ROLE",schema = "uat")
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

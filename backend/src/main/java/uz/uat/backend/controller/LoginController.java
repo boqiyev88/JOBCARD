@@ -20,7 +20,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import uz.uat.backend.dto.ResponseLogin;
 import uz.uat.backend.model.User;
+import uz.uat.backend.service.LoginService;
 import uz.uat.backend.service.UserDetailsServiceImpl;
 import uz.uat.backend.service.utils.UtilsService;
 
@@ -43,33 +45,39 @@ public class LoginController {
 
     @Autowired
     private UtilsService utilsService;
+    @Autowired
+    private LoginService loginService;
 
     @PostMapping(value = "/login", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            var authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // Spring Security tomonidan yaratilgan foydalanuvchini olish
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            // Agar UserDetails'dan haqiqiy User obyektini olish kerak bo‘lsa
-            User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
-
-            // JWT token generatsiya qilish
-            String token = utilsService.generateJwtToken(user);
-
-            return ResponseEntity.ok(Map.of(
-                    "jwtToken", token,
-                    "user", user,
-                    "redirect", "/"
-            ));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid username or password");
-        }
+        ResponseLogin login = loginService.login(loginRequest);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(login);
+//
+//        try {
+//            var authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+//            );
+//
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//            // Spring Security tomonidan yaratilgan foydalanuvchini olish
+//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//
+//            // Agar UserDetails'dan haqiqiy User obyektini olish kerak bo‘lsa
+//            User user = (User) userDetailsService.loadUserByUsername(loginRequest.getUsername());
+//
+//            // JWT token generatsiya qilish
+//            String token = utilsService.generateJwtToken(user);
+//
+//            return ResponseEntity.ok(Map.of(
+//                    "jwtToken", token,
+//                    "user", user,
+//                    "redirect", "/"
+//            ));
+//        } catch (AuthenticationException e) {
+//            return ResponseEntity.status(401).body("Invalid username or password");
+//        }
     }
 
 

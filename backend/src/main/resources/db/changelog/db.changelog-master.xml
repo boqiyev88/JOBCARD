@@ -30,50 +30,51 @@
     <changeSet id="2" author="user">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="USER" schemaName="uat"/>
+                <tableExists tableName="users" schemaName="uat"/>
             </not>
         </preConditions>
-        <createTable tableName="USER" schemaName="uat">
-            <column name="ID" type="VARCHAR(50)">
+        <createTable tableName="users" schemaName="uat">
+            <column name="id" type="VARCHAR(50)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="USERNAME" type="VARCHAR(20)">
+            <column name="username" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PASSWORD" type="VARCHAR(100)">
+            <column name="password" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PASSWORDOPEN" type="VARCHAR(20)">
+            <column name="passwordopen" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PINFL" type="VARCHAR(14)"/>
-            <column name="FIRSTNAME" type="VARCHAR(600)"/>
-            <column name="LASTNAME" type="VARCHAR(600)"/>
-            <column name="FATHERNAME" type="VARCHAR(600)"/>
-            <column name="FULLNAME" type="VARCHAR(1800)"/>
-            <column name="PASSPORT_NO" type="VARCHAR(10)"/>
-            <column name="PASSPORT_DATE" type="DATE"/>
-            <column name="PASSPORT_ISSUED" type="VARCHAR(600)"/>
-            <column name="PASSPORT_BIRTHDATE" type="DATE"/>
-            <column name="ADDRESS" type="VARCHAR(600)"/>
-            <column name="PHONE" type="VARCHAR(20)"/>
-            <column name="EMAIL" type="VARCHAR(30)"/>
-            <column name="IDDEVICE" type="VARCHAR(50)"/>
-            <column name="VERSION" type="VARCHAR(10)"/>
-            <column name="CATEGORY" type="VARCHAR(2)"/>
-            <column name="SPECIALTY" type="SMALLINT" defaultValueNumeric="0"/>
-            <column name="CONFIRMTYPE" type="SMALLINT" defaultValueNumeric="0"/>
-            <column name="NATIONALITY" type="SMALLINT"/>
-            <column name="DEPARTMENT" type="SMALLINT"/>
-            <column name="CITIZENSHIP" type="SMALLINT"/>
-            <column name="GENDER" type="VARCHAR(30)"/>
-            <column name="ORGANIZATION" type="SMALLINT" defaultValueNumeric="0"/>
-            <column name="JOBTITLE" type="SMALLINT" defaultValueNumeric="0"/>
-            <column name="ISCONFIRMED" type="SMALLINT" defaultValueNumeric="0"/>
-            <column name="CONTRACT_NO" type="VARCHAR(20)"/>
-            <column name="CONTRACT_DATE" type="DATE"/>
-            <column name="CONTRACT_END" type="DATE"/>
-            <column name="PHOTO" type="BLOB"/>
+
+            <column name="pinfl" type="VARCHAR(14)"/>
+            <column name="firstname" type="VARCHAR(600)"/>
+            <column name="lastname" type="VARCHAR(600)"/>
+            <column name="fathername" type="VARCHAR(600)"/>
+            <column name="fullname" type="VARCHAR(1800)"/>
+            <column name="passport_no" type="VARCHAR(10)"/>
+            <column name="passport_date" type="DATE"/>
+            <column name="passport_issued" type="VARCHAR(600)"/>
+            <column name="passport_birthdate" type="DATE"/>
+            <column name="address" type="VARCHAR(600)"/>
+            <column name="phone" type="VARCHAR(20)"/>
+            <column name="email" type="VARCHAR(30)"/>
+            <column name="iddevice" type="VARCHAR(50)"/>
+            <column name="version" type="VARCHAR(10)"/>
+            <column name="category" type="VARCHAR(2)"/>
+            <column name="specialty" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="confirmtype" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="nationality" type="SMALLINT"/>
+            <column name="department" type="SMALLINT"/>
+            <column name="citizenship" type="SMALLINT"/>
+            <column name="gender" type="VARCHAR(30)"/>
+            <column name="organization" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="jobtitle" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="isconfirmed" type="SMALLINT" defaultValueNumeric="0"/>
+            <column name="contract_no" type="VARCHAR(20)"/>
+            <column name="contract_date" type="DATE"/>
+            <column name="contract_end" type="DATE"/>
+            <column name="photo" type="BLOB"/>
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -101,22 +102,17 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-
-    <!-- Foreign Keys -->
-    <changeSet id="4" author="user">
         <addForeignKeyConstraint
                 baseTableName="USER_ROLES" baseColumnNames="USER_ID"
-                referencedTableName="USER" referencedColumnNames="ID"
+                referencedTableName="users" referencedColumnNames="ID"
                 constraintName="FK_USER_ROLES_USER" baseTableSchemaName="uat"/>
-    </changeSet>
 
-    <changeSet id="5" author="user">
         <addForeignKeyConstraint
                 baseTableName="USER_ROLES" baseColumnNames="ROLE_ID"
                 referencedTableName="ROLE" referencedColumnNames="ID"
                 constraintName="FK_USER_ROLES_ROLE" baseTableSchemaName="uat"/>
     </changeSet>
+
 
     <!-- City jadvalini yaratish -->
     <changeSet id="6" author="user">
@@ -534,7 +530,7 @@
         <addForeignKeyConstraint baseTableName="message"
                                  baseColumnNames="from_user"
                                  constraintName="fk_from_user"
-                                 referencedTableName="USER"
+                                 referencedTableName="users"
                                  referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>
@@ -542,7 +538,7 @@
         <addForeignKeyConstraint baseTableName="message"
                                  baseColumnNames="to_user"
                                  constraintName="fk_to_user"
-                                 referencedTableName="USER"
+                                 referencedTableName="users "
                                  referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>

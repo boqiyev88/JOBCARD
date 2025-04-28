@@ -31,4 +31,5 @@ public interface SpecialistServiceIM {
 
     List<ResultWork> getWorks(String jobid);
 
+    ResponseJobCardDto getJob(String jobId);
 }

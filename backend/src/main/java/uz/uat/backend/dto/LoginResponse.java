@@ -13,9 +13,10 @@ public class LoginResponse {
     private String resultNote;
     private String name;
     private String roleName;
-    private int newTaskCount;
-    private int inProcessTaskCount;
-    private int closedTaskCount;
-    private int messageCount;
+    private Long newTaskCount;
+    private Long inProcessTaskCount;
+    private Long closedTaskCount;
+    private Long messageCount;
+    private String token;
 
 }

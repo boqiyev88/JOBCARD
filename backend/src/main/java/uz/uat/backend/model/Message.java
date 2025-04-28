@@ -23,6 +23,9 @@ public class Message {
     @Column(nullable = false, length = 500)
     private String title;
 
+    @Column(length = 50)
+    private String jobId;
+
     @JoinColumn(name = "from_user")
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
     private User fromUser;

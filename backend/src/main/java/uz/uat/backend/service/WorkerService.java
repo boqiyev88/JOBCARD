@@ -9,27 +9,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.controller.LoginController;
-import uz.uat.backend.dto.JobCardDto;
-import uz.uat.backend.dto.LoginResponse;
-import uz.uat.backend.dto.RespJob;
-import uz.uat.backend.dto.ResultCode;
-import uz.uat.backend.model.JobCard;
-import uz.uat.backend.model.Services;
-import uz.uat.backend.model.User;
-import uz.uat.backend.model.Work;
+import uz.uat.backend.dto.*;
+import uz.uat.backend.model.*;
+import uz.uat.backend.model.enums.RoleName;
 import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.repository.JobCarRepository;
+import uz.uat.backend.repository.UserRepository;
 import uz.uat.backend.repository.WorkRepository;
 import uz.uat.backend.service.serviceIMPL.WorkerServiceIM;
 import uz.uat.backend.service.utils.UtilsService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +35,8 @@ public class WorkerService implements WorkerServiceIM {
     private final WorkRepository workRepository;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Override
     public RespJob showTasks(int status) {
@@ -59,48 +55,59 @@ public class WorkerService implements WorkerServiceIM {
                     return getJobsByStatus(Status.REJECTED, 4);
                 }
                 default -> {
-                    return new RespJob(new ResultCode(401, "CONFLICT"), "invalid status code",
+                    return new RespJob(new ResultCode(409, "CONFLICT"), "invalid status code",
                             utilsService.getJobCards(new ArrayList<>()));
                 }
             }
         } else
-            return new RespJob(new ResultCode(401, "CONFLICT"), "invalid status", new ArrayList<>());
+            return new RespJob(new ResultCode(409, "CONFLICT"), "invalid status", new ArrayList<>());
     }
 
     @Override
     public LoginResponse login(LoginController.LoginRequest loginRequest) {
-        try {
-            var authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = (User) userDetailsService.loadUserByUsername(loginRequest.getUsername());
+        System.err.println("in user :"+user.getPassword());
+        System.err.println("in loginRequest :"+loginRequest.getUsername());
+        boolean passwordMatches = passwordEncoder.matches(
+                loginRequest.getPassword(),
+                user.getPassword()
+        );
+        System.err.println(passwordMatches);
 
-            // Spring Security tomonidan yaratilgan foydalanuvchini olish
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-            // Agar UserDetails'dan haqiqiy User obyektini olish kerak bo‘lsa
-            User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
-
-            // JWT token generatsiya qilish
-            String token = utilsService.generateJwtToken(user);
-
-            return ResponseEntity.ok(Map.of(
-                    "jwtToken", token,
-                    "user", user,
-                    "redirect", "/"
-            ));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid username or password");
+        if (!passwordMatches) {
+            return LoginResponse.builder()
+                    .resultCode(ResultCode.builder()
+                            .code(409)
+                            .resultMessage("INCORRECT PASSWORD")
+                            .build())
+                    .resultNote("incorrect password")
+                    .build();
         }
-        ///  username va parol tekshirilishi kerak
-        /// newTask,InProcess, closed, message larni counti qaytishi kerak
+        ResponseDto count = utilsService.getWorkStatusCount();
+        System.err.println("-------------------------------------------------------------------");
+        Set<Role> roles = user.getRoles();
+        return LoginResponse.builder()
+                .resultCode(ResultCode.builder()
+                        .code(200)
+                        .resultMessage("SUCCESSFULLY")
+                        .build())
+                .resultNote("SUCCESSFULLY")
+                .name(user.getFirstName())
+                .roleName(roles.stream().map(Role::getName).toList().toString())
+                .newTaskCount(count.New())
+                .inProcessTaskCount(count.New())
+                .closedTaskCount(count.New())
+                .messageCount(null)
+                .token(utilsService.generateJwtToken(user))
+                .build();
     }
+
 
     @Override
     public RespJob getById(String jobId) {
         if (jobId.isBlank())
-            return new RespJob(new ResultCode(401, "CONFLICT"), "jobId must not be empty", new ArrayList<>());
+            return new RespJob(new ResultCode(409, "CONFLICT"), "jobId must not be empty", new ArrayList<>());
         JobCard jobCard = jobCarRepository.findByJobCardId(jobId);
         if (jobCard == null)
             return new RespJob(new ResultCode(404, "NOT FOUND"), "jobId  not found by this id: " + jobId, new ArrayList<>());
@@ -138,7 +145,7 @@ public class WorkerService implements WorkerServiceIM {
             }
             default -> {
                 return new RespJob(new ResultCode(
-                        401, "CONFLICT"),
+                        409, "CONFLICT"),
                         "invalid status code",
                         utilsService.getJobCards(new ArrayList<>()));
             }
