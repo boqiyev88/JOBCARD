@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.uat.backend.dto.LoginResponse;
 import uz.uat.backend.dto.RequestJob;
 import uz.uat.backend.dto.RespJob;
+import uz.uat.backend.dto.ResultService;
 import uz.uat.backend.service.WorkerService;
 
 @RestController
@@ -44,7 +45,14 @@ public class EmployeeController {
     //        @PreAuthorize("hasRole('ROLE_WORKER')")
     @PostMapping(value = "/getService", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getService(@RequestBody RequestJob requestJob) {
-        RespJob respJob = workerService.getService(requestJob);
+        ResultService respJob = workerService.getService(requestJob);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(respJob);
+    }
+
+    //        @PreAuthorize("hasRole('ROLE_WORKER')")
+    @PostMapping(value = "/changeStatus", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> changeStatus(@RequestBody RequestJob requestJob) {
+        ResultService respJob = workerService.changeWorkStatus(requestJob);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(respJob);
     }
 }

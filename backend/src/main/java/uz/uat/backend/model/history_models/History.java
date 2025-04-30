@@ -48,7 +48,8 @@ public class History {
     private String updatedBy;
 
     @Column(name = "UPDTIME")
-    private Instant updTime;
+    @Builder.Default
+    private Instant updTime = Instant.now();
 
 
 }

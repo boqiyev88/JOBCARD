@@ -74,6 +74,7 @@ public class JobCard extends AbstractAuditingEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Status status = Status.NEW;
 
     @JoinColumn(name = "MAIN_PLAN")

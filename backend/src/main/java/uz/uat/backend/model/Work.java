@@ -51,21 +51,27 @@ public class Work extends AbstractAuditingEntity {
     private int dit;
 
     @Column(name = "avionic")
+    @Builder.Default
     private int avionic = 0;
 
     @Column(name = "mechanic")
+    @Builder.Default
     private int mechanic = 0;
 
     @Column(name = "cab_mechanic")
+    @Builder.Default
     private int cab_mechanic = 0;
 
     @Column(name = "sheet_metal")
+    @Builder.Default
     private int sheet_metal = 0;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Status status = Status.NEW;
 
     @Column(name = "ndt")
+    @Builder.Default
     private int ndt = 0;
 
     @JoinColumn(name = "jobcard_id")

@@ -24,6 +24,7 @@ import uz.uat.backend.repository.WorkRepository;
 import uz.uat.backend.service.serviceIMPL.WorkerServiceIM;
 import uz.uat.backend.service.utils.UtilsService;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,31 +39,6 @@ public class WorkerService implements WorkerServiceIM {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JobCardMapper jobCardMapper;
-
-    @Override
-    public RespJob showTasks(int status) {
-        if (status >= 1 && status <= 4) {
-            switch (status) {
-                case 1 -> {
-                    return getJobsByStatus(Status.NEW, 1);
-                }
-                case 2 -> {
-                    return getJobsByStatus(Status.IN_PROCESS, 2);
-                }
-                case 3 -> {
-                    return getJobsByStatus(Status.CONFIRMED, 3);
-                }
-                case 4 -> {
-                    return getJobsByStatus(Status.REJECTED, 4);
-                }
-                default -> {
-                    return new RespJob(new ResultCode(409, "CONFLICT"), "invalid status code",
-                            utilsService.getJobCards(new ArrayList<>()));
-                }
-            }
-        } else
-            return new RespJob(new ResultCode(409, "CONFLICT"), "invalid status", new ArrayList<>());
-    }
 
     @Override
     public LoginResponse login(LoginController.LoginRequest loginRequest) {
@@ -100,6 +76,31 @@ public class WorkerService implements WorkerServiceIM {
                 .build();
     }
 
+    @Override
+    public RespJob showTasks(int status) {
+        if (status >= 1 && status <= 4) {
+            switch (status) {
+                case 1 -> {
+                    return getJobsByStatus(Status.IN_PROCESS, 1);
+                }
+                case 2 -> {
+                    return getJobsByStatus(Status.IN_PROCESS, 2);
+                }
+                case 3 -> {
+                    return getJobsByStatus(Status.CONFIRMED, 3);
+                }
+                case 4 -> {
+                    return getJobsByStatus(Status.REJECTED, 4);
+                }
+                default -> {
+                    return new RespJob(new ResultCode(409, "CONFLICT"), "invalid status code",
+                            utilsService.getJobCards(new ArrayList<>()));
+                }
+            }
+        } else
+            return new RespJob(new ResultCode(409, "CONFLICT"), "invalid status", new ArrayList<>());
+    }
+
 
     @Override
     public RespJob getById(String jobId) {
@@ -114,42 +115,86 @@ public class WorkerService implements WorkerServiceIM {
 
 
     @Override
-    public RespJob getService(RequestJob requestJob) {
-        if (requestJob.jobId().isBlank() || requestJob.serviceId().isBlank()) {
-            return new RespJob(
-                    ResultCode.builder()
-                            .code(409)
-                            .resultMessage("INCORRECT JOB OR SERIVCE ID")
-                            .build(),
-                    "Ids must not be empty",
-                    new ArrayList<>());
+    public ResultService getService(RequestJob requestJob) {
+        ResultService validWork = isValidWork(requestJob);
+        if (validWork.getResultCode().code() == 409 || validWork.getResultCode().code() == 404) {
+            return validWork;
         }
 
         Optional<Work> optionalWork = workRepository.findByJobcardAndSeviceId(requestJob.jobId(), requestJob.serviceId());
-        if (optionalWork.isEmpty()) {
-            return new RespJob(
-                    ResultCode.builder()
-                            .code(404)
-                            .resultMessage("NO WORK FOUND")
-                            .build(),
-                    "with these ids not found",
-                    new ArrayList<>());
-        }
         Work work = optionalWork.get();
+        return getSuccessfulWork(work);
+    }
+
+
+    @Override
+    public ResultService changeWorkStatus(RequestJob requestJob) {
+        ResultService validWork = isValidWork(requestJob);
+        if (validWork.getResultCode().code() == 409 || validWork.getResultCode().code() == 404) {
+            return validWork;
+        }
+        Optional<Work> optionalWork = workRepository.findByJobcardAndSeviceId(requestJob.jobId(), requestJob.serviceId());
+        Work work = optionalWork.get();
+        work.setStatus(Status.IN_PROCESS);
+        work.setUpdTime(Instant.now());
+        workRepository.save(work);
+        return getSuccessfulWork(work);
+    }
+
+    private ResultService getSuccessfulWork(Work work) {
         ResponseJobCardDto respJob = utilsService.getJobCard(work.getJobcard_id(), new Message());
         ResponseWorkDto workDto = utilsService.getWork(work);
-        ResultJob resultJob = jobCardMapper.fromDto(respJob);
-        ResponseServiceDto serviceDto = utilsService.fromEntityService(work.getService_id());
-        resultJob.setWork(workDto);
-        resultJob.setServices(serviceDto);
-        return new RespJob(
+        ResponseService service = utilsService.getTaskWithIdFromService(work.getService_id());
+
+        return new ResultService(
                 ResultCode.builder()
                         .code(200)
                         .resultMessage("OK")
                         .build(),
                 "SUCCESFULLY",
-                resultJob);
+                respJob,
+                workDto,
+                service);
     }
+
+    private ResultService isValidWork(RequestJob requestJob) {
+
+        if (requestJob.jobId().isBlank() || requestJob.serviceId().isBlank()) {
+            return new ResultService(
+                    ResultCode.builder()
+                            .code(409)
+                            .resultMessage("INCORRECT JOB OR SERIVCE ID")
+                            .build(),
+                    "Ids must not be empty", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        }
+        Optional<Work> optionalWork = workRepository.findByJobcardAndSeviceId(requestJob.jobId(), requestJob.serviceId());
+        if (optionalWork.isEmpty()) {
+            return new ResultService(
+                    ResultCode.builder()
+                            .code(404)
+                            .resultMessage("NO WORK FOUND")
+                            .build(),
+                    "with these ids not found",
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        }
+        Work work = optionalWork.get();
+        if (work.getStatus() == null || work.getStatus() != Status.NEW) {
+            return new ResultService(
+                    ResultCode.builder()
+                            .code(409)
+                            .resultMessage("CONFLICT WORK STATUS")
+                            .build(),
+                    "You visited with an invalid status", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        }
+        return new ResultService(
+                ResultCode.builder()
+                        .code(200)
+                        .resultMessage("SUCCESSFULLY")
+                        .build(),
+                "SUCCESFULLY",
+                new ArrayList<>(), work, new ArrayList<>());
+    }
+
 
     private RespJob getJobsByStatus(Status status, int statusCode) {
         Page<JobCard> page = jobCarRepository.findBySTATUS(status, PageRequest.of(0, 20));

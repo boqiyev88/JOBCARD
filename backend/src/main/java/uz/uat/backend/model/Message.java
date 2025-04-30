@@ -36,9 +36,11 @@ public class Message {
     private User toUser;
 
     @Column(nullable = false)
+    @Builder.Default
     private LocalDateTime created_date = LocalDateTime.now();
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
+    @Builder.Default
     private int is_deleted = 0;
 
 

@@ -52,7 +52,7 @@ public class TechnicianService {
 
             for (Work work : works) {
                 work.setCreatedDate(Instant.now());
-//                work.setStatus(Status.NEW);
+                work.setStatus(Status.NEW);
             }
 
             List<Work> saved = workRepository.saveAll(works);

@@ -106,6 +106,13 @@ public class UtilsService {
                 .build();
     }
 
+    public ResponseService getTaskWithIdFromService(Services service) {
+        return ResponseService.builder()
+                .service(fromEntityService(service))
+                .tasks(taskMapper.taskWithId(service.getTasks()))
+                .build();
+    }
+
     public List<ResponseJobCardDto> getJobCards(List<JobCard> jobCards) {
 
         List<Message> messages = messageRepository.findMessageByJobIds(
@@ -195,6 +202,8 @@ public class UtilsService {
 
     public ResponseWorkDto getWork(Work work) {
         return ResponseWorkDto.builder()
+                .jobCard_id(work.getJobcard_id().getId())
+                .service_id(work.getService_id().getId())
                 .threshold(work.getThreshold())
                 .repeat_int(work.getRepeat_int())
                 .zone(work.getZone())

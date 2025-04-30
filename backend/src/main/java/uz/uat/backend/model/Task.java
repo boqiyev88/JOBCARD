@@ -27,10 +27,12 @@ public class Task {
     private String description;
 
     @Column(name = "pref")
-    private int pref;
+    @Builder.Default
+    private int pref = 0;
 
     @Column(name = "insp")
-    private int insp;
+    @Builder.Default
+    private int insp = 0;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)

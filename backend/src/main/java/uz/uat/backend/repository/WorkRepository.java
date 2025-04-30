@@ -32,7 +32,7 @@ public interface WorkRepository extends JpaRepository<Work, String> {
     @Query("select w from Work w where w.isDeleted=0")
     Optional<Work> findWorkByStatus();
 
-    @Query("SELECT w FROM Work w WHERE w.isDeleted = 0 AND w.status =:status AND w.jobcard_id.id IN :jobIds")
+    @Query("SELECT w FROM Work w WHERE w.isDeleted = 0 AND w.status = :status AND w.jobcard_id.id IN :jobIds ORDER BY w.updTime desc ,w.createdDate desc")
     List<Work> findNewWorksByJobIds(@Param("status") Status status, @Param("jobIds") Set<String> jobIds);
 
 
