@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ResultJob {
-
     private String work_order;
     private String reg;
     private String serial_number1;

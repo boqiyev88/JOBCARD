@@ -28,6 +28,7 @@ public record ResponseJobCardDto(
         @NotNull LocalDate date,
         @NotBlank String status,
         boolean is_file,
-        String filename
+        String filename,
+        String rejectMessage
 ) {
 }

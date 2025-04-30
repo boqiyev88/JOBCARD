@@ -22,25 +22,23 @@ public class LoginService {
 
     public ResponseLogin login(LoginController.LoginRequest loginRequest) {
         User user =(User) userDetailsService.loadUserByUsername(loginRequest.getUsername());
-        System.err.println("in user :"+user.getUsername());
-        System.err.println("in loginRequest :"+loginRequest.getUsername());
 
         boolean passwordMatches = passwordEncoder.matches(
                 loginRequest.getPassword(),
                 user.getPassword()
         );
 
-        String token = utilsService.generateJwtToken(user);
         if (!passwordMatches) {
             return ResponseLogin.builder()
                     .resultCode(ResultCode.builder()
-                            .code(404)
+                            .code(409)
                             .resultMessage("Invalid password")
                             .build())
                     .User(null)
                     .token(null)
                     .build();
         }
+        String token = utilsService.generateJwtToken(user);
 
         return  ResponseLogin.builder()
                 .resultCode(ResultCode.builder()

@@ -6,7 +6,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "message")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
@@ -23,8 +23,9 @@ public class Message {
     @Column(nullable = false, length = 500)
     private String title;
 
-    @Column(length = 50)
-    private String jobId;
+    @JoinColumn(name = "job_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    private JobCard job_id;
 
     @JoinColumn(name = "from_user")
     @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
@@ -37,8 +38,8 @@ public class Message {
     @Column(nullable = false)
     private LocalDateTime created_date = LocalDateTime.now();
 
-    @Column(nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
-    private int isDeleted = 0;
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
+    private int is_deleted = 0;
 
 
 }

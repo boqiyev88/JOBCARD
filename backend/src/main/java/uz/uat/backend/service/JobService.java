@@ -38,7 +38,6 @@ public class JobService {
         boolean hasSearch = (search != null && !search.trim().isEmpty());
 
         if (!isValidStatus && !hasSearch) {
-            System.err.println(Instant.now() + ": Invalid search parameter");
             return getAll(validPage);
         }
         if (!isValidStatus) {

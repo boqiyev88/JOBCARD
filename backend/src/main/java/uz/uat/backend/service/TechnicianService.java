@@ -15,6 +15,7 @@ import uz.uat.backend.model.enums.OperationStatus;
 import uz.uat.backend.model.enums.Status;
 import uz.uat.backend.model.enums.TableName;
 import uz.uat.backend.repository.JobCarRepository;
+import uz.uat.backend.repository.MessageRepository;
 import uz.uat.backend.repository.ServicesRepository;
 import uz.uat.backend.repository.WorkRepository;
 import uz.uat.backend.service.utils.UtilsService;
@@ -37,6 +38,7 @@ public class TechnicianService {
     private final JobService jobService;
     private final HistoryService historyService;
     private final UtilsService utilsService;
+    private final MessageRepository messageRepository;
 
 
     @Transactional
@@ -176,7 +178,8 @@ public class TechnicianService {
         List<Work> works = workRepository.findByJobcard_id(jobCard.getId());
         if (works.isEmpty())
             throw new MyNotFoundException("works not found, may be Invalid jobid");
-        ResponseJobCardDto responseJobCard = utilsService.getJobCard(jobCard);
+        Optional<Message> message = messageRepository.findByJobId(jobCard.getId());
+        ResponseJobCardDto responseJobCard = utilsService.getJobCard(jobCard, message.orElse(new Message()));
         return ResponseWork.builder()
                 .jobcard(responseJobCard)
                 .work(works.stream().map(work -> utilsService.getWork(work, work.getService_id())).collect(Collectors.toList()))

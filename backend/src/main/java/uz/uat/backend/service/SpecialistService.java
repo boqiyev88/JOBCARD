@@ -47,8 +47,7 @@ public class SpecialistService implements SpecialistServiceIM {
         if (jobCardDto == null) {
             throw new MyNotFoundException("jobCardDto is null");
         }
-        System.err.println(jobCardDto.leg());
-        System.err.println(jobCardDto.to());
+
         Optional<City> LEG = cityRepository.findById(jobCardDto.leg());
         Optional<City> TO = cityRepository.findById(jobCardDto.to());
         if (LEG.isEmpty() || TO.isEmpty()) {
@@ -82,7 +81,7 @@ public class SpecialistService implements SpecialistServiceIM {
                 .build());
 
 //        notifier.TechnicianMassageNotifier("New JobCard added");
-        return utilsService.getJobCard(jobCard);
+        return utilsService.getJobCard(jobCard, new Message());
 
     }
 
@@ -220,7 +219,9 @@ public class SpecialistService implements SpecialistServiceIM {
     public ResultJob getWork(String workid) {
         Work work = utilsService.getWorkById(workid);
         Services service = utilsService.getServiceById(work.getService_id().getId());
-        ResponseJobCardDto responseJobCard = utilsService.getJobCard(utilsService.getJobById(work.getJobcard_id().getId()));
+        Message message = utilsService.getMessage(work.getJobcard_id().getId());
+        ResponseJobCardDto responseJobCard = utilsService.getJobCard(utilsService.getJobById(work.getJobcard_id().getId()),
+                message != null ? message : new Message());
         ResponseWorkDto responseWork = utilsService.getWork(work);
         ResultJob resultJob = jobCardMapper.fromDto(responseJobCard);
         resultJob.setServices(utilsService.getTaskFromService(service));
@@ -250,12 +251,12 @@ public class SpecialistService implements SpecialistServiceIM {
     public ResultJob getJobWithAll(String jobid) {
         JobCard jobCard = utilsService.getJobById(jobid);
         List<Work> workList = workRepository.findByJobcard_id(jobid);
-
+        Optional<Message> message = messageRepository.findByJobId(jobCard.getId());
         List<Services> servicesList = workList.stream()
                 .map(Work::getService_id)
                 .collect(Collectors.toList());
 
-        ResponseJobCardDto responseJobCard = utilsService.getJobCard(jobCard);
+        ResponseJobCardDto responseJobCard = utilsService.getJobCard(jobCard, message.orElse(new Message()));
         ResultJob resultJob = jobCardMapper.fromDto(responseJobCard);
         List<ResponseWorkDto> responseWork = utilsService.getWorksDto(workList);
         List<ResponseService> responseServices = utilsService.getTasksFromService(servicesList);
@@ -267,7 +268,8 @@ public class SpecialistService implements SpecialistServiceIM {
     @Override
     public ResponseJobCardDto getJob(String jobId) {
         JobCard jobCard = utilsService.getJobById(jobId);
-        return utilsService.getJobCard(jobCard);
+        Optional<Message> message = messageRepository.findByJobId(jobCard.getId());
+        return utilsService.getJobCard(jobCard, message.orElse(new Message()));
     }
 
     public ResponseDto getByStatusNum(int status, int page, String search) {
@@ -325,7 +327,6 @@ public class SpecialistService implements SpecialistServiceIM {
                 .Confirmed(responseDto.Confirmed())
                 .Completed(responseDto.Completed())
                 .Rejected(responseDto.Rejected())
-                .message(message.getTitle())
                 .build();
     }
 

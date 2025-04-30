@@ -36,5 +36,6 @@ public interface WorkRepository extends JpaRepository<Work, String> {
     List<Work> findNewWorksByJobIds(@Param("status") Status status, @Param("jobIds") Set<String> jobIds);
 
 
-
+    @Query("select w from Work w where w.isDeleted =0 and w.jobcard_id.id =:jobid and w.service_id.id= :serviceid ORDER BY w.updTime desc ,w.createdDate desc")
+    Optional<Work> findByJobcardAndSeviceId(@Param("jobid") String jobid,@Param("serviceid") String serviceid);
 }

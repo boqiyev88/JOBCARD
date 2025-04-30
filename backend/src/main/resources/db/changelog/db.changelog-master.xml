@@ -217,9 +217,16 @@
             <column name="number" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="VARCHAR">
+            <column name="description" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="pref" type="SMALLINT" defaultValueNumeric="0">
+            </column>
+            <column name="insp" type="SMALLINT" defaultValueNumeric="0">
+            </column>
+            <column name="user_id" type="VARCHAR">
+            </column>
+
 
             <!-- Audit fields -->
             <column name="INSUSER" type="VARCHAR(50)"/>
@@ -230,6 +237,15 @@
             <column name="DELTIME" type="TIMESTAMP"/>
             <column name="ISDELETED" type="SMALLINT" defaultValueNumeric="0"/>
         </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="task"
+                baseColumnNames="user_id"
+                constraintName="fk_task_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                baseTableSchemaName="uat"
+                onDelete="CASCADE"/>
     </changeSet>
 
     <!-- Task and Services tables-->
@@ -249,14 +265,7 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint
-                baseTableName="service_task"
-                baseColumnNames="service_id"
-                constraintName="fk_service_task_service"
-                referencedTableName="services"
-                referencedColumnNames="id"
-                baseTableSchemaName="uat"
-                onDelete="CASCADE"/>
+
 
         <addForeignKeyConstraint
                 baseTableName="service_task"
@@ -522,11 +531,21 @@
             </column>
             <column name="to_user" type="VARCHAR">
             </column>
-            <column name="is_deleted" type="VARCHAR">
+            <column name="is_deleted" type="SMALLINT" defaultValueNumeric="0">
             </column>
             <column name="created_date" type="timestamp">
             </column>
+            <column name="job_id" type="VARCHAR">
+            </column>
         </createTable>
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="job_id"
+                                 constraintName="fk_jobId"
+                                 referencedTableName="JOB"
+                                 referencedColumnNames="id"
+                                 baseTableSchemaName="uat"
+                                 onDelete="CASCADE"/>
+
         <addForeignKeyConstraint baseTableName="message"
                                  baseColumnNames="from_user"
                                  constraintName="fk_from_user"
@@ -538,7 +557,7 @@
         <addForeignKeyConstraint baseTableName="message"
                                  baseColumnNames="to_user"
                                  constraintName="fk_to_user"
-                                 referencedTableName="users "
+                                 referencedTableName="users"
                                  referencedColumnNames="id"
                                  baseTableSchemaName="uat"
                                  onDelete="CASCADE"/>

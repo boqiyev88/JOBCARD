@@ -24,6 +24,8 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -105,9 +107,24 @@ public class UtilsService {
     }
 
     public List<ResponseJobCardDto> getJobCards(List<JobCard> jobCards) {
+
+        List<Message> messages = messageRepository.findMessageByJobIds(
+                jobCards.stream()
+                        .map(JobCard::getId)
+                        .collect(Collectors.toSet())
+        );
+
         return jobCards.stream()
-                .map(this::getJobCard)
-                .toList();
+                .map(jobCard -> {
+                    Message message = messages.stream()
+                            .filter(m -> m.getJob_id().getId().equals(jobCard.getId()))
+                            .findFirst()
+                            .orElse(new Message());
+                    return getJobCard(jobCard, message);
+                })
+                .collect(Collectors.toList());
+
+
     }
 
     public PdfFile getFile(JobCard jobCard) {
@@ -119,7 +136,7 @@ public class UtilsService {
         return optional.get();
     }
 
-    public ResponseJobCardDto getJobCard(JobCard jobCard) {
+    public ResponseJobCardDto getJobCard(JobCard jobCard, Message message) {
         PdfFile file = getFile(jobCard);
         return ResponseJobCardDto.builder()
                 .id(jobCard.getId())
@@ -140,6 +157,7 @@ public class UtilsService {
                 .status(String.valueOf(getStatus(jobCard.getStatus())))
                 .is_file(file.getData() != null)
                 .filename(file.getFileName())
+                .rejectMessage(message.getTitle())
                 .build();
     }
 
@@ -197,11 +215,12 @@ public class UtilsService {
 
     public JobWithService getJobWithService(String jobId) {
         JobCard jobCard = getJobById(jobId);
+        Message message = getMessage(jobCard.getId());
         List<Work> works = workRepository.findByJobcard_id(jobCard.getId());
         if (works.isEmpty())
             throw new MyNotFoundException("Work not found by this jobId");
         return new JobWithService(
-                getJobCard(jobCard),
+                getJobCard(jobCard, message != null ? message : new Message()),
                 fromEntityService(
                         works.stream()
                                 .map(Work::getService_id)
@@ -328,6 +347,7 @@ public class UtilsService {
         Optional<Message> optional = messageRepository.findByJobId(jobId);
         return optional.orElse(null);
     }
+
     public ResponseDto getWorkStatusCount() {
         List<StatusCountDto> dto = workRepository.getByStatusCount();
         Long newCount = dto.stream().filter(d -> "NEW".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
@@ -336,7 +356,7 @@ public class UtilsService {
         Long completedCount = dto.stream().filter(d -> "COMPLETED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
         Long rejectedCount = dto.stream().filter(d -> "REJECTED".equals(d.getStatus())).map(StatusCountDto::getCount).findFirst().orElse(0L);
         return ResponseDto.builder()
-                .all(newCount  + inProcessCount + confirmedCount + completedCount + rejectedCount)
+                .all(newCount + inProcessCount + confirmedCount + completedCount + rejectedCount)
                 .New(newCount)
                 .In_process(inProcessCount)
                 .Confirmed(confirmedCount)

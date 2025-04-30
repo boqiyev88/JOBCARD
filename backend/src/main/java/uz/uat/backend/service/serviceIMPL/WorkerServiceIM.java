@@ -2,6 +2,7 @@ package uz.uat.backend.service.serviceIMPL;
 
 import uz.uat.backend.controller.LoginController;
 import uz.uat.backend.dto.LoginResponse;
+import uz.uat.backend.dto.RequestJob;
 import uz.uat.backend.dto.RespJob;
 
 public interface WorkerServiceIM {
@@ -11,5 +12,5 @@ public interface WorkerServiceIM {
 
     RespJob getById(String  jobId);
 
-    RespJob getService(String serviceId);
+    RespJob getService(RequestJob requestJob);
 }

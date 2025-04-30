@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import uz.uat.backend.config.exception.MyNotFoundException;
 import uz.uat.backend.controller.LoginController;
 import uz.uat.backend.dto.*;
+import uz.uat.backend.mapper.JobCardMapper;
 import uz.uat.backend.model.*;
 import uz.uat.backend.model.enums.RoleName;
 import uz.uat.backend.model.enums.Status;
@@ -34,9 +35,9 @@ public class WorkerService implements WorkerServiceIM {
     private final UtilsService utilsService;
     private final WorkRepository workRepository;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JobCardMapper jobCardMapper;
 
     @Override
     public RespJob showTasks(int status) {
@@ -65,15 +66,11 @@ public class WorkerService implements WorkerServiceIM {
 
     @Override
     public LoginResponse login(LoginController.LoginRequest loginRequest) {
-
         User user = (User) userDetailsService.loadUserByUsername(loginRequest.getUsername());
-        System.err.println("in user :"+user.getPassword());
-        System.err.println("in loginRequest :"+loginRequest.getUsername());
         boolean passwordMatches = passwordEncoder.matches(
                 loginRequest.getPassword(),
                 user.getPassword()
         );
-        System.err.println(passwordMatches);
 
         if (!passwordMatches) {
             return LoginResponse.builder()
@@ -117,11 +114,41 @@ public class WorkerService implements WorkerServiceIM {
 
 
     @Override
-    public RespJob getService(String serviceId) {
-        if (serviceId.isBlank())
-            throw new MyNotFoundException("service id must not be empty");
+    public RespJob getService(RequestJob requestJob) {
+        if (requestJob.jobId().isBlank() || requestJob.serviceId().isBlank()) {
+            return new RespJob(
+                    ResultCode.builder()
+                            .code(409)
+                            .resultMessage("INCORRECT JOB OR SERIVCE ID")
+                            .build(),
+                    "Ids must not be empty",
+                    new ArrayList<>());
+        }
 
-        return null;
+        Optional<Work> optionalWork = workRepository.findByJobcardAndSeviceId(requestJob.jobId(), requestJob.serviceId());
+        if (optionalWork.isEmpty()) {
+            return new RespJob(
+                    ResultCode.builder()
+                            .code(404)
+                            .resultMessage("NO WORK FOUND")
+                            .build(),
+                    "with these ids not found",
+                    new ArrayList<>());
+        }
+        Work work = optionalWork.get();
+        ResponseJobCardDto respJob = utilsService.getJobCard(work.getJobcard_id(), new Message());
+        ResponseWorkDto workDto = utilsService.getWork(work);
+        ResultJob resultJob = jobCardMapper.fromDto(respJob);
+        ResponseServiceDto serviceDto = utilsService.fromEntityService(work.getService_id());
+        resultJob.setWork(workDto);
+        resultJob.setServices(serviceDto);
+        return new RespJob(
+                ResultCode.builder()
+                        .code(200)
+                        .resultMessage("OK")
+                        .build(),
+                "SUCCESFULLY",
+                resultJob);
     }
 
     private RespJob getJobsByStatus(Status status, int statusCode) {

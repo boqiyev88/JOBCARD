@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 public class MessageDto {
     private String message;
-    private String jobId;
+    private String job_id;
 
 }
